@@ -13,7 +13,8 @@
     "dev:backend": "npm run dev --prefix backend",
     "build:frontend": "npm run build --prefix frontend",
     "build:backend": "npm run build --prefix backend",
-    "build": "npm run build:frontend && npm run build:backend",
+    "build:all": "npm run build:frontend && npm run build:backend",
+    "build": "npm run build:frontend && node -e \"const fs = require('fs'); if (fs.existsSync('frontend/.next')) { fs.cpSync('frontend/.next', '.next', {recursive: true}); }\"",
     "start:frontend": "npm run start --prefix frontend",
     "start:backend": "npm run start --prefix backend",
     "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend"
