@@ -282,6 +282,95 @@ export default function SuperAdminPage() {
     );
   };
 
+  // Onboard New Client State & Handlers
+  const [isOnboardingClient, setIsOnboardingClient] = useState(false);
+  const [newClientForm, setNewClientForm] = useState<{
+    storeName: string;
+    ownerName: string;
+    phone: string;
+    plan: "Starter" | "Growth Pro" | "Enterprise";
+    status: "Active" | "Trial";
+    channels: string[];
+    industry: string;
+    loginEmail: string;
+    loginPassword: string;
+  }>({
+    storeName: "",
+    ownerName: "",
+    phone: "+880 1",
+    plan: "Growth Pro",
+    status: "Active",
+    channels: ["WhatsApp", "Messenger"],
+    industry: "E-Commerce & Gadget Shop",
+    loginEmail: "",
+    loginPassword: "",
+  });
+  const [clientOnboardSuccess, setClientOnboardSuccess] = useState<{
+    storeName: string;
+    ownerName: string;
+    phone: string;
+    id: string;
+    plan: string;
+    email: string;
+    pass: string;
+  } | null>(null);
+
+  const handleCreateNewClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClientForm.storeName.trim() || !newClientForm.ownerName.trim()) return;
+
+    const newId = `CLI-${100 + clients.length + 1}`;
+    const cleanPhone = newClientForm.phone.trim() || "+880 1711-000000";
+    const rev = newClientForm.status === "Trial" ? 0 : (newClientForm.plan === "Starter" ? 2490 : newClientForm.plan === "Enterprise" ? 9990 : 4990);
+    const storeSlug = newClientForm.storeName.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    const generatedEmail = newClientForm.loginEmail.trim() || `${storeSlug}@store.zyncoo.ai`;
+    const generatedPassword = newClientForm.loginPassword.trim() || `Zyncoo@${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newStore: ClientStore = {
+      id: newId,
+      name: newClientForm.storeName.trim(),
+      owner: newClientForm.ownerName.trim(),
+      phone: cleanPhone,
+      plan: newClientForm.plan,
+      status: newClientForm.status,
+      channels: newClientForm.channels.length > 0 ? newClientForm.channels : ["WhatsApp"],
+      conversationsThisMonth: 0,
+      apiCostUSD: 0,
+      revenueBDT: rev,
+      joinedDate: "Today",
+    };
+
+    setClients([newStore, ...clients]);
+
+    // Register into AI training store selector
+    if (!clientStores.includes(newStore.name)) {
+      setClientStores((prev) => [...prev, newStore.name]);
+    }
+
+    setClientOnboardSuccess({
+      storeName: newStore.name,
+      ownerName: newStore.owner,
+      phone: newStore.phone,
+      id: newId,
+      plan: newStore.plan,
+      email: generatedEmail,
+      pass: generatedPassword,
+    });
+
+    setIsOnboardingClient(false);
+    setNewClientForm({
+      storeName: "",
+      ownerName: "",
+      phone: "+880 1",
+      plan: "Growth Pro",
+      status: "Active",
+      channels: ["WhatsApp", "Messenger"],
+      industry: "E-Commerce & Gadget Shop",
+      loginEmail: "",
+      loginPassword: "",
+    });
+  };
+
   const handleApprovePayment = (id: string) => {
     setPayments((prev) =>
       prev.map((p) => (p.id === id ? { ...p, status: "Verified" } : p))
@@ -1365,101 +1454,375 @@ export default function SuperAdminPage() {
           {/* TAB 2: CLIENT STORES */}
           {adminTab === "clients" && (
             <div className="space-y-5">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                <div className="relative flex-1 sm:w-72">
+              
+              {/* Search & Action Bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-sm">
+                <div className="relative flex-1 sm:w-80">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search client by store, owner, or phone..."
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-hidden focus:border-emerald-500"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-950 border border-slate-800 text-white focus:outline-hidden focus:border-emerald-500"
                   />
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                    {filteredClients.length} of {clients.length} Stores
+                  </span>
                   <button
-                    onClick={() => alert("New client onboarding link generated!")}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"
+                    onClick={() => setIsOnboardingClient(true)}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                   >
-                    + Onboard New Store
+                    <Plus className="w-4 h-4" />
+                    <span>+ Onboard New Store</span>
                   </button>
                 </div>
               </div>
 
+              {/* Success Notification Banner */}
+              {clientOnboardSuccess && (
+                <div className="p-5 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl text-white space-y-3 animate-in fade-in duration-200 shadow-lg">
+                  <div className="flex items-center justify-between border-b border-emerald-800/60 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      <span className="font-extrabold text-sm text-emerald-300">
+                        নতুন ক্লায়েন্ট &quot;{clientOnboardSuccess.storeName}&quot; সফলভাবে অনবোর্ড হয়েছে!
+                      </span>
+                      <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
+                        ID: {clientOnboardSuccess.id}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setClientOnboardSuccess(null)}
+                      className="text-slate-400 hover:text-white cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 block text-[11px]">Owner & Phone:</span>
+                      <strong className="text-white">{clientOnboardSuccess.ownerName}</strong>
+                      <div className="text-emerald-400 font-mono">{clientOnboardSuccess.phone}</div>
+                    </div>
+                    <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 block text-[11px]">Login Credentials:</span>
+                      <div className="text-slate-200 font-mono text-[11px]">Email: {clientOnboardSuccess.email}</div>
+                      <div className="text-slate-200 font-mono text-[11px]">Pass: {clientOnboardSuccess.pass}</div>
+                    </div>
+                    <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+                      <span className="text-slate-400 block text-[11px]">Plan Status:</span>
+                      <strong className="text-emerald-400">{clientOnboardSuccess.plan} Tier</strong>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-end gap-2.5 pt-1">
+                    <button
+                      onClick={() => {
+                        const cleanPhone = clientOnboardSuccess.phone.replace(/[^0-9]/g, "");
+                        const msg = encodeURIComponent(
+                          `আসসালামু আলাইকুম ${clientOnboardSuccess.ownerName} ভাই! Zyncoo AI-তে আপনার স্টোর [${clientOnboardSuccess.storeName}] সফলভাবে অ্যাক্টিভ করা হয়েছে।\n\n🔗 পোর্টাল লগইন: https://zyncoo.ai/dashboard\n📧 ইমেইল: ${clientOnboardSuccess.email}\n🔑 পাসওয়ার্ড: ${clientOnboardSuccess.pass}\n\nযেকোনো প্রয়োজনে আমাদের সাপোর্ট টিম সবসময় প্রস্তুত রয়েছে!`
+                        );
+                        window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>WhatsApp-এ লগইন তথ্য পাঠান 📲</span>
+                    </button>
+
+                    <Link
+                      href={`/dashboard?impersonate=${clientOnboardSuccess.id}&store=${encodeURIComponent(clientOnboardSuccess.storeName)}`}
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-4 py-2 rounded-xl transition-all border border-slate-700 flex items-center gap-1.5"
+                    >
+                      <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Login as Store Now 🔑</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Onboard New Store Modal Form */}
+              {isOnboardingClient && (
+                <div className="bg-slate-900 p-6 rounded-2xl border-2 border-emerald-500 shadow-2xl space-y-5 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                        <Building className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-extrabold text-sm text-white">
+                          অনবোর্ড নতুন ক্লায়েন্ট বিজনেস (Onboard New Client Store)
+                        </h4>
+                        <p className="text-xs text-slate-400">
+                          ক্লায়েন্টের স্টোরের নাম, প্যাকেজ ও চ্যানেল সেট করুন। সাথে সাথে এআই অ্যাকাউন্ট তৈরি হবে।
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setIsOnboardingClient(false)}
+                      className="text-slate-400 hover:text-white cursor-pointer p-1"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleCreateNewClient} className="space-y-4 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Store Name */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">
+                          Store / Business Name <span className="text-emerald-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Dhaka Gadgets Pro or Luxe BD"
+                          value={newClientForm.storeName}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, storeName: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white focus:outline-hidden focus:border-emerald-500"
+                        />
+                      </div>
+
+                      {/* Owner Name */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">
+                          Owner / Contact Person <span className="text-emerald-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. তানভীর হাসান বা নাফিস ফুয়াদ"
+                          value={newClientForm.ownerName}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, ownerName: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white focus:outline-hidden focus:border-emerald-500"
+                        />
+                      </div>
+
+                      {/* Phone Number */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">
+                          WhatsApp / Mobile Phone <span className="text-emerald-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="+880 1711-223344"
+                          value={newClientForm.phone}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, phone: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono focus:outline-hidden focus:border-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Plan Tier */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">Subscription Plan Tier</label>
+                        <select
+                          value={newClientForm.plan}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, plan: e.target.value as any })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500 cursor-pointer"
+                        >
+                          <option value="Growth Pro">Growth Pro (৳4,990 / mo)</option>
+                          <option value="Starter">Starter (৳2,490 / mo)</option>
+                          <option value="Enterprise">Enterprise (৳9,990 / mo)</option>
+                        </select>
+                      </div>
+
+                      {/* Initial Status */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">Initial Account Status</label>
+                        <select
+                          value={newClientForm.status}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, status: e.target.value as any })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500 cursor-pointer"
+                        >
+                          <option value="Active">Active (Paid Subscription)</option>
+                          <option value="Trial">Trial (14-Day Free Trial)</option>
+                        </select>
+                      </div>
+
+                      {/* Industry Template */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-300">Initial AI Industry Persona</label>
+                        <select
+                          value={newClientForm.industry}
+                          onChange={(e) => setNewClientForm({ ...newClientForm, industry: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500 cursor-pointer"
+                        >
+                          <option value="E-Commerce & Gadget Shop">ই-কমার্স ও গ্যাজেট শপ</option>
+                          <option value="Fashion & Clothing">ফ্যাশন ও ক্লোথিং</option>
+                          <option value="Healthcare & Doctor Chamber">ডাক্তার ও চেম্বার ক্লিনিক</option>
+                          <option value="Real Estate & Developers">রিয়েল এস্টেট ও প্রোপার্টি</option>
+                          <option value="IT Academy & Coaching">কোচিং ও আইটি একাডেমি</option>
+                          <option value="Travel & Visa Holidays">ভ্রমণ ও ট্যুরিজম এজেন্সি</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Channel Toggles */}
+                    <div className="space-y-1.5 pt-1">
+                      <label className="font-bold text-slate-300 block">Active Automation Channels:</label>
+                      <div className="flex flex-wrap items-center gap-3">
+                        {["WhatsApp", "Messenger", "Instagram"].map((ch) => {
+                          const isSelected = newClientForm.channels.includes(ch);
+                          return (
+                            <button
+                              key={ch}
+                              type="button"
+                              onClick={() => {
+                                setNewClientForm({
+                                  ...newClientForm,
+                                  channels: isSelected
+                                    ? newClientForm.channels.filter((c) => c !== ch)
+                                    : [...newClientForm.channels, ch],
+                                });
+                              }}
+                              className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+                                isSelected
+                                  ? "bg-emerald-600 text-white shadow-xs"
+                                  : "bg-slate-950 text-slate-400 border border-slate-800"
+                              }`}
+                            >
+                              <span>{isSelected ? "✓" : "+"}</span>
+                              <span>{ch}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Auto Credentials Preview Box */}
+                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>Auto-Generated Client Login Credentials:</span>
+                        <span className="text-emerald-400 font-mono">Secured</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                        <div className="text-slate-300">
+                          Portal URL: <span className="text-emerald-400 font-bold">https://zyncoo.ai/dashboard</span>
+                        </div>
+                        <div className="text-slate-300">
+                          Login ID: <span className="text-emerald-400">
+                            {newClientForm.storeName ? `${newClientForm.storeName.toLowerCase().replace(/[^a-z0-9]/g, "")}@store.zyncoo.ai` : "client@store.zyncoo.ai"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Submit Footer */}
+                    <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => setIsOnboardingClient(false)}
+                        className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!newClientForm.storeName.trim() || !newClientForm.ownerName.trim()}
+                        className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>Deploy & Onboard Client 🚀</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
               {/* Clients Table */}
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-md">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-800/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                    <thead className="bg-slate-950/80 text-slate-400 uppercase font-bold border-b border-slate-800 text-[11px] tracking-wider">
                       <tr>
-                        <th className="px-5 py-3">Store ID</th>
-                        <th className="px-5 py-3">Store & Owner</th>
-                        <th className="px-5 py-3">Channels</th>
-                        <th className="px-5 py-3">Plan</th>
-                        <th className="px-5 py-3">MRR</th>
-                        <th className="px-5 py-3">Bot Status</th>
-                        <th className="px-5 py-3 text-right">Owner Actions</th>
+                        <th className="px-5 py-3.5">Store ID</th>
+                        <th className="px-5 py-3.5">Store & Owner</th>
+                        <th className="px-5 py-3.5">Channels</th>
+                        <th className="px-5 py-3.5">Plan</th>
+                        <th className="px-5 py-3.5">MRR</th>
+                        <th className="px-5 py-3.5">Bot Status</th>
+                        <th className="px-5 py-3.5 text-right">Owner Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-800/80 font-medium">
                       {filteredClients.map((c) => (
                         <tr key={c.id} className="hover:bg-slate-800/40 transition-colors">
-                          <td className="px-5 py-4 font-mono text-slate-400">{c.id}</td>
+                          <td className="px-5 py-4 font-mono font-bold text-slate-400 whitespace-nowrap">{c.id}</td>
                           <td className="px-5 py-4">
                             <div className="font-bold text-white text-sm">{c.name}</div>
-                            <div className="text-slate-400 text-xs">{c.owner} ({c.phone})</div>
+                            <div className="text-slate-400 text-xs font-mono mt-0.5">{c.owner} ({c.phone})</div>
                           </td>
                           <td className="px-5 py-4">
-                            <div className="flex gap-1 flex-wrap">
+                            <div className="flex gap-1.5 flex-wrap">
                               {c.channels.map((ch, i) => (
-                                <span key={i} className="bg-slate-800 text-[10px] px-1.5 py-0.5 rounded text-slate-300">
+                                <span key={i} className="bg-slate-950 border border-slate-800 text-[10px] px-2 py-0.5 rounded-md text-emerald-300 font-mono">
                                   {ch}
                                 </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-5 py-4 font-mono font-bold text-slate-200">{c.plan}</td>
-                          <td className="px-5 py-4 font-mono text-emerald-400 font-bold">
-                            {c.revenueBDT > 0 ? `৳${c.revenueBDT}` : "Trial Free"}
-                          </td>
-                          <td className="px-5 py-4">
-                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                              c.status === "Active"
-                                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                                : c.status === "Trial"
-                                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                : "bg-red-500/20 text-red-400 border border-red-500/30"
-                            }`}>
-                              {c.status}
+                          <td className="px-5 py-4 font-mono font-bold text-slate-200 whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 inline-block">
+                              {c.plan}
                             </span>
                           </td>
-                          <td className="px-5 py-4 text-right space-x-2">
-                            <Link
-                              href={`/dashboard?impersonate=${c.id}&store=${encodeURIComponent(c.name)}`}
-                              className="text-xs bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/40 inline-flex items-center gap-1 font-semibold transition-colors"
-                              title={`Impersonate and login as ${c.name}`}
-                            >
-                              <LogIn className="w-3 h-3 text-emerald-400" />
-                              <span>Login as Store 🔑</span>
-                            </Link>
-                            <button
-                              onClick={() => handleToggleStoreStatus(c.id)}
-                              className={`text-xs px-2.5 py-1 rounded-lg border font-semibold transition-colors ${
-                                c.status === "Active"
-                                  ? "bg-slate-800 text-amber-400 border-amber-500/30 hover:bg-slate-700"
-                                  : "bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-500"
-                              }`}
-                            >
-                              {c.status === "Active" ? "Pause Bot" : "Activate"}
-                            </button>
-                            <Link
-                              href="/dashboard"
-                              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 inline-flex items-center gap-1"
-                            >
-                              <span>Inspect</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </Link>
+                          <td className="px-5 py-4 font-mono text-emerald-400 font-black whitespace-nowrap">
+                            {c.revenueBDT > 0 ? `৳${c.revenueBDT.toLocaleString()}` : "Trial Free"}
+                          </td>
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold ${
+                              c.status === "Active"
+                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                                : c.status === "Trial"
+                                ? "bg-blue-500/20 text-blue-300 border border-blue-500/40"
+                                : "bg-red-500/20 text-red-300 border border-red-500/40"
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${c.status === "Active" ? "bg-emerald-400" : c.status === "Trial" ? "bg-blue-400" : "bg-red-400"}`} />
+                              <span>{c.status}</span>
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                              <Link
+                                href={`/dashboard?impersonate=${c.id}&store=${encodeURIComponent(c.name)}`}
+                                className="text-xs bg-emerald-950/70 hover:bg-emerald-900 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/40 inline-flex items-center gap-1 font-bold transition-all shadow-sm"
+                                title={`Impersonate and login as ${c.name}`}
+                              >
+                                <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Login as Store 🔑</span>
+                              </Link>
+                              
+                              <button
+                                onClick={() => handleToggleStoreStatus(c.id)}
+                                className={`text-xs px-3 py-1.5 rounded-xl border font-bold transition-all cursor-pointer ${
+                                  c.status === "Active"
+                                    ? "bg-slate-800 text-amber-300 border-amber-500/30 hover:bg-slate-700"
+                                    : "bg-emerald-600 text-white border-emerald-500 hover:bg-emerald-500 shadow-sm"
+                                }`}
+                              >
+                                {c.status === "Active" ? "Pause Bot" : "Activate"}
+                              </button>
+
+                              <button
+                                onClick={() => {
+                                  if (confirm(`Are you sure you want to delete ${c.name}?`)) {
+                                    setClients(clients.filter((client) => client.id !== c.id));
+                                  }
+                                }}
+                                className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+                                title="Delete client"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
