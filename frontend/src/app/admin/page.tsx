@@ -1087,193 +1087,210 @@ export default function SuperAdminPage() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
       
       {/* Super Admin Dark Sidebar */}
-      <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+      <aside className="w-full md:w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
         <div>
           {/* Header */}
-          <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <ZyncooLogo className="w-10 h-10" />
-              <div>
-                <div className="font-extrabold text-base text-white tracking-wide">
-                  zyncoo<span className="text-[#b8e900]">.ai</span> HQ
+          <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="p-1 rounded-xl bg-slate-800/90 border border-slate-700/60 shadow-sm shrink-0">
+                <ZyncooLogo className="w-9 h-9 rounded-lg" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-extrabold text-base text-white tracking-wide flex items-center gap-1.5 whitespace-nowrap">
+                  <span>zyncoo</span>
+                  <span className="text-[#b8e900]">.ai</span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 bg-[#b8e900]/15 text-[#b8e900] border border-[#b8e900]/30 rounded font-bold uppercase shrink-0">HQ</span>
                 </div>
-                <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">
-                  Super Admin Panel
+                <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider flex items-center gap-1 mt-0.5 whitespace-nowrap">
+                  <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+                  <span>Super Admin Panel</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Quick System Badge */}
-          <div className="mx-4 my-3 p-3 rounded-xl bg-slate-800/80 border border-slate-700/80">
+          <div className="mx-3.5 my-3 p-3 rounded-xl bg-slate-800/50 border border-slate-800/80 backdrop-blur-xs">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Platform Status:</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <span className="text-slate-400 font-medium">Platform Status</span>
+              <span className="text-emerald-400 font-semibold flex items-center gap-1.5 text-[11px] bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 whitespace-nowrap shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 Operational
               </span>
             </div>
-            <div className="text-[11px] text-slate-400 mt-1 font-mono">
-              Server Load: 18% • 0 Errs
+            <div className="text-[11px] text-slate-400 mt-2 font-mono flex items-center justify-between border-t border-slate-800/80 pt-2">
+              <span>Server Load: <strong className="text-slate-200">18%</strong></span>
+              <span className="text-emerald-400 font-medium">0 Errors</span>
             </div>
           </div>
 
           {/* Nav Links */}
-          <nav className="p-3 space-y-1 text-xs font-semibold">
+          <nav className="p-3 space-y-1 text-xs">
             <button
               onClick={() => setAdminTab("overview")}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "overview"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <Activity className="w-4 h-4" />
-              <span>Platform Analytics</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Activity className={`w-4 h-4 shrink-0 ${adminTab === "overview" ? "text-emerald-400" : "text-slate-400"}`} />
+                <span className="truncate whitespace-nowrap">Platform Analytics</span>
+              </div>
             </button>
 
             <button
               onClick={() => setAdminTab("clients")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "clients"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Users className="w-4 h-4" />
-                <span>Client Businesses</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Users className={`w-4 h-4 shrink-0 ${adminTab === "clients" ? "text-emerald-400" : "text-slate-400"}`} />
+                <span className="truncate whitespace-nowrap">Client Businesses</span>
               </div>
-              <span className="text-[10px] font-mono bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 whitespace-nowrap ${
+                adminTab === "clients"
+                  ? "bg-emerald-500/25 text-emerald-300 border-emerald-500/40"
+                  : "bg-slate-800 text-slate-400 border-slate-700/60"
+              }`}>
                 {clients.length}
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("training")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "training"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Brain className="w-4 h-4 text-emerald-400" />
-                <span>AI Rules & Training</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Brain className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="truncate whitespace-nowrap">AI Rules & Training</span>
               </div>
-              <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <span className="text-[10px] font-mono bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 shrink-0 whitespace-nowrap">
                 {aiRules.length} Rules
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("leads")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "leads"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Package className="w-4 h-4 text-emerald-400" />
-                <span>Lead Store Orders</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Package className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="truncate whitespace-nowrap">Lead Store Orders</span>
               </div>
-              <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
+              <span className="text-[10px] font-mono bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 shrink-0 whitespace-nowrap">
                 2 Pending
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("agencies")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "agencies"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Building className="w-4 h-4 text-purple-400" />
-                <span>Agency White-Label</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Building className="w-4 h-4 text-purple-400 shrink-0" />
+                <span className="truncate whitespace-nowrap">Agency White-Label</span>
               </div>
-              <span className="text-[10px] font-mono bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/30">
+              <span className="text-[10px] font-mono bg-purple-500/15 text-purple-300 px-2 py-0.5 rounded-full border border-purple-500/30 shrink-0 whitespace-nowrap">
                 {agencies.length}
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("fraud-blacklist")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "fraud-blacklist"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <Ban className="w-4 h-4 text-red-400" />
-                <span>Central Fraud Defense</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Ban className="w-4 h-4 text-red-400 shrink-0" />
+                <span className="truncate whitespace-nowrap">Central Fraud Defense</span>
               </div>
-              <span className="text-[10px] font-mono bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded border border-red-500/30">
+              <span className="text-[10px] font-mono bg-red-500/15 text-red-300 px-2 py-0.5 rounded-full border border-red-500/30 shrink-0 whitespace-nowrap">
                 {fraudBlacklist.length} Blocked
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("billing")}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "billing"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <div className="flex items-center gap-3">
-                <CreditCard className="w-4 h-4" />
-                <span>Payments & Billing</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <CreditCard className={`w-4 h-4 shrink-0 ${adminTab === "billing" ? "text-emerald-400" : "text-slate-400"}`} />
+                <span className="truncate whitespace-nowrap">Payments & Billing</span>
               </div>
-              <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">
+              <span className="text-[10px] font-mono bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 shrink-0 whitespace-nowrap">
                 1 Pending
               </span>
             </button>
 
             <button
               onClick={() => setAdminTab("llm")}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "llm"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <Cpu className="w-4 h-4" />
-              <span>LLM & Meta API Gateway</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Cpu className={`w-4 h-4 shrink-0 ${adminTab === "llm" ? "text-emerald-400" : "text-indigo-400"}`} />
+                <span className="truncate whitespace-nowrap">LLM & Meta API Gateway</span>
+              </div>
             </button>
 
             <button
               onClick={() => setAdminTab("features")}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "features"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
               }`}
             >
-              <Sliders className="w-4 h-4" />
-              <span>Global Engine Config</span>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Sliders className={`w-4 h-4 shrink-0 ${adminTab === "features" ? "text-emerald-400" : "text-slate-400"}`} />
+                <span className="truncate whitespace-nowrap">Global Engine Config</span>
+              </div>
             </button>
           </nav>
         </div>
 
         {/* Footer shortcuts */}
-        <div className="p-4 border-t border-slate-800 space-y-2">
+        <div className="p-3.5 border-t border-slate-800 space-y-2">
           <Link
             href="/dashboard"
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 text-slate-200 hover:text-white text-xs font-semibold transition-all group shadow-xs"
           >
-            <LayoutDashboard className="w-3.5 h-3.5 text-emerald-400" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform shrink-0" />
             <span>Open Client Portal View</span>
           </Link>
           <Link
             href="/"
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-800 text-slate-400 hover:text-white text-xs transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl hover:bg-slate-800/60 text-slate-400 hover:text-slate-200 text-xs transition-colors"
           >
-            <span>Public Website →</span>
+            <span>Public Website</span>
+            <span className="text-[#b8e900]">→</span>
           </Link>
         </div>
       </aside>
