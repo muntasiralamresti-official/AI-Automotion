@@ -471,7 +471,7 @@ export default function SuperAdminPage() {
           {/* Header */}
           <div className="p-5 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <ZyncooLogo className="w-8 h-8" />
+              <ZyncooLogo className="w-9.5 h-9.5" />
               <div>
                 <div className="font-extrabold text-base text-white tracking-wide">
                   zyncoo<span className="text-emerald-400">.ai</span> HQ

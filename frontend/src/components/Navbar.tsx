@@ -26,7 +26,7 @@ export default function Navbar() {
             
             {/* Brand Logo - Zyncoo AI */}
             <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <ZyncooLogo className="w-8 h-8 sm:w-9 sm:h-9 group-hover:scale-105 transition-transform duration-200 shrink-0" />
+              <ZyncooLogo className="w-9.5 h-9.5 sm:w-10 sm:h-10 group-hover:scale-105 transition-transform duration-200 shrink-0" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 whitespace-nowrap">

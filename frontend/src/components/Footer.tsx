@@ -14,7 +14,7 @@ export default function Footer() {
           {/* Brand info */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <ZyncooLogo className="w-8 h-8" />
+              <ZyncooLogo className="w-9.5 h-9.5" />
               <span className="font-extrabold text-2xl tracking-tight text-white">
                 zyncoo<span className="text-emerald-500">.ai</span>
               </span>

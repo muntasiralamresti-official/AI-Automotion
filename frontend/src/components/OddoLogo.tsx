@@ -1,16 +1,16 @@
 import Image from "next/image";
 
-export default function OddoLogo({ className = "w-9 h-9" }: { className?: string }) {
+export default function OddoLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
     <div
-      className={`relative flex items-center justify-center shrink-0 rounded-2xl overflow-hidden shadow-sm bg-lime-400 p-0.5 border border-lime-500/30 ${className}`}
+      className={`relative flex items-center justify-center shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-900/10 bg-[#b8e900] ${className}`}
     >
       <Image
-        src="/zyncoo-icon.jpg"
+        src="/zyncoo-icon.png"
         alt="Zyncoo AI Logo"
-        width={64}
-        height={64}
-        className="w-full h-full object-contain hover:scale-105 transition-transform duration-300 rounded-xl"
+        fill
+        sizes="64px"
+        className="object-cover hover:scale-105 transition-transform duration-300"
         priority
       />
     </div>

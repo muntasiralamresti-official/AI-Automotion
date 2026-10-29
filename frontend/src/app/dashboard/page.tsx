@@ -686,7 +686,7 @@ export default function DashboardPage() {
             {/* Logo & Store */}
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2.5">
-                <ZyncooLogo className="w-8 h-8" />
+                <ZyncooLogo className="w-9.5 h-9.5" />
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 leading-tight">
                     zyncoo<span className="text-emerald-600">.ai</span>

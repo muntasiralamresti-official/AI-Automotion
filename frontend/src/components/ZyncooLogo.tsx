@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 export default function ZyncooLogo({
-  className = "w-9 h-9",
+  className = "w-10 h-10",
   showText = false,
   textClassName = "text-xl font-black",
 }: {
@@ -12,14 +12,14 @@ export default function ZyncooLogo({
   return (
     <div className="flex items-center gap-2.5 shrink-0 select-none">
       <div
-        className={`relative flex items-center justify-center shrink-0 rounded-2xl overflow-hidden shadow-sm bg-lime-400 p-1 border border-lime-500/30 ${className}`}
+        className={`relative flex items-center justify-center shrink-0 rounded-xl overflow-hidden shadow-sm border border-slate-900/10 bg-[#b8e900] ${className}`}
       >
         <Image
-          src="/zyncoo-icon.jpg"
+          src="/zyncoo-icon.png"
           alt="Zyncoo AI Logo"
-          width={64}
-          height={64}
-          className="w-full h-full object-contain hover:scale-105 transition-transform duration-300 rounded-xl"
+          fill
+          sizes="64px"
+          className="object-cover hover:scale-105 transition-transform duration-300"
           priority
         />
       </div>
