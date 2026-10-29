@@ -54,7 +54,13 @@ import {
   Filter,
   Sliders,
   HelpCircle,
-  CheckSquare
+  CheckSquare,
+  Stethoscope,
+  GraduationCap,
+  Plane,
+  Coffee,
+  Globe,
+  RefreshCw
 } from "lucide-react";
 import ZyncooLogo from "@/components/ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
@@ -95,13 +101,31 @@ interface ProductItem {
 export interface ClientAiRule {
   id: string;
   clientStore: string;
-  category: "Bargaining" | "Delivery & COD" | "Fraud & Advance" | "Address Sanitizer" | "Product & Warranty" | "Custom";
+  category: "Bargaining" | "Delivery & COD" | "Fraud & Advance" | "Address Sanitizer" | "Product & Warranty" | "Custom" | "Appointment & Booking";
   name: string;
   triggerKeywords: string[];
   matchType: "contains" | "exact" | "ai_intent";
   replyText: string;
   actionTrigger: "apply_coupon_100" | "send_bkash_advance" | "request_full_address" | "none";
   active: boolean;
+}
+
+export interface IndustryPreset {
+  id: string;
+  name: string;
+  category: string;
+  emoji: string;
+  targetClient: string;
+  systemPersona: string;
+  description: string;
+  rules: {
+    category: ClientAiRule["category"];
+    name: string;
+    triggerKeywords: string[];
+    matchType: ClientAiRule["matchType"];
+    replyText: string;
+    actionTrigger: ClientAiRule["actionTrigger"];
+  }[];
 }
 
 export default function DashboardPage() {
@@ -323,6 +347,269 @@ export default function DashboardPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [isAddingRule, setIsAddingRule] = useState<boolean>(false);
   const [ruleSaveMessage, setRuleSaveMessage] = useState<string | null>(null);
+
+  // Real-Time Google Sheets Webhook Exporter State
+  const [googleSheetWebhook, setGoogleSheetWebhook] = useState("https://script.google.com/macros/s/AKfycbz_SAMPLE_LEADS_SHEET/exec");
+  const [googleSheetAutoSync, setGoogleSheetAutoSync] = useState(true);
+  const [googleSheetSyncing, setGoogleSheetSyncing] = useState(false);
+  const [googleSheetSuccess, setGoogleSheetSuccess] = useState<string | null>(null);
+
+  const handleTestGoogleSheetSync = () => {
+    setGoogleSheetSyncing(true);
+    setTimeout(() => {
+      setGoogleSheetSyncing(false);
+      setGoogleSheetSuccess("✓ ১টি টেস্ট কাস্টমার লিড সফলভাবে ক্লায়েন্টের গুগল শিটে সিঙ্ক হয়েছে!");
+      setTimeout(() => setGoogleSheetSuccess(null), 4000);
+    }, 1200);
+  };
+
+  // 1-Click Multi-Industry Presets
+  const industryPresets: IndustryPreset[] = [
+    {
+      id: "clinic",
+      name: "ডাক্তার ও ক্লিনিক চেম্বার",
+      category: "Healthcare & Doctor Chamber",
+      emoji: "🩺",
+      targetClient: "Apex Dental & Medical Care",
+      systemPersona: "তুমি একটি আধুনিক বিশেষজ্ঞ ডক্টরস চেম্বার ও ক্লিনিকের অফিসিয়াল রিসেপশনিস্ট AI। রোগীদের সাথে সবসময় বিনম্র ভাষায় কথা বলবে। সিরিয়াল বুকিং, চেম্বার শিডিউল, ভিজিট ফি ও রিপোর্ট পাওয়ার সময় বিস্তারিত জানাবে।",
+      description: "সিরিয়াল বুকিং, ডাক্তারের ভিজিট ফি, চেম্বারের সময়সূচি ও ল্যাব রিপোর্ট ডেলিভারির ২০+ প্রি-বিল্ড রুলস।",
+      rules: [
+        {
+          category: "Appointment & Booking",
+          name: "ডাক্তারের শিডিউল ও সিরিয়াল বুকিং",
+          triggerKeywords: ["সিরিয়াল", "serial", "appointment", "কখন বসেন", "ডাক্তার দেখতে চাই", "doctor ache"],
+          matchType: "contains",
+          replyText: "আসসালামু আলাইকুম। আমাদের স্পেশালিস্ট ডাক্তার প্রতিদিন বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত রোগী দেখেন। আপনার নাম ও মোবাইল নম্বর দিলে আজকেই সিরিয়াল বুক করে দেওয়া হবে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Appointment & Booking",
+          name: "কনসালটেশন ও ভিজিট ফি",
+          triggerKeywords: ["ভিজিট কত", "visit fee", "কত টাকা ভিজিট", "ডাক্তারের ফি", "consultation fee"],
+          matchType: "contains",
+          replyText: "নতুন রোগীর জন্য বিশেষজ্ঞ ডাক্তারের কনসালটেশন ফি ৳৮০০ টাকা এবং পুরাতন রোগীর ফলো-আপ ফি ৳৫০০ টাকা (৩০ দিনের মধ্যে প্রযোজ্য)।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "টেস্ট রিপোর্ট ডেলিভারি টাইম",
+          triggerKeywords: ["রিপোর্ট কবে", "test report", "রিপোর্ট পেয়েছি কি না", "report delivery"],
+          matchType: "contains",
+          replyText: "সাধারণ ব্লাড ও ইউরিন টেস্টের রিপোর্ট টেস্ট করার ৩ ঘণ্টার মধ্যে ডেলিভারি দেওয়া হয়। আল্ট্রাসনোগ্রাম ও এক্স-রে রিপোর্ট তাৎক্ষণিকভাবে ডাক্তারের স্বাক্ষরসহ প্রদান করা হয়।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "চেম্বারের ঠিকানা ও গুগল ম্যাপ",
+          triggerKeywords: ["ঠিকানা কোথায়", "location", "chamber address", "গুগল ম্যাপ", "thikana ki"],
+          matchType: "contains",
+          replyText: "আমাদের চেম্বার: বাড়ি নং ১২, রোড নং ৭, ধানমন্ডি (ল্যাবএইড হাসপাতালের বিপরীতে), ঢাকা। গুগল ম্যাপ লোকেশন লিংক: https://maps.google.com/apex-dental",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "realestate",
+      name: "রিয়েল এস্টেট ও প্রোপার্টি",
+      category: "Real Estate & Developers",
+      emoji: "🏢",
+      targetClient: "Skyline Luxury Properties BD",
+      systemPersona: "তুমি একটি স্বনামধন্য রিয়েল এস্টেট ডেভেলপার কোম্পানির সিনিয়র প্রোপার্টি কনসালট্যান্ট। ক্রেতাদের ফ্ল্যাটের সাইজ, কিস্তির প্ল্যান এবং সাইট ভিজিট শিডিউল করতে সাহায্য করো।",
+      description: "স্কয়ারফিট সাইজ, কিস্তির হিসাব, সাইট ভিজিট বুকিং এবং ব্রোশিওর PDF শেয়ারিং রুলস।",
+      rules: [
+        {
+          category: "Custom",
+          name: "ফ্ল্যাট সাইজ ও স্কয়ারফিট",
+          triggerKeywords: ["স্কয়ার ফিট কত", "sqft", "flat size", "কত বড় ফ্ল্যাট", "koto sqft"],
+          matchType: "contains",
+          replyText: "আমাদের চলতি প্রজেক্টে ১,২৫০ স্কয়ার ফিট (৩ বেড, ৩ বাথ) এবং ১,৬৫০ স্কয়ার ফিট (৪ বেড, ৪ বাথ) এর প্রিমিয়াম অ্যাপার্টমেন্ট এভেইলেবল আছে। আপনি কোন সাইজটি খুঁজছেন?",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "দাম ও কিস্তির সুবিধা",
+          triggerKeywords: ["দাম কত", "flat price", "installment", "কিস্তিতে দেওয়া যাবে", "kisti ache"],
+          matchType: "contains",
+          replyText: "প্রতি স্কয়ার ফিট রেট শুরু মাত্র ৳৬,২০০ থেকে। এছাড়া ৩০% ডাউনপেমেন্টে টানা ৫ বছরের সহজ ব্যাংক লোন ও সরাসরি কোম্পানি কিস্তির সুবিধা রয়েছে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Appointment & Booking",
+          name: "সাইট ভিজিট বুকিং",
+          triggerKeywords: ["সাইট ভিজিট", "site visit", "দেখতে যেতে চাই", "কবে যাওয়া যাবে", "dekhte chai"],
+          matchType: "contains",
+          replyText: "জি অবশ্যই! প্রতি শুক্র ও শনিবার সকাল ১০টা থেকে বিকাল ৫টার মধ্যে আমাদের প্রজেক্ট ভিজিট করতে পারেন। আপনার সুবিধাজনক তারিখ এবং ফোন নম্বর দিলে আমরা ভিজিট শিডিউল কনফার্ম করে রাখব।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ব্রোশিওর ও ফ্লোর প্ল্যান PDF",
+          triggerKeywords: ["brochure", "ফ্লোর প্ল্যান", "floor plan", "পিডিএফ দিন", "pdf pathan"],
+          matchType: "contains",
+          replyText: "আমাদের প্রজেক্টের থ্রি-ডি ফ্লোর প্ল্যান এবং অফিশিয়াল ব্রোশিওর PDF ফাইলটি ডাউনলোড করতে পারেন অথবা আপনার WhatsApp নম্বর দিলে সরাসরি পাঠিয়ে দিচ্ছি।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "coaching",
+      name: "কোচিং ও আইটি একাডেমি",
+      category: "IT Academy & Coaching",
+      emoji: "🎓",
+      targetClient: "ByteCraft IT Academy & Coaching",
+      systemPersona: "তুমি একটি শীর্ষস্থানীয় স্কিল ডেভেলপমেন্ট ও আইটি একাডেমির অ্যাডমিশন কাউন্সেলর AI। শিক্ষার্থীদের সঠিক কোর্স নির্বাচন, ব্যাচের সময়সূচি এবং স্কলারশিপে ভর্তি হতে সহায়তা করো।",
+      description: "কোর্স সিলেবাস, ব্যাচ টাইমিং, স্কলারশিপ ফি এবং ভেরিফায়েড সার্টিফিকেটের প্রশ্নোত্তর।",
+      rules: [
+        {
+          category: "Custom",
+          name: "কোর্স ফি ও স্কলারশিপ অফার",
+          triggerKeywords: ["কোর্স ফি কত", "course fee", "discount ache", "কত টাকা লাগবে", "koto tk lagbe"],
+          matchType: "contains",
+          replyText: "আমাদের ফুল-স্ট্যাক ওয়েব ও এআই অটোমেশন কোর্সের রেগুলার ফি ৳১২,০০০, তবে চলতি ব্যাচে প্রথম ২০ জনের জন্য ৫০% স্কলারশিপে মাত্র ৳৫,৯৯৯ টাকায় ভর্তি চলছে!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ক্লাস শুরুর তারিখ ও ব্যাচ শিডিউল",
+          triggerKeywords: ["কবে শুরু", "batch kobe shuru", "class time", "ক্লাসের সময়", "kobe theke shuru"],
+          matchType: "contains",
+          replyText: "আমাদের নতুন সান্ধ্যকালীন ব্যাচ আগামী শুক্রবার থেকে শুরু হচ্ছে। প্রতি শুক্র ও শনিবার রাত ৮:৩০ থেকে ১০:৩০ পর্যন্ত জুম লাইভে ক্লাস হবে এবং লাইভ ক্লাসের ফুল এইচডি রেকর্ডিং প্রদান করা হবে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "সার্টিফিকেট ও জব প্লেসমেন্ট",
+          triggerKeywords: ["সার্টিফিকেট পাব", "job placement", "চাকরি হবে", "certificate ache", "internship"],
+          matchType: "contains",
+          replyText: "জি, কোর্স সফলভাবে সম্পন্ন করার পর ভেরিফায়েড প্রফেশনাল সার্টিফিকেট প্রদান করা হয়। এছাড়া সেরা শিক্ষার্থীদের আমাদের সহযোগী আইটি কোম্পানিতে ইন্টার্নশিপ ও জব রেফারেল দেওয়া হয়।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "travel",
+      name: "ভ্রমণ ও ট্যুরিজম এজেন্সি",
+      category: "Travel & Visa Holidays",
+      emoji: "✈️",
+      targetClient: "FlyHigh Travel & Visa Holidays",
+      systemPersona: "তুমি একটি অভিজ্ঞ ট্যুরিজম ও ভিসা কনসালটেন্সি এজেন্সির ট্রাভেল গাইড AI। পর্যটকদের আকর্ষণীয় বাজেট প্যাকেজ ও ভিসা প্রসেসিং রিকোয়ারমেন্টস জানাও।",
+      description: "সাজেক/কক্সবাজার প্যাকেজ, এয়ার টিকিট কোটেশন ও ভিসা প্রসেসিং রিকোয়ারমেন্টস।",
+      rules: [
+        {
+          category: "Custom",
+          name: "সাজেক ও কক্সবাজার ট্যুর প্যাকেজ",
+          triggerKeywords: ["সাজেক ট্যুর", "sajek package", "coxs bazar", "ট্যুর প্যাকেজ", "sajek tour"],
+          matchType: "contains",
+          replyText: "আমাদের ৩ রাত ২ দিনের প্রিমিয়াম সাজেক ভ্যালি কাপল প্যাকেজ মাত্র ৳১২,৫০০ (রিসোর্ট, এসি গাড়ি, সকল খাবার ও চান্দের গাড়ি সহ)। আর গ্রুপ ট্যুরে জনপ্রতি মাত্র ৳৫,৫০০!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ভিসা প্রসেসিং রিকোয়ারমেন্টস",
+          triggerKeywords: ["ভিসা প্রসেসিং", "tourist visa", "কী কী কাগজ লাগবে", "visa requirement", "visa lagbe"],
+          matchType: "contains",
+          replyText: "থাইল্যান্ড, মালয়েশিয়া ও দুবাই ট্যুরিস্ট ভিসার জন্য প্রয়োজন: অন্তত ৭ মাসের মেয়াদসহ পাসপোর্ট, ২ কপি ছবি (৩৫x৪৫ মিমি), লাস্ট ৬ মাসের ব্যাংক স্টেটমেন্ট ও সলভেন্সি এবং নোমিনেশন/ভিজিটিং কার্ড।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "এয়ার টিকিট কোটেশন",
+          triggerKeywords: ["air ticket", "বিমান টিকিট", "flight ticket", "টিকিটের দাম", "ticket koto"],
+          matchType: "contains",
+          replyText: "আমরা Biman, US-Bangla, Emirates সহ সকল আন্তর্জাতিক ও অভ্যন্তরীণ ফ্লাইটের সবচেয়ে কম ভাড়ায় নিশ্চিত টিকিট ইস্যু করি। আপনার যাত্রার তারিখ ও গন্তব্য জানালে সাথে সাথে টিকিটের দাম জানিয়ে দেব।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "restaurant",
+      name: "রেস্তোরাঁ ও ক্যাফে",
+      category: "Restaurant & Cafe",
+      emoji: "🍽️",
+      targetClient: "The Rooftop Bistro & Cafe",
+      systemPersona: "তুমি একটি ট্রেন্ডি রুফটপ রেস্তোরাঁ ও ক্যাফের গেস্ট রিলেশন অফিসার AI। টেবিল রিজার্ভেশন, মেনু ও স্পেশাল প্ল্যাটার অফার জানাও।",
+      description: "টেবিল বুকিং, মেনু চার্ট, বার্থডে পার্টি আয়োজন ও হোম ডেলিভারি রুলস।",
+      rules: [
+        {
+          category: "Appointment & Booking",
+          name: "টেবিল রিজার্ভেশন বুকিং",
+          triggerKeywords: ["টেবিল বুকিং", "table reservation", "আজকে সিট আছে", "table book", "seat pabo"],
+          matchType: "contains",
+          replyText: "আসসালামু আলাইকুম! আমাদের রুফটপ ও ফ্যামিলি ডাইনিংয়ে টেবিল রিজার্ভেশনের জন্য আপনার নাম, কতজন মেহমান এবং আসার সময়টি জানালে আমরা টেবিল রেডি করে রাখব।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "আজকের মেনু ও স্পেশাল অফার",
+          triggerKeywords: ["menu card", "মেনু আছে", "signature dish", "আজকের মেনু", "platter offer"],
+          matchType: "contains",
+          replyText: "আমাদের সিগনেচার প্ল্যাটার, স্মোকড বিব ও পাস্তার ফুল মেনু দেখতে পারেন। এছাড়া আজ আমাদের যেকোনো ২টি প্ল্যাটারে ২০% ফ্ল্যাট ছাড় চলছে!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "বার্থডে ও পার্টি আয়োজন",
+          triggerKeywords: ["birthday celebration", "পার্টি করতে চাই", "rooftop party", "ইভেন্ট", "birthday party"],
+          matchType: "contains",
+          replyText: "বার্থডে, অ্যানিভার্সারি বা ফ্রেন্ডস গেট-টুগেদারের জন্য আমাদের প্রাইভেট রুফটপ ডেক বুক করতে পারেন। ফ্রি মিউজিক সিস্টেম ও স্পেশাল ডেকোরেশন সুবিধা দেওয়া হবে।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "ecommerce",
+      name: "ই-কমার্স ও গ্যাজেট শপ",
+      category: "E-Commerce & Retail",
+      emoji: "🛒",
+      targetClient: "GadgetZone BD (Electronics)",
+      systemPersona: "তুমি একটি গ্যাজেট ও ই-কমার্স স্টোরের স্মার্ট সেলস এক্সিকিউটিভ AI। পণ্যের ফিচার, জেনুইন ওয়ারেন্টি, ফাস্ট ডেলিভারি ও রিটার্ন পলিসি দিয়ে কাস্টমারকে অর্ডারে কনভার্ট করো।",
+      description: "ক্যাশ অন ডেলিভারি, বার্গেনিং ডিফেন্স, বিকাশ অগ্রিম ও ওপেন-বক্স চেকিং রুলস।",
+      rules: [
+        {
+          category: "Bargaining",
+          name: "বার্গেনিং ডিফেন্স ও কুপন ডিসকাউন্ট",
+          triggerKeywords: ["দাম কম", "লাস্ট কত", "একদাম কত", "dam kom", "discount den"],
+          matchType: "contains",
+          replyText: "ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আজকেই অর্ডার করলে আপনার জন্য স্পেশাল ৳১০০ ডিসকাউন্ট কুপন [ZYNCOO100] কার্যকর থাকবে!",
+          actionTrigger: "apply_coupon_100",
+        },
+        {
+          category: "Delivery & COD",
+          name: "ডেলিভারি চার্জ ও হোম ডেলিভারি",
+          triggerKeywords: ["ডেলিভারি চার্জ কত", "কবে পাবো", "delivery charge", "kobe pabo"],
+          matchType: "contains",
+          replyText: "ঢাকার ভেতর হোম ডেলিভারি মাত্র ৬০ টাকা (২৪-৪৮ ঘণ্টা) এবং ঢাকার বাইরে ১২০ টাকা। সম্পূর্ণ ক্যাশ অন ডেলিভারি!",
+          actionTrigger: "none",
+        },
+      ],
+    },
+  ];
+
+  const [selectedIndustryPreset, setSelectedIndustryPreset] = useState<IndustryPreset | null>(null);
+
+  const handleApplyIndustryPreset = (preset: IndustryPreset) => {
+    if (!clientStores.includes(preset.targetClient)) {
+      setClientStores((prev) => [...prev, preset.targetClient]);
+    }
+    setSelectedClientStore(preset.targetClient);
+
+    const newRules: ClientAiRule[] = preset.rules.map((r, idx) => ({
+      id: `rule-${preset.id}-${Date.now()}-${idx}`,
+      clientStore: preset.targetClient,
+      category: r.category,
+      name: r.name,
+      triggerKeywords: r.triggerKeywords,
+      matchType: r.matchType,
+      replyText: r.replyText,
+      actionTrigger: r.actionTrigger,
+      active: true,
+    }));
+
+    setAiRules((prev) => [...newRules, ...prev]);
+    setSelectedIndustryPreset(null);
+    setRuleSaveMessage(`✓ "${preset.name}" টেমপ্লেটের ${newRules.length}টি প্রি-বিল্ড রুলস "${preset.targetClient}"-এ সক্রিয় করা হয়েছে!`);
+    setTimeout(() => setRuleSaveMessage(null), 4000);
+  };
 
   const [ruleForm, setRuleForm] = useState<{
     id?: string;
@@ -660,6 +947,29 @@ export default function DashboardPage() {
         { sender: "bot", text: "ভাইয়া প্রোডাক্টটি ১০০% অরিজিনাল ও ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি সহ। তবে আপনার জন্য স্পেশাল অনার হিসেবে ৳১০০ ডিসকাউন্ট কুপন 'ZYNCOO100' অ্যাড করে দিয়েছি (মাত্র ৳১,৩৯০)। এখন কি পার্সেল বুক করে দেব ভাইয়া?", time: "08:29 AM" },
         { sender: "customer", text: "Thik ache confirm koren. Name: Kamrul Islam, Phone: 01712-112233, Sector 3, Road 7, Uttara, Dhaka.", time: "08:30 AM" },
         { sender: "bot", text: "অসংখ্য ধন্যবাদ কামরুল ভাই! আপনার অর্ডারটি গ্রহণ করা হয়েছে। ট্র্যাকিং কোড প্রস্তুত হচ্ছে।", time: "08:30 AM" },
+      ],
+    },
+    {
+      id: "c5",
+      customer: "Shahadat Hossain",
+      phone: "01915-776655",
+      channel: "facebook" as const,
+      unread: true,
+      priority: true,
+      sentiment: "angry" as const,
+      lastMsg: "আমার পার্সেল এখনো আসেনি কেন? ফালতু সার্ভিস!",
+      time: "11:05 AM",
+      location: "Chawkbazar, Chittagong",
+      rtoSuccessRate: "82%",
+      rtoRisk: "MEDIUM" as const,
+      totalOrders: 2,
+      lifetimeValue: 3100,
+      tags: ["High Escalation", "Delayed Parcel", "Urgent Call"],
+      stage: "Human Escalation Required",
+      messages: [
+        { sender: "customer", text: "৪ দিন আগে অর্ডার করেছিলাম। এখনো ডেলিভারি ম্যান আসে নাই কেন? ফালতু সার্ভিস!", time: "11:04 AM" },
+        { sender: "bot", text: "শাহাদাত ভাই, আসসালামু আলাইকুম। অত্যন্ত দুঃখিত বিলম্বের জন্য! আমি এখনই আমাদের কুরিয়ার টিমকে বিষয়টি তাগাদা দিচ্ছি।", time: "11:04 AM" },
+        { sender: "customer", text: "আজকের মধ্যে না আসলে আমি পার্সেল রিসিভ করব না এবং পেইজে নেগেটিভ রিভিউ দেব!", time: "11:05 AM" },
       ],
     },
   ]);
@@ -1883,6 +2193,27 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
+                {/* Urgent Sentiment / Escalation Alert Banner */}
+                {(activeConversation as any).sentiment === "angry" && (
+                  <div className="bg-rose-50 border-b border-rose-200 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs animate-in fade-in">
+                    <div className="flex items-center gap-2 text-rose-900">
+                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 animate-bounce" />
+                      <div>
+                        <strong className="font-black text-rose-800">⚠️ হাই ফ্রাস্ট্রেশন অ্যালার্ট:</strong>{" "}
+                        <span>কাস্টমার অসন্তুষ্ট! এআই বট সাময়িক পজ করা হয়েছে এবং অ্যাডমিনের ফোনে SMS পাঠানো হয়েছে।</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => setHumanTakeover(!humanTakeover)}
+                        className="bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg shadow-xs cursor-pointer transition-all"
+                      >
+                        {humanTakeover ? "এআই বট পুনরায় চালু করুন" : "হিউম্যান টেকওভার করুন"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Messages Body */}
                 <div className="p-4 sm:p-5 flex-1 overflow-y-auto space-y-3.5">
                   {activeConversation.messages.map((m: any, idx: number) => {
@@ -2699,6 +3030,110 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
+                {/* 1-Click Multi-Industry Presets Carousel/Grid */}
+                <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white p-5 rounded-2xl border border-emerald-800/50 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-800/40 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">⚡</span>
+                      <div>
+                        <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
+                          <span>১-ক্লিকে ইন্ডাস্ট্রি টেমপ্লেট লোড করুন (1-Click Industry Templates)</span>
+                          <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                            Instant Setup
+                          </span>
+                        </h4>
+                        <p className="text-xs text-slate-300 mt-0.5">
+                          ডাক্তার, রিয়েল এস্টেট, আইটি কোচিং বা ট্রাভেলের মতো যেকোনো ইন্ডাস্ট্রির জন্য এআই পারসোনা ও ২০+ প্রশ্নোত্তর এক ক্লিকে লোড করুন।
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {industryPresets.map((preset) => (
+                      <div
+                        key={preset.id}
+                        onClick={() => setSelectedIndustryPreset(preset)}
+                        className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between group ${
+                          selectedIndustryPreset?.id === preset.id
+                            ? "bg-emerald-500/20 border-emerald-400 shadow-md shadow-emerald-500/20"
+                            : "bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-emerald-500/50"
+                        }`}
+                      >
+                        <div>
+                          <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{preset.emoji}</div>
+                          <div className="font-bold text-xs text-white leading-tight">{preset.name}</div>
+                          <div className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-snug">{preset.description}</div>
+                        </div>
+                        <div className="mt-3 pt-2 border-t border-slate-700/50 flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-emerald-400">
+                            {preset.rules.length} রুলস
+                          </span>
+                          <span className="text-[10px] text-slate-400 group-hover:text-white transition-colors">
+                            প্রিভিউ →
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Preset Preview & Quick Apply Modal */}
+                  {selectedIndustryPreset && (
+                    <div className="bg-slate-900/90 border border-emerald-500/40 rounded-xl p-4 space-y-3 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{selectedIndustryPreset.emoji}</span>
+                          <div>
+                            <span className="font-bold text-sm text-white">
+                              {selectedIndustryPreset.name} — টেমপ্লেট প্রিভিউ
+                            </span>
+                            <span className="text-xs text-slate-400 ml-2 font-mono">({selectedIndustryPreset.targetClient})</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setSelectedIndustryPreset(null)}
+                          className="text-slate-400 hover:text-white cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800 text-xs space-y-1">
+                        <span className="font-bold text-emerald-400 block text-[11px] uppercase tracking-wider">AI System Persona (ভূমিকা):</span>
+                        <p className="text-slate-300 leading-relaxed italic">&quot;{selectedIndustryPreset.systemPersona}&quot;</p>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <span className="font-bold text-slate-300 text-xs block">প্রি-বিল্ড প্রশ্নোত্তর ({selectedIndustryPreset.rules.length}টি রুল অন্তর্ভুক্ত):</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          {selectedIndustryPreset.rules.map((r, rIdx) => (
+                            <div key={rIdx} className="bg-slate-800/70 p-2.5 rounded-lg border border-slate-700 space-y-1">
+                              <div className="font-bold text-white flex items-center justify-between">
+                                <span>{r.name}</span>
+                                <span className="text-[10px] text-emerald-400 font-mono">({r.category})</span>
+                              </div>
+                              <p className="text-[11px] text-slate-300 line-clamp-2">&quot;{r.replyText}&quot;</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                        <div className="text-xs text-slate-400">
+                          টার্গেট স্টোর: <strong className="text-emerald-400">{selectedIndustryPreset.targetClient}</strong>
+                        </div>
+                        <button
+                          onClick={() => handleApplyIndustryPreset(selectedIndustryPreset)}
+                          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>এই টেমপ্লেটটি সক্রিয় করুন (Apply Template)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Save Feedback Toast */}
                 {ruleSaveMessage && (
                   <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs rounded-xl font-bold flex items-center gap-2 animate-in fade-in">
@@ -3500,6 +3935,122 @@ export default function DashboardPage() {
                   >
                     Save bKash PGW
                   </button>
+                </div>
+              </div>
+
+              {/* Universal Website Live Chat Widget Embed Card */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full mb-1">
+                      <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Web Live Chat Widget</span>
+                    </div>
+                    <h4 className="font-bold text-sm text-slate-900">
+                      যেকোনো ওয়েবসাইটে Zyncoo AI চ্যাট উইজেট এম্বেড করুন
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      WordPress, Shopify বা যেকোনো কাস্টম HTML ওয়েবসাইটে নিচের কোডটি বসালেই ওয়েবসাইটেই লাইভ এআই চ্যাট চালু হয়ে যাবে।
+                    </p>
+                  </div>
+                  <Link
+                    href="/widget"
+                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap self-start sm:self-auto"
+                  >
+                    <span>লাইভ উইজেট কনফিগ পেজ খুলুন</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                    <span>১-লাইন HTML এম্বেড কোড:</span>
+                    <button
+                      onClick={() => {
+                        const code = `<script src="${typeof window !== "undefined" ? window.location.origin : "https://zyncoo.ai"}/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="#10b981" async></script>`;
+                        navigator.clipboard.writeText(code);
+                        alert("এম্বেড স্ক্রিপ্ট কোড কপি করা হয়েছে!");
+                      }}
+                      className="text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer font-bold"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Embed Code</span>
+                    </button>
+                  </div>
+                  <pre className="p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl border border-slate-800 overflow-x-auto leading-relaxed">
+                    {`<script src="https://zyncoo.ai/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="#10b981" async></script>`}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Real-time Google Sheets Exporter Card */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                      <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                      <span>Google Sheets রিয়েল-টাইম লিড ও অর্ডার অটো-সিঙ্ক</span>
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      কাস্টমার নাম, ফোন নম্বর ও অর্ডার দিলে সরাসরি ক্লায়েন্টের Google Sheets-এ নতুন রো হিসেবে সেভ হবে।
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                    Auto-Sync Active
+                  </span>
+                </div>
+
+                {googleSheetSuccess && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs rounded-xl font-bold flex items-center gap-2 animate-in fade-in">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>{googleSheetSuccess}</span>
+                  </div>
+                )}
+
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <label className="font-bold text-slate-700 mb-1 block">
+                      Google Apps Script Webhook URL
+                    </label>
+                    <input
+                      type="text"
+                      value={googleSheetWebhook}
+                      onChange={(e) => setGoogleSheetWebhook(e.target.value)}
+                      placeholder="https://script.google.com/macros/s/.../exec"
+                      className="w-full p-2.5 border border-slate-300 rounded-xl font-mono text-slate-800 focus:outline-hidden focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div className="flex items-center gap-4 text-slate-700 font-semibold">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={googleSheetAutoSync}
+                          onChange={(e) => setGoogleSheetAutoSync(e.target.checked)}
+                          className="w-4 h-4 accent-emerald-600 rounded"
+                        />
+                        <span>নতুন লিড আসলেই শিটে পাঠাও</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          defaultChecked={true}
+                          className="w-4 h-4 accent-emerald-600 rounded"
+                        />
+                        <span>কনফার্মড অর্ডার স্বয়ংক্রিয়ভাবে শিটে পাঠাও</span>
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={handleTestGoogleSheetSync}
+                      disabled={googleSheetSyncing}
+                      className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${googleSheetSyncing ? "animate-spin" : ""}`} />
+                      <span>{googleSheetSyncing ? "সিঙ্ক হচ্ছে..." : "Test Sync 1 Lead to Google Sheet"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 

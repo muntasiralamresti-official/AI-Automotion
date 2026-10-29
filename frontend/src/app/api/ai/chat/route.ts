@@ -7,7 +7,7 @@ interface MessageTurn {
 
 interface ChatRequestPayload {
   message: string;
-  channel: "whatsapp" | "facebook" | "instagram";
+  channel: "whatsapp" | "facebook" | "instagram" | "website";
   storeName?: string;
   conversationHistory?: MessageTurn[];
 }
