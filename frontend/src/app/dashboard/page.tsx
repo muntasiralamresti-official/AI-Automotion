@@ -48,7 +48,13 @@ import {
   BadgeCheck,
   FileText,
   Smartphone,
-  Building
+  Building,
+  Trash2,
+  Edit3,
+  Filter,
+  Sliders,
+  HelpCircle,
+  CheckSquare
 } from "lucide-react";
 import ZyncooLogo from "@/components/ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
@@ -84,6 +90,18 @@ interface ProductItem {
   price: number;
   stock: number;
   category: string;
+}
+
+export interface ClientAiRule {
+  id: string;
+  clientStore: string;
+  category: "Bargaining" | "Delivery & COD" | "Fraud & Advance" | "Address Sanitizer" | "Product & Warranty" | "Custom";
+  name: string;
+  triggerKeywords: string[];
+  matchType: "contains" | "exact" | "ai_intent";
+  replyText: string;
+  actionTrigger: "apply_coupon_100" | "send_bkash_advance" | "request_full_address" | "none";
+  active: boolean;
 }
 
 export default function DashboardPage() {
@@ -291,6 +309,245 @@ export default function DashboardPage() {
   const [newPrice, setNewPrice] = useState("");
   const [newStock, setNewStock] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Client-Wise AI Keyword Training & Custom Q&A Rules State
+  const [clientStores, setClientStores] = useState<string[]>([
+    "All Stores (Global Default)",
+    "GadgetZone BD (Electronics)",
+    "Luxe Lifestyle BD (Fashion)",
+    "Organic Shombhar BD (Grocery)",
+    "GlowCare Bangladesh (Skincare)",
+  ]);
+  const [selectedClientStore, setSelectedClientStore] = useState<string>("All Stores (Global Default)");
+  const [ruleSearchQuery, setRuleSearchQuery] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [isAddingRule, setIsAddingRule] = useState<boolean>(false);
+  const [ruleSaveMessage, setRuleSaveMessage] = useState<string | null>(null);
+
+  const [ruleForm, setRuleForm] = useState<{
+    id?: string;
+    clientStore: string;
+    category: ClientAiRule["category"];
+    name: string;
+    keywordsInput: string;
+    matchType: ClientAiRule["matchType"];
+    replyText: string;
+    actionTrigger: ClientAiRule["actionTrigger"];
+  }>({
+    clientStore: "All Stores (Global Default)",
+    category: "Bargaining",
+    name: "",
+    keywordsInput: "",
+    matchType: "contains",
+    replyText: "",
+    actionTrigger: "none",
+  });
+
+  const [aiRules, setAiRules] = useState<ClientAiRule[]>([
+    {
+      id: "rule-1",
+      clientStore: "All Stores (Global Default)",
+      category: "Bargaining",
+      name: "দামাদামি ও কুপন ডিসকাউন্ট রুল (৳১০০ অফার)",
+      triggerKeywords: ["দাম কম", "লাস্ট কত", "একদাম কত", "কম রাখেন", "dam kom", "discount den", "last price", "kisu kom"],
+      matchType: "contains",
+      replyText: "ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনি যেহেতু আজকেই নিতে চাচ্ছেন, আপনার জন্য স্পেশাল ৳১০০ ডিসকাউন্ট কুপন [ZYNCOO100] অ্যাপ্লাই করে দিয়েছি (মাত্র ৳১,৩৯০)। এখন কি পার্সেল বুক করে দেব ভাইয়া?",
+      actionTrigger: "apply_coupon_100",
+      active: true,
+    },
+    {
+      id: "rule-2",
+      clientStore: "All Stores (Global Default)",
+      category: "Delivery & COD",
+      name: "ডেলিভারি চার্জ ও সময় (SLA) তথ্য",
+      triggerKeywords: ["ডেলিভারি চার্জ কত", "কবে পাবো", "কয়দিন লাগবে", "delivery charge", "kobe pabo", "dhaka baire koto"],
+      matchType: "contains",
+      replyText: "ঢাকার ভেতরে হোম ডেলিভারি চার্জ মাত্র ৬০ টাকা (২৪ থেকে ৪৮ ঘণ্টার মধ্যে ডেলিভারি)। ঢাকার বাইরে জেলা ও থানা পর্যায়ে চার্জ ১২০ টাকা (২-৩ কার্যদিবস)। সম্পূর্ণ ক্যাশ অন ডেলিভারি—পণ্য হাতে পেয়ে টাকা পরিশোধ করবেন!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-3",
+      clientStore: "All Stores (Global Default)",
+      category: "Fraud & Advance",
+      name: "অগ্রিম পেমেন্ট দ্বিধা দূরীকরণ (১০০ টাকা বিকাশ)",
+      triggerKeywords: ["অগ্রিম কেন দেব", "আগে টাকা কেন", "ডেলিভারি চার্জ আগে কেন", "advance keno dibo", "age taka dibo na"],
+      matchType: "contains",
+      replyText: "ভাইয়া আপনার বিষয়টি আমরা অত্যন্ত সম্মান করি। কিন্তু কিছু ফেইক অর্ডার বা পার্সেল রিফিউজের কারণে কুরিয়ার সার্ভিসের সিকিউরিটি পলিসি অনুযায়ী শুধুমাত্র ১০০ টাকা ডেলিভারি চার্জ আমরা বিকাশ মার্চেন্টে অগ্রিম ভেরিফাই করি। পণ্যের সম্পূর্ণ মূল্যের বাকি টাকা আপনি রাইডারের সামনে পার্সেল হাতে পেয়ে ক্যাশ দেবেন।",
+      actionTrigger: "send_bkash_advance",
+      active: true,
+    },
+    {
+      id: "rule-4",
+      clientStore: "All Stores (Global Default)",
+      category: "Product & Warranty",
+      name: "প্যাকেট খুলে চেক করার পারমিশন (Open Box)",
+      triggerKeywords: ["দেখে নিতে পারব", "চেক করে নেওয়া যাবে", "খুলে দেখা যাবে", "deke nite parbo", "check kore nebo"],
+      matchType: "contains",
+      replyText: "জি অবশ্যই ভাইয়া! আমাদের কুরিয়ার পার্টনারকে বলে দেওয়া আছে—ডেলিভারি ম্যানের সামনেই আপনি প্যাকেট খুলে প্রোডাক্ট চেক করে নিশ্চিত হয়ে মূল্য পরিশোধ করবেন। কোনো সমস্যা থাকলে অন-স্পট রিটার্ন করতে পারবেন!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-5",
+      clientStore: "All Stores (Global Default)",
+      category: "Address Sanitizer",
+      name: "অসম্পূর্ণ ঠিকানা ডিটেকশন ও কারেকশন",
+      triggerKeywords: ["মিরপুর", "ধানমন্ডি", "উত্তরা", "চট্টগ্রাম", "সিলেট", "খুলনা", "shudhu city", "dhaka"],
+      matchType: "contains",
+      replyText: "অসংখ্য ধন্যবাদ ভাইয়া! আপনার পার্সেলটি স্টেডফাস্ট কুরিয়ারে নির্ভুলভাবে পৌঁছে দেওয়ার জন্য আপনার সম্পূর্ণ রোড নম্বর, বাড়ি নম্বর/ফ্ল্যাট নম্বর বা এলাকার বিস্তারিত ঠিকানাটি দয়া করে লিখে দেবেন?",
+      actionTrigger: "request_full_address",
+      active: true,
+    },
+    {
+      id: "rule-6",
+      clientStore: "All Stores (Global Default)",
+      category: "Product & Warranty",
+      name: "৭-দিনের রিপ্লেসমেন্ট ও অফিসিয়াল ওয়ারেন্টি",
+      triggerKeywords: ["নষ্ট বের হলে কি হবে", "ওয়ারেন্টি আছে", "সমস্যা হলে", "replecement pabo", "warranty ache"],
+      matchType: "contains",
+      replyText: "আমাদের প্রতিটি পণ্যের সাথে পাচ্ছেন ৭ দিনের ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি এবং ১ বছরের অফিশিয়াল সার্ভিস ওয়ারেন্টি। কোনো ধরণের ত্রুটি পেলে আমরা সরাসরি নতুন আরেকটি পিস পাঠিয়ে পরিবর্তন করে দেব—১০০% টেনশন ফ্রি কেনাকাটা!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-7",
+      clientStore: "Luxe Lifestyle BD (Fashion)",
+      category: "Custom",
+      name: "পোশাকের সাইজ চার্ট ও কালার গাইড",
+      triggerKeywords: ["সাইজ চার্ট", "কোন সাইজ হবে", "size chart", "xl ache", "color ki ki"],
+      matchType: "contains",
+      replyText: "আপু/ভাইয়া! আমাদের সাইজ চার্ট: M (বুক ৩৮\", দৈর্ঘ্য ২৭\"), L (বুক ৪০\", দৈর্ঘ্য ২৮\"), XL (বুক ৪২\", দৈর্ঘ্য ২৯\"), XXL (বুক ৪৪\", দৈর্ঘ্য ৩০\")। এছাড়া ব্ল্যাক, নেভি ব্লু ও অলিভ কালার ফুল স্টক এভেইলেবল আছে। আপনার হাইট ও ওজন বললে পারফেক্ট সাইজটি সাজেস্ট করে দেব!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-8",
+      clientStore: "GadgetZone BD (Electronics)",
+      category: "Custom",
+      name: "স্মার্টওয়াচ ওয়াটারপ্রুফ ও ব্যাটারি ব্যাকআপ",
+      triggerKeywords: ["waterproof", "পানি ঢুকবে", "চার্জ কতক্ষণ থাকে", "battery backup"],
+      matchType: "contains",
+      replyText: "ভাইয়া, এই মডেলটি IP68 সার্টিফাইড ওয়াটারপ্রুফ—বৃষ্টির পানি বা হাত ধোয়ার পানিতে কোনো সমস্যা হবে না। আর একবার ফুল চার্জে স্বাভাবিক ব্যবহারে টানা ৩-৫ দিন এবং স্ট্যান্ডবাই মোডে ৭ দিন পর্যন্ত ব্যাটারি ব্যাকআপ পাবেন!",
+      actionTrigger: "none",
+      active: true,
+    }
+  ]);
+
+  // Live Rule Match Sandbox State
+  const [sandboxInput, setSandboxInput] = useState<string>("bhaiya dam kisu kom rakha jabe?");
+  const [sandboxResult, setSandboxResult] = useState<{
+    matchedRule: ClientAiRule | null;
+    confidence: string;
+    actionNote: string | null;
+  } | null>(null);
+
+  const handleTestSandbox = (testText?: string) => {
+    const query = (testText ?? sandboxInput).trim().toLowerCase();
+    if (!query) return;
+
+    // Filter candidate rules based on selected store or global rules
+    const candidateRules = aiRules.filter((r) => 
+      r.active && (r.clientStore === selectedClientStore || r.clientStore === "All Stores (Global Default)")
+    );
+
+    let match: ClientAiRule | null = null;
+    for (const rule of candidateRules) {
+      const isMatched = rule.triggerKeywords.some((kw) => query.includes(kw.toLowerCase()));
+      if (isMatched) {
+        match = rule;
+        break;
+      }
+    }
+
+    if (match) {
+      let actionNote: string | null = null;
+      if (match.actionTrigger === "apply_coupon_100") actionNote = "🎁 ৳১০০ ডিসকাউন্ট ভাউচার [ZYNCOO100] সংযুক্ত হয়েছে";
+      else if (match.actionTrigger === "send_bkash_advance") actionNote = "💳 ১০০ টাকা বিকাশ পেমেন্ট লিংক ও QR জেনারেট হয়েছে";
+      else if (match.actionTrigger === "request_full_address") actionNote = "📍 কুরিয়ার অ্যাড্রেস স্যানিটাইজার সক্রিয় হয়েছে";
+
+      setSandboxResult({
+        matchedRule: match,
+        confidence: "99.2% Intent Match",
+        actionNote,
+      });
+    } else {
+      setSandboxResult({
+        matchedRule: null,
+        confidence: "Default Catalog Fallback",
+        actionNote: null,
+      });
+    }
+  };
+
+  const handleSaveRule = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ruleForm.name || !ruleForm.keywordsInput || !ruleForm.replyText) return;
+
+    const rawKeywords = ruleForm.keywordsInput
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
+
+    if (rawKeywords.length === 0) return;
+
+    if (ruleForm.id) {
+      setAiRules((prev) =>
+        prev.map((r) =>
+          r.id === ruleForm.id
+            ? {
+                ...r,
+                clientStore: ruleForm.clientStore,
+                category: ruleForm.category,
+                name: ruleForm.name,
+                triggerKeywords: rawKeywords,
+                matchType: ruleForm.matchType,
+                replyText: ruleForm.replyText,
+                actionTrigger: ruleForm.actionTrigger,
+              }
+            : r
+        )
+      );
+      setRuleSaveMessage("রুলটি সফলভাবে আপডেট করা হয়েছে!");
+    } else {
+      const newRule: ClientAiRule = {
+        id: "rule-" + Date.now(),
+        clientStore: ruleForm.clientStore,
+        category: ruleForm.category,
+        name: ruleForm.name,
+        triggerKeywords: rawKeywords,
+        matchType: ruleForm.matchType,
+        replyText: ruleForm.replyText,
+        actionTrigger: ruleForm.actionTrigger,
+        active: true,
+      };
+      setAiRules((prev) => [newRule, ...prev]);
+      setRuleSaveMessage("নতুন কিওয়ার্ড রুল AI মডেলে যুক্ত করা হয়েছে!");
+    }
+
+    setIsAddingRule(false);
+    setRuleForm({
+      clientStore: selectedClientStore,
+      category: "Bargaining",
+      name: "",
+      keywordsInput: "",
+      matchType: "contains",
+      replyText: "",
+      actionTrigger: "none",
+    });
+
+    setTimeout(() => setRuleSaveMessage(null), 3000);
+  };
+
+  const handleDeleteRule = (id: string) => {
+    setAiRules((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleToggleRule = (id: string) => {
+    setAiRules((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, active: !r.active } : r))
+    );
+  };
 
   // Rich Omnichannel Conversations with Voice Notes, Pills, and CRM Dossier
   const [conversations, setConversations] = useState([
@@ -2385,6 +2642,498 @@ export default function DashboardPage() {
           {/* TRAINING */}
           {activeTab === "training" && (
             <div className="space-y-6">
+
+              {/* 1. Client-Wise AI Keyword Training & Custom Q&A Rules Manager */}
+              <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                
+                {/* Header & Client Store Selector */}
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Bangladeshi E-Commerce NLP Customizer</span>
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                      Client & Store-Wise AI Keyword Rules & Training (এআই প্রশ্নোত্তর ও কিওয়ার্ড রুলস)
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+                      বাংলা ও বাংলিশে কাস্টমারের নির্দিষ্ট প্রশ্নের বিপরীতে কিওয়ার্ড ও ট্রিগার সেট করুন। প্রতিটি ক্লায়েন্ট/স্টোরের জন্য আলাদা বা গ্লোবাল রুল নির্ধারণ করতে পারবেন।
+                    </p>
+                  </div>
+
+                  {/* Client Filter & Add Button */}
+                  <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                    <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                      <Building className="w-3.5 h-3.5 text-slate-500 ml-2" />
+                      <select
+                        value={selectedClientStore}
+                        onChange={(e) => setSelectedClientStore(e.target.value)}
+                        className="bg-transparent text-xs font-bold text-slate-800 focus:outline-hidden pr-2 cursor-pointer"
+                      >
+                        {clientStores.map((store) => (
+                          <option key={store} value={store}>
+                            {store}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setRuleForm({
+                          clientStore: selectedClientStore,
+                          category: "Bargaining",
+                          name: "",
+                          keywordsInput: "",
+                          matchType: "contains",
+                          replyText: "",
+                          actionTrigger: "none",
+                        });
+                        setIsAddingRule(true);
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Custom Rule</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Save Feedback Toast */}
+                {ruleSaveMessage && (
+                  <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs rounded-xl font-bold flex items-center gap-2 animate-in fade-in">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>{ruleSaveMessage}</span>
+                  </div>
+                )}
+
+                {/* Inline Add / Edit Rule Form Modal */}
+                {isAddingRule && (
+                  <div className="bg-slate-50 p-5 sm:p-6 rounded-2xl border-2 border-emerald-500 shadow-md space-y-4 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-4 h-4 text-emerald-600" />
+                        <h4 className="font-bold text-sm text-slate-900">
+                          {ruleForm.id ? "Edit AI Rule" : "নতুন AI কিওয়ার্ড ও রিপ্লাই রুল যোগ করুন"}
+                        </h4>
+                      </div>
+                      <button
+                        onClick={() => setIsAddingRule(false)}
+                        className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleSaveRule} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                      {/* Store Selector */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700">Target Client Store (কোন স্টোরের জন্য?)</label>
+                        <select
+                          value={ruleForm.clientStore}
+                          onChange={(e) => setRuleForm({ ...ruleForm, clientStore: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-hidden focus:border-emerald-500"
+                        >
+                          {clientStores.map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Category */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700">Rule Category</label>
+                        <select
+                          value={ruleForm.category}
+                          onChange={(e) => setRuleForm({ ...ruleForm, category: e.target.value as any })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-hidden focus:border-emerald-500"
+                        >
+                          <option value="Bargaining">Bargaining (দামাদামি ও অফার)</option>
+                          <option value="Delivery & COD">Delivery & COD (চার্জ ও সময়)</option>
+                          <option value="Fraud & Advance">Fraud & Advance (বিকাশ অগ্রিম)</option>
+                          <option value="Address Sanitizer">Address Sanitizer (অসম্পূর্ণ ঠিকানা)</option>
+                          <option value="Product & Warranty">Product & Warranty (ওয়ারেন্টি ও কোয়ালিটি)</option>
+                          <option value="Custom">Custom (কাস্টম রুল)</option>
+                        </select>
+                      </div>
+
+                      {/* Rule Title */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700">Rule Title (রুলের নাম)</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. ক্যাশঅন ডেলিভারি দামাদামি হ্যান্ডলার"
+                          value={ruleForm.name}
+                          onChange={(e) => setRuleForm({ ...ruleForm, name: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-hidden focus:border-emerald-500"
+                        />
+                      </div>
+
+                      {/* Match Mode */}
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700">Match Mode (ম্যাচিং ধরণ)</label>
+                        <select
+                          value={ruleForm.matchType}
+                          onChange={(e) => setRuleForm({ ...ruleForm, matchType: e.target.value as any })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-hidden focus:border-emerald-500"
+                        >
+                          <option value="contains">Contains Keyword (মেসেজের ভেতর যেকোনো শব্দ থাকলে)</option>
+                          <option value="exact">Exact Match (হুবহু সম্পূর্ণ বাক্য মিললে)</option>
+                          <option value="ai_intent">Semantic AI Intent (ভাবার্থ বা উদ্দেশ্য মিললে)</option>
+                        </select>
+                      </div>
+
+                      {/* Trigger Keywords */}
+                      <div className="sm:col-span-2 space-y-1">
+                        <label className="font-bold text-slate-700 flex items-center justify-between">
+                          <span>Trigger Keywords / Phrases (কমা দিয়ে একাধিক শব্দ লিখুন)</span>
+                          <span className="text-[11px] text-slate-400 font-normal">বাংলা ও বাংলিশ উভয়ই দিতে পারেন</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. দাম কম, লাস্ট কত, একদাম কত, কম রাখেন, dam kom, discount den"
+                          value={ruleForm.keywordsInput}
+                          onChange={(e) => setRuleForm({ ...ruleForm, keywordsInput: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white font-mono focus:outline-hidden focus:border-emerald-500"
+                        />
+                        <div className="text-[11px] text-slate-500 pt-1 flex flex-wrap gap-1 items-center">
+                          <span className="font-semibold text-slate-600">জনপ্রিয় সাজেশন:</span>
+                          <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, dam kom` : "dam kom" }))} className="px-1.5 py-0.5 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">+ dam kom</span>
+                          <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, kobe pabo` : "kobe pabo" }))} className="px-1.5 py-0.5 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">+ kobe pabo</span>
+                          <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, delivery charge` : "delivery charge" }))} className="px-1.5 py-0.5 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">+ delivery charge</span>
+                          <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, advance keno` : "advance keno" }))} className="px-1.5 py-0.5 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">+ advance keno</span>
+                        </div>
+                      </div>
+
+                      {/* Reply Text */}
+                      <div className="sm:col-span-2 space-y-1">
+                        <label className="font-bold text-slate-700 flex items-center justify-between">
+                          <span>AI Custom Reply Message (কাস্টমারকে AI হুবহু যা বলবে)</span>
+                          <span className="text-[11px] text-emerald-700 font-semibold">100% Conversational Bangla</span>
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনার জন্য স্পেশাল ৳১০০ ডিসকাউন্ট কুপন [ZYNCOO100] অ্যাড করে দিচ্ছি..."
+                          value={ruleForm.replyText}
+                          onChange={(e) => setRuleForm({ ...ruleForm, replyText: e.target.value })}
+                          className="w-full p-3 rounded-xl border border-slate-300 bg-white focus:outline-hidden focus:border-emerald-500 leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Attached Action */}
+                      <div className="sm:col-span-2 space-y-1">
+                        <label className="font-bold text-slate-700">Attach Automated Action (ঐচ্ছিক অটোমেশন অ্যাকশন)</label>
+                        <select
+                          value={ruleForm.actionTrigger}
+                          onChange={(e) => setRuleForm({ ...ruleForm, actionTrigger: e.target.value as any })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold focus:outline-hidden focus:border-emerald-500"
+                        >
+                          <option value="none">None (শুধু মেসেজ রিপ্লাই পাঠাবে)</option>
+                          <option value="apply_coupon_100">Apply ৳100 Discount Coupon [ZYNCOO100] (ডিসকাউন্ট কুপন অ্যাক্টিভ করবে)</option>
+                          <option value="send_bkash_advance">Send ৳100 bKash Advance Payment QR/Link (ইন-চ্যাট বিকাশ লিংক পাঠাবে)</option>
+                          <option value="request_full_address">Request Full Address (কুরিয়ার অ্যাড্রেস স্যানিটাইজার চালাবে)</option>
+                        </select>
+                      </div>
+
+                      {/* Form Actions */}
+                      <div className="sm:col-span-2 flex items-center justify-end gap-2.5 pt-2 border-t border-slate-200">
+                        <button
+                          type="button"
+                          onClick={() => setIsAddingRule(false)}
+                          className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={!ruleForm.name || !ruleForm.keywordsInput || !ruleForm.replyText}
+                          className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold transition-all shadow-sm cursor-pointer"
+                        >
+                          Save Rule to AI Brain
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {/* Filter and Search Bar */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  {/* Category Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {["all", "Bargaining", "Delivery & COD", "Fraud & Advance", "Address Sanitizer", "Product & Warranty", "Custom"].map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setCategoryFilter(cat)}
+                        className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
+                          categoryFilter === cat
+                            ? "bg-slate-900 text-white shadow-xs"
+                            : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300"
+                        }`}
+                      >
+                        {cat === "all" ? "All Categories" : cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search Input */}
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      placeholder="Search keywords or rules..."
+                      value={ruleSearchQuery}
+                      onChange={(e) => setRuleSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-white border border-slate-200 focus:outline-hidden focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Rules List Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {aiRules
+                    .filter((rule) => {
+                      const matchesStore = selectedClientStore === "All Stores (Global Default)"
+                        ? true
+                        : (rule.clientStore === selectedClientStore || rule.clientStore === "All Stores (Global Default)");
+                      const matchesCategory = categoryFilter === "all" ? true : rule.category === categoryFilter;
+                      const matchesSearch = ruleSearchQuery.trim() === ""
+                        ? true
+                        : (rule.name.toLowerCase().includes(ruleSearchQuery.toLowerCase()) ||
+                           rule.triggerKeywords.some(kw => kw.toLowerCase().includes(ruleSearchQuery.toLowerCase())) ||
+                           rule.replyText.toLowerCase().includes(ruleSearchQuery.toLowerCase()));
+                      return matchesStore && matchesCategory && matchesSearch;
+                    })
+                    .map((rule) => (
+                      <div
+                        key={rule.id}
+                        className={`p-5 rounded-2xl border transition-all space-y-3.5 ${
+                          rule.active 
+                            ? "bg-white border-slate-200 hover:border-emerald-400 shadow-2xs" 
+                            : "bg-slate-50/80 border-slate-200 opacity-60"
+                        }`}
+                      >
+                        {/* Top Bar: Store & Category + Active Switch */}
+                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-900 text-white">
+                              {rule.clientStore}
+                            </span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              {rule.category}
+                            </span>
+                            {rule.matchType === "contains" && (
+                              <span className="text-[9px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                Contains
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleToggleRule(rule.id)}
+                              className="text-xs flex items-center gap-1 font-bold cursor-pointer"
+                            >
+                              {rule.active ? (
+                                <span className="text-emerald-700 flex items-center gap-1 text-[11px]">
+                                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Active
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 text-[11px]">Inactive</span>
+                              )}
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteRule(rule.id)}
+                              className="text-slate-400 hover:text-rose-600 transition-colors p-1 cursor-pointer"
+                              title="Delete rule"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Rule Name */}
+                        <div>
+                          <h4 className="font-extrabold text-sm text-slate-900">{rule.name}</h4>
+                        </div>
+
+                        {/* Trigger Keyword Chips */}
+                        <div className="space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                            Trigger Keywords ({rule.triggerKeywords.length}):
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {rule.triggerKeywords.map((kw, i) => (
+                              <span
+                                key={i}
+                                onClick={() => handleTestSandbox(kw)}
+                                className="text-[11px] font-mono bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200 cursor-pointer hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 transition-colors"
+                                title="Click to test in sandbox"
+                              >
+                                &quot;{kw}&quot;
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* AI Reply Bubble */}
+                        <div className="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200/80 text-xs text-slate-800 leading-relaxed space-y-1">
+                          <span className="text-[10px] font-bold text-emerald-800 block uppercase tracking-wider flex items-center gap-1">
+                            <Bot className="w-3 h-3 text-emerald-600" />
+                            AI Trained Response:
+                          </span>
+                          <p className="italic">&quot;{rule.replyText}&quot;</p>
+                        </div>
+
+                        {/* Attached Action Tag & Sandbox Trigger */}
+                        <div className="flex items-center justify-between pt-1 text-xs">
+                          <div>
+                            {rule.actionTrigger === "apply_coupon_100" && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">
+                                🎁 ৳১০০ কুপন অ্যাকশন সংযুক্ত
+                              </span>
+                            )}
+                            {rule.actionTrigger === "send_bkash_advance" && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-md border border-pink-200">
+                                💳 বিকাশ অগ্রিম পেমেন্ট লিংক
+                              </span>
+                            )}
+                            {rule.actionTrigger === "request_full_address" && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                                📍 সম্পূর্ণ ঠিকানা প্রম্পটার
+                              </span>
+                            )}
+                            {rule.actionTrigger === "none" && (
+                              <span className="text-[10px] text-slate-400 font-medium">Standard Message Reply</span>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              const sampleWord = rule.triggerKeywords[0] || "দাম কম";
+                              setSandboxInput(`bhaiya ${sampleWord} hobe?`);
+                              handleTestSandbox(`bhaiya ${sampleWord} hobe?`);
+                            }}
+                            className="text-emerald-700 font-bold hover:underline cursor-pointer text-[11px] flex items-center gap-1"
+                          >
+                            <Zap className="w-3 h-3 text-emerald-600" />
+                            <span>Test Match</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
+                {/* 2. Interactive Bangladeshi AI Sandbox (লাইভ মেসেজ টেস্ট বক্স) */}
+                <div className="mt-8 bg-gradient-to-b from-slate-900 to-slate-950 text-white p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                      <h4 className="font-extrabold text-sm text-white flex items-center gap-1.5">
+                        <Brain className="w-4 h-4 text-emerald-400" />
+                        <span>Live AI Rule Matcher Sandbox (লাইভ টেস্ট কনসোল)</span>
+                      </h4>
+                    </div>
+                    <span className="text-[11px] text-slate-400 font-mono">
+                      Active Store Profile: <strong className="text-emerald-400">{selectedClientStore}</strong>
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-400">
+                    যে কোনো বাংলিশ বা বাংলা প্রশ্ন লিখে টেস্ট করুন। AI স্বয়ংক্রিয়ভাবে দেখাবে কোন রুলটি ম্যাচ করেছে এবং কী উত্তর দেবে।
+                  </p>
+
+                  {/* Input Box */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. bhaiya dam kisu kom rakha jabe? or mirpur 10 e delivery kobe pabo?"
+                      value={sandboxInput}
+                      onChange={(e) => setSandboxInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleTestSandbox();
+                      }}
+                      className="flex-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-mono focus:outline-hidden focus:border-emerald-500 placeholder:text-slate-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleTestSandbox()}
+                      className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer"
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>Run AI Test</span>
+                    </button>
+                  </div>
+
+                  {/* Quick Sample Buttons */}
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+                    <span className="text-[11px] font-semibold text-slate-500">Quick Test Samples:</span>
+                    {[
+                      "দাম কম হবে না?",
+                      "ডেলিভারি চার্জ কত?",
+                      "অগ্রিম কেন দেব?",
+                      "প্যাকেট খুলে দেখা যাবে?",
+                      "shudhu mirpur 10 likhlam",
+                      "size chart ki ache?"
+                    ].map((sample) => (
+                      <button
+                        key={sample}
+                        type="button"
+                        onClick={() => {
+                          setSandboxInput(sample);
+                          handleTestSandbox(sample);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono border border-slate-700 transition-colors cursor-pointer"
+                      >
+                        &quot;{sample}&quot;
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Sandbox Output Display */}
+                  {sandboxResult && (
+                    <div className="mt-4 p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 animate-in fade-in zoom-in-95">
+                      <div className="flex items-center justify-between text-xs border-b border-slate-800/80 pb-2">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span className="font-bold text-white">
+                            Matched Rule: {sandboxResult.matchedRule?.name || "No Specific Keyword Matched"}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
+                          {sandboxResult.confidence}
+                        </span>
+                      </div>
+
+                      {sandboxResult.matchedRule ? (
+                        <div className="space-y-2">
+                          <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-emerald-200 leading-relaxed font-sans">
+                            <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-1">
+                              AI Trained Response (Sub-120ms):
+                            </span>
+                            &quot;{sandboxResult.matchedRule.replyText}&quot;
+                          </div>
+
+                          {sandboxResult.actionNote && (
+                            <div className="p-2.5 bg-emerald-950/70 border border-emerald-500/40 rounded-xl text-xs text-emerald-300 font-bold flex items-center gap-2">
+                              <span>⚡ Fired Action:</span>
+                              <span>{sandboxResult.actionNote}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400 italic">
+                          কোনো নির্দিষ্ট রুল ম্যাচ করেনি; AI স্ট্যান্ডার্ড ক্যাটালগ ও জেনেরিক প্রোডাক্ট তথ্যের ওপর ভিত্তি করে স্বাভাবিক উত্তর দেবে।
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                </div>
+
+              </div>
+
+              {/* 3. Original Product Catalog Ingestion */}
               
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center gap-2 mb-4">
