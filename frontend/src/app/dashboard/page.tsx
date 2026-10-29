@@ -1256,7 +1256,7 @@ export default function DashboardPage() {
                 <ZyncooLogo className="w-9.5 h-9.5" />
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 leading-tight">
-                    zyncoo<span className="text-emerald-600">.ai</span>
+                    zyncoo<span className="text-[#72a600]">.ai</span>
                   </div>
                   <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
                     Client Portal

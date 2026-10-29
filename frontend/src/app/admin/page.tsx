@@ -474,7 +474,7 @@ export default function SuperAdminPage() {
               <ZyncooLogo className="w-9.5 h-9.5" />
               <div>
                 <div className="font-extrabold text-base text-white tracking-wide">
-                  zyncoo<span className="text-emerald-400">.ai</span> HQ
+                  zyncoo<span className="text-[#b8e900]">.ai</span> HQ
                 </div>
                 <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">
                   Super Admin Panel

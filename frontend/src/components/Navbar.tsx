@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, LayoutDashboard, Menu, X, Flame, Truck } from "lucide-react";
+import { ArrowRight, Sparkles, LayoutDashboard, Menu, X, Flame } from "lucide-react";
 import ZyncooLogo from "./ZyncooLogo";
 
 export default function Navbar() {
@@ -30,9 +30,9 @@ export default function Navbar() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 whitespace-nowrap">
-                    zyncoo<span className="text-emerald-600">.ai</span>
+                    zyncoo<span className="text-[#72a600]">.ai</span>
                   </span>
-                  <span className="bg-emerald-50 text-emerald-700 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-emerald-200 uppercase tracking-widest shrink-0">
+                  <span className="bg-[#b8e900] text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-md border border-[#9fd000] uppercase tracking-widest shrink-0 shadow-2xs">
                     PRO
                   </span>
                 </div>
@@ -43,7 +43,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Navigation Links (Clean, No-Wrap, Perfectly Aligned) */}
-            <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 text-xs xl:text-[13px] font-semibold text-slate-600 whitespace-nowrap">
+            <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-xs xl:text-[13px] font-semibold text-slate-600 whitespace-nowrap">
               <a 
                 href="#features" 
                 className="hover:text-emerald-600 transition-colors whitespace-nowrap py-1"
@@ -92,14 +92,6 @@ export default function Navbar() {
                 className="hover:text-emerald-600 transition-colors text-slate-700 whitespace-nowrap py-1"
               >
                 White-Label
-              </Link>
-
-              <Link 
-                href="/track" 
-                className="hover:text-emerald-600 transition-colors text-slate-600 flex items-center gap-1 whitespace-nowrap py-1"
-              >
-                <Truck className="w-3.5 h-3.5 shrink-0" />
-                <span>Track</span>
               </Link>
             </nav>
 
@@ -200,13 +192,6 @@ export default function Navbar() {
               className="block px-3 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50 rounded-lg"
             >
               👑 Agency White-Label (৳3,010 Margin)
-            </Link>
-            <Link
-              href="/track"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-emerald-50 rounded-lg"
-            >
-              🚚 Track Live Parcel
             </Link>
             
             <div className="pt-3 border-t border-slate-100 space-y-2">

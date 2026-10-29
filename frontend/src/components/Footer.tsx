@@ -16,7 +16,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2.5">
               <ZyncooLogo className="w-9.5 h-9.5" />
               <span className="font-extrabold text-2xl tracking-tight text-white">
-                zyncoo<span className="text-emerald-500">.ai</span>
+                zyncoo<span className="text-[#b8e900]">.ai</span>
               </span>
             </Link>
             <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm">
