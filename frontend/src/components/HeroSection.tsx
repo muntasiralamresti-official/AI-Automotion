@@ -21,7 +21,7 @@ import {
   Clock
 } from "lucide-react";
 import InteractiveChatSimulator from "./InteractiveChatSimulator";
-import OddoLogo from "./OddoLogo";
+import ZyncooLogo from "./ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
 
 export default function HeroSection() {
@@ -111,7 +111,7 @@ export default function HeroSection() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span className="text-slate-600 font-medium">oddo.ai 2.4</span>
+          <span className="text-slate-600 font-medium">zyncoo.ai 2.4</span>
           <span className="text-slate-300">•</span>
           <span className="text-emerald-700 font-bold group-hover:text-emerald-800 flex items-center gap-1">
             Autonomous Conversational Sales Engine
@@ -174,7 +174,7 @@ export default function HeroSection() {
             <div className="flex items-center justify-between border-b border-emerald-100/80 pb-2.5 mb-3 text-xs">
               <div className="flex items-center gap-2">
                 <span className={`w-2 h-2 rounded-full ${activeLiveEvent.channelColor} animate-pulse`}></span>
-                <span className="font-bold text-slate-900">Oddo Live Stream</span>
+                <span className="font-bold text-slate-900">Zyncoo Live Stream</span>
                 <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
                   {activeLiveEvent.channel}
                 </span>
@@ -203,12 +203,12 @@ export default function HeroSection() {
                 </p>
               </div>
 
-              {/* Oddo Autonomous Action */}
+              {/* Zyncoo Autonomous Action */}
               <div className="bg-emerald-50/90 rounded-xl p-2.5 text-emerald-950 border border-emerald-200/70 ml-auto max-w-[94%] shadow-2xs">
                 <div className="flex items-center justify-between text-[10px] font-bold text-emerald-700 mb-0.5">
                   <span className="flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-emerald-600" />
-                    Oddo Reasoning & Stock Match
+                    Zyncoo Reasoning & Stock Match
                   </span>
                   <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${activeLiveEvent.badgeColor}`}>
                     {activeLiveEvent.badge}
@@ -254,14 +254,14 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Interactive Comparison Component: Old Manual Way vs. Oddo AI */}
+        {/* Interactive Comparison Component: Old Manual Way vs. Zyncoo AI */}
         <div className="mt-16 sm:mt-24 text-left">
           <div className="text-center mb-8">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
               Why Brands Switch
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
-              Human Support Staff vs. Oddo Autonomous AI
+              Human Support Staff vs. Zyncoo Autonomous AI
             </h2>
           </div>
 
@@ -295,12 +295,12 @@ export default function HeroSection() {
               </ul>
             </div>
 
-            {/* The Oddo AI Way */}
+            {/* The Zyncoo AI Way */}
             <div className="bg-emerald-50/70 p-6 rounded-2xl border-2 border-emerald-500 shadow-lg shadow-emerald-600/10 space-y-4">
               <div className="flex items-center justify-between border-b border-emerald-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <OddoLogo className="w-5 h-5" />
-                  <h3 className="font-bold text-sm text-slate-900">The Oddo AI Way</h3>
+                  <ZyncooLogo className="w-5 h-5" />
+                  <h3 className="font-bold text-sm text-slate-900">The Zyncoo AI Way</h3>
                 </div>
                 <span className="text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
                   100% Automated
@@ -336,7 +336,7 @@ export default function HeroSection() {
               Full Test Simulator
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-2">
-              Try Sending a Message Directly to Oddo
+              Try Sending a Message Directly to Zyncoo AI
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md mx-auto">
               Type or select a question below to see how customer details are parsed and recorded.
@@ -356,7 +356,7 @@ export default function HeroSection() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <OddoLogo className="w-8 h-8" />
+                <ZyncooLogo className="w-8 h-8" />
                 <div>
                   <h3 className="font-extrabold text-base sm:text-lg text-slate-900">
                     60-Second Autonomous Order Cycle
@@ -430,7 +430,7 @@ export default function HeroSection() {
                   </div>
                   <div className="text-xs text-slate-600 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Oddo AI receives webhook within <strong>180ms</strong>. No human staff is awake.</span>
+                    <span>Zyncoo AI receives webhook within <strong>180ms</strong>. No human staff is awake.</span>
                   </div>
                 </div>
               )}
@@ -454,7 +454,7 @@ export default function HeroSection() {
                     </div>
                   </div>
                   <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-900">
-                    <span className="font-bold block mb-0.5">Oddo Autonomous AI Reply (Sent in 1.4s):</span>
+                    <span className="font-bold block mb-0.5">Zyncoo Autonomous AI Reply (Sent in 1.4s):</span>
                     &quot;Assalamu Alaikum! Ji Ultra Watch 9 Black stock e ache. Dhanmondi te kal sondhar moddhei delivery paben (charge ৳60). Apnar name, phone number o full address ta bolben please?&quot;
                   </div>
                 </div>
@@ -482,7 +482,7 @@ export default function HeroSection() {
                     </p>
                   </div>
                   <div className="text-[11px] text-slate-500">
-                    * If buyer had chronic return history (&gt;50% RTO), Oddo would automatically dispatch a ৳100 advance delivery payment link.
+                    * If buyer had chronic return history (&gt;50% RTO), Zyncoo would automatically dispatch a ৳100 advance delivery payment link.
                   </div>
                 </div>
               )}

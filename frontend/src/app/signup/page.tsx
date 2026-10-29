@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import OddoLogo from "@/components/OddoLogo";
+import ZyncooLogo from "@/components/ZyncooLogo";
 import { 
   Bot, 
   ArrowRight, 
@@ -47,10 +47,10 @@ export default function SignUpPage() {
         {/* Brand Header */}
         <div>
           <Link href="/" className="inline-flex items-center gap-2.5 group">
-            <OddoLogo className="w-9 h-9 group-hover:scale-105 transition-all" />
+            <ZyncooLogo className="w-9 h-9 group-hover:scale-105 transition-all" />
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-2xl tracking-tight text-slate-900">
-                oddo<span className="text-emerald-600">.ai</span>
+                zyncoo<span className="text-emerald-600">.ai</span>
               </span>
               <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
                 PRO

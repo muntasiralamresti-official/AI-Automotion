@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
-import OddoLogo from "./OddoLogo";
+import ZyncooLogo from "./ZyncooLogo";
 
 export default function Footer() {
   return (
@@ -14,9 +14,9 @@ export default function Footer() {
           {/* Brand info */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <OddoLogo className="w-8 h-8" />
+              <ZyncooLogo className="w-8 h-8" />
               <span className="font-extrabold text-2xl tracking-tight text-white">
-                oddo<span className="text-emerald-500">.ai</span>
+                zyncoo<span className="text-emerald-500">.ai</span>
               </span>
             </Link>
             <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm">
@@ -90,7 +90,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-500 shrink-0" />
-                <span>support@oddo.ai</span>
+                <span>support@zyncoo.ai</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -103,7 +103,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            © 2026 Oddo AI Inc. All rights reserved.
+            © 2026 Zyncoo AI Inc. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-emerald-400 transition-colors">Privacy Policy</Link>

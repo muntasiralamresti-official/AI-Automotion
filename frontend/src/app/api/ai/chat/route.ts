@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     // 1. Anti-Prompt Injection Guardrail
     for (const pattern of PROMPT_INJECTION_PATTERNS) {
       if (pattern.test(message)) {
-        console.warn("[Oddo Guardrail Alert] Prompt injection attempt blocked:", message);
+        console.warn("[Zyncoo Guardrail Alert] Prompt injection attempt blocked:", message);
         return NextResponse.json({
           success: true,
           channel,
@@ -218,8 +218,8 @@ export async function POST(req: NextRequest) {
       upsellOffer = catalogItem.upsell;
     } else if (isBargaining) {
       intent = "negotiation";
-      appliedCoupon = { code: "ODDO100", discountBDT: 100 };
-      replyText = `ভাইয়া আমাদের প্রতিটি প্রোডাক্ট ১০০% অরিজিনাল এবং সাথে ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি পাচ্ছেন। তবে আপনার জন্য স্পেশাল অনার হিসেবে ৳১০০ ডিসকাউন্ট কুপন 'ODDO100' অ্যাড করে দিচ্ছি (মাত্র ৳১,৩৯০ টাকা)। ঢাকার ভেতরে ১-২ দিনে ক্যাশ অন ডেলিভারিতে পাবেন। এখনই কি পার্সেলটি বুক করে দেব?`;
+      appliedCoupon = { code: "ZYNCOO100", discountBDT: 100 };
+      replyText = `ভাইয়া আমাদের প্রতিটি প্রোডাক্ট ১০০% অরিজিনাল এবং সাথে ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি পাচ্ছেন। তবে আপনার জন্য স্পেশাল অনার হিসেবে ৳১০০ ডিসকাউন্ট কুপন 'ZYNCOO100' অ্যাড করে দিচ্ছি (মাত্র ৳১,৩৯০ টাকা)। ঢাকার ভেতরে ১-২ দিনে ক্যাশ অন ডেলিভারিতে পাবেন। এখনই কি পার্সেলটি বুক করে দেব?`;
     } else if (isPaymentInquiry) {
       intent = "payment_inquiry";
       replyText = `আমরা সম্পূর্ণ ক্যাশ অন ডেলিভারি (COD) সাপোর্ট করি—পণ্য হাতে পেয়ে টাকা দেবেন। তবে আপনি চাইলে বিকাশ মার্চেন্ট (01700-000000) বা কার্ডেও অগ্রিম পে করতে পারেন। অগ্রিম পেমেন্টে ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!`;

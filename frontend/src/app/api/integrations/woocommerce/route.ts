@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (topic.includes("order")) {
-      // Create order in Oddo CRM and trigger courier
+      // Create order in Zyncoo CRM and trigger courier
       const { id, billing, line_items, total } = body;
       return NextResponse.json({
         success: true,
@@ -53,6 +53,6 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   return NextResponse.json({
     status: "active",
-    message: "Oddo AI WooCommerce Bidirectional Sync Endpoint. Set webhook topic to product.created or order.created.",
+    message: "Zyncoo AI WooCommerce Bidirectional Sync Endpoint. Set webhook topic to product.created or order.created.",
   });
 }

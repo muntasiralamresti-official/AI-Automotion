@@ -17,7 +17,7 @@ import {
   ArrowRight,
   AlertCircle
 } from "lucide-react";
-import OddoLogo from "@/components/OddoLogo";
+import ZyncooLogo from "@/components/ZyncooLogo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -66,7 +66,7 @@ const mockOrders: Record<string, TrackingData> = {
     timeline: [
       {
         title: "Order Placed & AI Verified",
-        description: "Verified by Oddo AI on WhatsApp. Anti-fraud check passed (96% delivery profile).",
+        description: "Verified by Zyncoo AI on WhatsApp. Anti-fraud check passed (96% delivery profile).",
         time: "Yesterday, 02:14 AM",
         completed: true,
       },

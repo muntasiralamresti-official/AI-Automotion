@@ -3,8 +3,8 @@ export const CONFIG = {
   NODE_ENV: process.env.NODE_ENV || "development",
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
   META: {
-    VERIFY_TOKEN: process.env.META_VERIFY_TOKEN || "oddo_ai_meta_verify_token_2026",
-    APP_SECRET: process.env.META_APP_SECRET || "oddo_meta_app_secret_production_2026",
+    VERIFY_TOKEN: process.env.META_VERIFY_TOKEN || "zyncoo_ai_meta_verify_token_2026",
+    APP_SECRET: process.env.META_APP_SECRET || "zyncoo_meta_app_secret_production_2026",
   },
   STEADFAST: {
     API_URL: "https://portal.steadfast.com.bd/api/v1",

@@ -48,7 +48,7 @@ export default function AffiliatePage() {
 
   const cleanSlug = agencyName.toLowerCase().replace(/[^a-z0-9]/g, "") || "agency";
   const whiteLabelPortalUrl = `https://ai.${cleanSlug || "yourbrand"}.com`;
-  const affiliateReferralLink = `https://oddo.ai/?ref=${cleanSlug}`;
+  const affiliateReferralLink = `https://zyncoo.ai/?ref=${cleanSlug}`;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
@@ -70,7 +70,7 @@ export default function AffiliatePage() {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              আপনি কি ডিজিটাল মার্কেটিং এজেন্সি, শপিফাই ডেভেলপার বা ফেসবুক মিডিয়া বায়ার? আপনার ক্লায়েন্টদের অডোর ফুল AI স্যুট প্রোভাইড করুন আপনার নিজস্ব এজেন্সির নামে অথবা রেফার করে নিশ্চিত প্যাসিভ ইনকাম তৈরি করুন।
+              আপনি কি ডিজিটাল মার্কেটিং এজেন্সি, শপিফাই ডেভেলপার বা ফেসবুক মিডিয়া বায়ার? আপনার ক্লায়েন্টদের জিনকোর ফুল AI স্যুট প্রোভাইড করুন আপনার নিজস্ব এজেন্সির নামে অথবা রেফার করে নিশ্চিত প্যাসিভ ইনকাম তৈরি করুন।
             </p>
 
             {/* Partner Mode Switcher */}
@@ -118,7 +118,7 @@ export default function AffiliatePage() {
                   এজেন্সির নিজস্ব ব্র্যান্ডে সেল করে কত আয় করতে পারবেন?
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto">
-                  ক্লায়েন্ট থেকে আপনি নেবেন প্রতি মাসে <strong>৳৮,০০০</strong>, অডোকে দেবেন পাইকারি রেটে <strong>৳৪,৯৯০</strong> — প্রতি ক্লায়েন্টে প্রতি মাসে আপনার নিট লাভ থাকবে <strong>৳৩,০১০</strong>।
+                  ক্লায়েন্ট থেকে আপনি নেবেন প্রতি মাসে <strong>৳৮,০০০</strong>, জিনকোকে দেবেন পাইকারি রেটে <strong>৳৪,৯৯০</strong> — প্রতি ক্লায়েন্টে প্রতি মাসে আপনার নিট লাভ থাকবে <strong>৳৩,০১০</strong>।
                 </p>
               </div>
 
@@ -185,7 +185,7 @@ export default function AffiliatePage() {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>১০০% এজেন্সির ব্র্যান্ডিং:</strong> আপনার লোগো, নাম ও কালার। কোথাও Oddo-এর নাম থাকবে না।</span>
+                    <span><strong>১০০% এজেন্সির ব্র্যান্ডিং:</strong> আপনার লোগো, নাম ও কালার। কোথাও Zyncoo-এর নাম থাকবে না।</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -280,17 +280,17 @@ export default function AffiliatePage() {
                   </tr>
                   <tr>
                     <td className="p-4 font-semibold">ব্র্যান্ডিং ও লোগো</td>
-                    <td className="p-4">Oddo AI ব্র্যান্ড</td>
+                    <td className="p-4">Zyncoo AI ব্র্যান্ড</td>
                     <td className="p-4 font-bold text-emerald-700 bg-emerald-50/50">১০০% আপনার এজেন্সির লোগো</td>
                   </tr>
                   <tr>
                     <td className="p-4 font-semibold">কাস্টম ডোমেন সাপোর্ট</td>
-                    <td className="p-4">oddo.ai/?ref=yourname</td>
+                    <td className="p-4">zyncoo.ai/?ref=yourname</td>
                     <td className="p-4 font-bold text-emerald-700 bg-emerald-50/50">ai.youragency.com</td>
                   </tr>
                   <tr>
                     <td className="p-4 font-semibold">ক্লায়েন্টকে আপনি প্রাইসিং নির্ধারণ করবেন?</td>
-                    <td className="p-4">না (ফিক্সড অডো প্রাইসিং)</td>
+                    <td className="p-4">না (ফিক্সড জিনকো প্রাইসিং)</td>
                     <td className="p-4 font-bold text-emerald-700 bg-emerald-50/50">হ্যাঁ (৳৮,০০০ থেকে ৳১৫,০০০/মাস)</td>
                   </tr>
                   <tr>
@@ -314,7 +314,7 @@ export default function AffiliatePage() {
                 <span>{partnerTier === "whitelabel" ? "Apply for Agency White-Label" : "Get Affiliate Referral Link"}</span>
               </div>
               <h3 className="font-black text-xl text-slate-900">
-                {partnerTier === "whitelabel" ? "এজেন্সি পার্টনার পোর্টাল চালু করুন" : "Oddo অ্যাফিলিয়েট নেটওয়ার্কে যুক্ত হন"}
+                {partnerTier === "whitelabel" ? "এজেন্সি পার্টনার পোর্টাল চালু করুন" : "Zyncoo অ্যাফিলিয়েট নেটওয়ার্কে যুক্ত হন"}
               </h3>
               <p className="text-xs text-slate-500 mt-1">
                 {partnerTier === "whitelabel"
@@ -434,7 +434,7 @@ export default function AffiliatePage() {
                         আমাদের পার্টনার সাপোর্ট টিম আপনার হোয়াটসঅ্যাপ <strong>({agencyPhone})</strong>-এ DNS CNAME ভেরিফিকেশন ও কাস্টম লোগো আপলোডের গাইড পাঠিয়ে দিয়েছে।
                       </p>
                       <a
-                        href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hello Oddo Team! I just registered my Agency "${agencyName}" for White-Label AI portal at ai.${agencyDomain || cleanSlug}.com. Please activate my Sandbox master admin!`)}`}
+                        href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hello Zyncoo Team! I just registered my Agency "${agencyName}" for White-Label AI portal at ai.${agencyDomain || cleanSlug}.com. Please activate my Sandbox master admin!`)}`}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-emerald-700 font-bold hover:underline"

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
 const VERIFY_TOKEN = process.env.META_VERIFY_TOKEN || "dialosync_secure_webhook_token_2026";
-const APP_SECRET = process.env.META_APP_SECRET || "oddo_meta_app_secret_production_2026";
+const APP_SECRET = process.env.META_APP_SECRET || "zyncoo_meta_app_secret_production_2026";
 
 /**
  * Validates Meta's SHA256 Signature (x-hub-signature-256)
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
                 const messages = change.value?.messages;
                 if (messages && messages.length > 0) {
                   const msg = messages[0];
-                  console.log(`[Oddo Engine :: WhatsApp Event] Phone: ${msg.from} | Type: ${msg.type}`);
+                  console.log(`[Zyncoo Engine :: WhatsApp Event] Phone: ${msg.from} | Type: ${msg.type}`);
                 }
               }
             }
@@ -92,13 +92,13 @@ export async function POST(req: NextRequest) {
             if (entry.messaging) {
               for (const event of entry.messaging) {
                 if (event.message?.text) {
-                  console.log(`[Oddo Engine :: Messenger Event] Sender: ${event.sender?.id}`);
+                  console.log(`[Zyncoo Engine :: Messenger Event] Sender: ${event.sender?.id}`);
                 }
               }
             }
           }
         } catch (workerErr) {
-          console.error("[Oddo Engine Async Worker Error]:", workerErr);
+          console.error("[Zyncoo Engine Async Worker Error]:", workerErr);
         }
       })();
 

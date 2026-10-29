@@ -58,7 +58,7 @@ function handleFraudCheck(phone: string | null | undefined) {
       returnedParcels = 5;
       riskLevel = "HIGH";
       advancePaymentRequired = true;
-      recommendation = "High parcel refusal history (55% RTO). Oddo recommends requesting ৳100 advance delivery fee via bKash before shipping.";
+      recommendation = "High parcel refusal history (55% RTO). Zyncoo recommends requesting ৳100 advance delivery fee via bKash before shipping.";
     } else if (lastDigits > 70) {
       // Medium returner profile
       totalOrders = 7;

@@ -44,7 +44,7 @@ const leadPacks: LeadPack[] = [
       "ক্যাটাগরি ফিল্টার: Fashion / Gadget / Skincare / Kids",
       "১০০% ১১-ডিজিট ক্লিন ও সচল নম্বর (Zero Fake)",
       "ডেলিভারি লোকেশন ও থানা সহ কমপ্লিট ডাটা",
-      "Oddo AI দিয়ে ১-ক্লিকে WhatsApp ব্রডকাস্ট রেডি",
+      "Zyncoo AI দিয়ে ১-ক্লিকে WhatsApp ব্রডকাস্ট রেডি",
       "এক্সেল ও গুগল শিট ফরম্যাটে ইনস্ট্যান্ট ডেলিভারি",
     ],
     sampleFormat: "Name, Mobile, Category, Thana, District",
@@ -61,7 +61,7 @@ const leadPacks: LeadPack[] = [
     features: [
       "১,৫০০ জন নিয়মিত ক্যাশ-অন-ডেলিভারি রিসিভ করা VIP বায়ার",
       "কোনো ইনভ্যালিড নম্বর থাকলে ১০০% ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি",
-      "Oddo AI স্পেশাল ৩-স্টেপ হোয়াটসঅ্যাপ সেলস স্ক্রিপ্ট ফ্রি",
+      "Zyncoo AI স্পেশাল ৩-স্টেপ হোয়াটসঅ্যাপ সেলস স্ক্রিপ্ট ফ্রি",
       "গড় কনভার্সন রেট: ১৫% - ২৫% (মিনিমাম ২২৫+ নতুন অর্ডার)",
       "প্রতি লিড খরচ মাত্র ৳৩.৯৯ টাকা (ফেসবুক অ্যাডের চেয়ে ৫ গুণ সস্তা)",
       "VIP ডেডিকেটেড একাউন্ট ম্যানেজার সাপোর্ট",
@@ -124,7 +124,7 @@ export default function LeadGenSection() {
           </h2>
 
           <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            কোল্ড ট্রাফিকে প্রতি মেসেজে ৳২০-৳৩০ খরচ না করে সরাসরি রিয়েল কাস্টমার ও একটিভ ই-কমার্স উদ্যোক্তাদের ভেরিফাইড ডাটা সংগ্রহ করুন। Oddo AI দিয়ে ১-ক্লিকে হোয়াটসঅ্যাপে সেলস ক্লোজ করুন।
+            কোল্ড ট্রাফিকে প্রতি মেসেজে ৳২০-৳৩০ খরচ না করে সরাসরি রিয়েল কাস্টমার ও একটিভ ই-কমার্স উদ্যোক্তাদের ভেরিফাইড ডাটা সংগ্রহ করুন। Zyncoo AI দিয়ে ১-ক্লিকে হোয়াটসঅ্যাপে সেলস ক্লোজ করুন।
           </p>
         </div>
 
@@ -226,7 +226,7 @@ export default function LeadGenSection() {
           </div>
 
           <a
-            href={`https://wa.me/8801700000000?text=${encodeURIComponent("Hello Oddo Team! I want to buy custom targeted leads for my e-commerce brand. Please send details.")}`}
+            href={`https://wa.me/8801700000000?text=${encodeURIComponent("Hello Zyncoo Team! I want to buy custom targeted leads for my e-commerce brand. Please send details.")}`}
             target="_blank"
             rel="noreferrer"
             className="px-5 py-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs flex items-center gap-2 shrink-0 transition-all"
@@ -382,7 +382,7 @@ export default function LeadGenSection() {
 
                 <div className="space-y-2 pt-2">
                   <a
-                    href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hello Oddo Team! I just ordered "${selectedPack.name}" (৳${selectedPack.priceBDT.toLocaleString()}) for my store "${buyerName}". Category: ${nicheCategory}. My WhatsApp: ${buyerPhone}. Please send bKash payment number and deliver the leads file.`)}`}
+                    href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hello Zyncoo Team! I just ordered "${selectedPack.name}" (৳${selectedPack.priceBDT.toLocaleString()}) for my store "${buyerName}". Category: ${nicheCategory}. My WhatsApp: ${buyerPhone}. Please send bKash payment number and deliver the leads file.`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-xs shadow-md transition-all"

@@ -34,11 +34,11 @@ export default function RtoAuditCalculator() {
   const currentLostBDT = currentReturns * avgReturnCost;
   const annualLostBDT = currentLostBDT * 12;
 
-  // Oddo reduces RTO by ~72% via 3-step fraud defense (bKash advance fee + phone check + AI IVR call)
-  const oddoReturnRate = Math.max(4, Math.round(returnRate * 0.28));
-  const oddoReturns = Math.round(monthlyOrders * (oddoReturnRate / 100));
-  const oddoLostBDT = oddoReturns * avgReturnCost;
-  const monthlySavedBDT = currentLostBDT - oddoLostBDT;
+  // Zyncoo reduces RTO by ~72% via 3-step fraud defense (bKash advance fee + phone check + AI IVR call)
+  const zyncooReturnRate = Math.max(4, Math.round(returnRate * 0.28));
+  const zyncooReturns = Math.round(monthlyOrders * (zyncooReturnRate / 100));
+  const zyncooLostBDT = zyncooReturns * avgReturnCost;
+  const monthlySavedBDT = currentLostBDT - zyncooLostBDT;
   const annualSavedBDT = monthlySavedBDT * 12;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,7 +63,7 @@ export default function RtoAuditCalculator() {
           </h2>
 
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
-            আপনার মাসিক পার্সেল সংখ্যা এবং গড় রিটার্ন রেট দিন। Oddo AI হিসাব করে দেখিয়ে দেবে আপনার বিজনেসের প্রতি মাসে কত টাকা সেভ করা সম্ভব।
+            আপনার মাসিক পার্সেল সংখ্যা এবং গড় রিটার্ন রেট দিন। Zyncoo AI হিসাব করে দেখিয়ে দেবে আপনার বিজনেসের প্রতি মাসে কত টাকা সেভ করা সম্ভব।
           </p>
         </div>
 
@@ -150,17 +150,17 @@ export default function RtoAuditCalculator() {
                 </div>
               </div>
 
-              {/* Oddo Protected Card */}
+              {/* Zyncoo Protected Card */}
               <div className="bg-emerald-50/90 border border-emerald-300 p-5 rounded-2xl relative overflow-hidden shadow-2xs">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Oddo AI দিয়ে নিশ্চিত সেভিংস</span>
+                  <span>Zyncoo AI দিয়ে নিশ্চিত সেভিংস</span>
                 </div>
                 <div className="text-3xl font-black text-emerald-700 font-mono mt-2">
                   ৳{monthlySavedBDT.toLocaleString()}
                 </div>
                 <div className="text-xs text-emerald-800 mt-1 font-semibold">
-                  রিটার্ন ড্রপ করে {returnRate}% থেকে মাত্র {oddoReturnRate}%-এ নামবে
+                  রিটার্ন ড্রপ করে {returnRate}% থেকে মাত্র {zyncooReturnRate}%-এ নামবে
                 </div>
                 <div className="mt-2 text-[11px] text-emerald-600 font-mono font-bold">
                   বছরে বাঁচবে: ৳{annualSavedBDT.toLocaleString()} 🔥
@@ -173,7 +173,7 @@ export default function RtoAuditCalculator() {
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1.5 leading-relaxed">
               <div className="font-bold text-slate-900 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>কীভাবে অডো এই টাকা সেভ করে?</span>
+                <span>কীভাবে জিনকো এই টাকা সেভ করে?</span>
               </div>
               <p>
                 ১. অর্ডার কনফার্মের সাথে সাথে ইন-চ্যাটে <strong>৳১০০ ডেলিভারি চার্জ বিকাশ পেমেন্ট লিংক</strong> পাঠায় (৯০% ফেইক বা টাইমপাস কাস্টমার সেখানেই ফিল্টার হয়)।
@@ -199,7 +199,7 @@ export default function RtoAuditCalculator() {
                     আপনার পেজের ফ্রি RTO অডিট রিপোর্ট নিন
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    আপনার পেজের নাম ও হোয়াটসঅ্যাপ নম্বর দিন। অডোর AI স্পেশালিস্ট টিম আপনার কুরিয়ার লিকেজ ফিক্স করার একটি কমপ্লিট ১-পেজ অ্যাকশন প্ল্যান তৈরি করে পাঠিয়ে দেবে।
+                    আপনার পেজের নাম ও হোয়াটসঅ্যাপ নম্বর দিন। জিনকোর AI স্পেশালিস্ট টিম আপনার কুরিয়ার লিকেজ ফিক্স করার একটি কমপ্লিট ১-পেজ অ্যাকশন প্ল্যান তৈরি করে পাঠিয়ে দেবে।
                   </p>
                 </div>
 
@@ -293,7 +293,7 @@ export default function RtoAuditCalculator() {
                     <span className="font-bold text-rose-400 font-mono">৳{currentLostBDT.toLocaleString()} / মাস</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-slate-700/60 pb-2">
-                    <span className="text-slate-400">Oddo প্রটেক্টেড সেভিংস:</span>
+                    <span className="text-slate-400">Zyncoo প্রটেক্টেড সেভিংস:</span>
                     <span className="font-bold text-emerald-400 font-mono">+৳{monthlySavedBDT.toLocaleString()} / মাস</span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -304,7 +304,7 @@ export default function RtoAuditCalculator() {
 
                 <div className="pt-2 space-y-2.5">
                   <a
-                    href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hi Oddo Team! I just ran an RTO Audit for my store "${storeName}". My monthly lost courier cash is ৳${currentLostBDT.toLocaleString()}. Please send my complete RTO Shield Action Report to my WhatsApp: ${merchantPhone}`)}`}
+                    href={`https://wa.me/8801700000000?text=${encodeURIComponent(`Hi Zyncoo Team! I just ran an RTO Audit for my store "${storeName}". My monthly lost courier cash is ৳${currentLostBDT.toLocaleString()}. Please send my complete RTO Shield Action Report to my WhatsApp: ${merchantPhone}`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl flex items-center justify-center gap-2 text-xs shadow-md transition-all"

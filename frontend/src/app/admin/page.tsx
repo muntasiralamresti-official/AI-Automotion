@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import OddoLogo from "@/components/OddoLogo";
+import ZyncooLogo from "@/components/ZyncooLogo";
 import {
   ShieldAlert,
   Users,
@@ -411,7 +411,7 @@ export default function SuperAdminPage() {
     );
     const cleanPhone = order.phone.replace(/[^0-9]/g, "");
     const msg = encodeURIComponent(
-      `Hello ${order.buyerName}! Your verified Oddo AI Lead Pack [${order.packTitle}] (${order.leadsCount} leads) is ready for download. Trx ID: ${order.trxId}. Download link: https://oddo.ai/vault/leads/${order.id}. Thank you for scaling with Oddo AI!`
+      `Hello ${order.buyerName}! Your verified Zyncoo AI Lead Pack [${order.packTitle}] (${order.leadsCount} leads) is ready for download. Trx ID: ${order.trxId}. Download link: https://zyncoo.ai/vault/leads/${order.id}. Thank you for scaling with Zyncoo AI!`
     );
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank");
   };
@@ -471,10 +471,10 @@ export default function SuperAdminPage() {
           {/* Header */}
           <div className="p-5 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <OddoLogo className="w-8 h-8" />
+              <ZyncooLogo className="w-8 h-8" />
               <div>
                 <div className="font-extrabold text-base text-white tracking-wide">
-                  oddo<span className="text-emerald-400">.ai</span> HQ
+                  zyncoo<span className="text-emerald-400">.ai</span> HQ
                 </div>
                 <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">
                   Super Admin Panel
@@ -1100,13 +1100,13 @@ export default function SuperAdminPage() {
                   <div>
                     <h3 className="font-bold text-sm text-white">White-Label Agency Partner Roster</h3>
                     <p className="text-xs text-slate-400">
-                      Agencies resell Oddo AI at ৳7,500 - ৳8,500 under their own branding, while paying Oddo wholesale ৳4,990/store.
+                      Agencies resell Zyncoo AI at ৳7,500 - ৳8,500 under their own branding, while paying Zyncoo wholesale ৳4,990/store.
                     </p>
                   </div>
                   <button
                     onClick={() =>
                       alert(
-                        "Agency White-Label Invite Link generated: https://oddo.ai/partner/signup?invite=WL-AGENCY-2026"
+                        "Agency White-Label Invite Link generated: https://zyncoo.ai/partner/signup?invite=WL-AGENCY-2026"
                       )
                     }
                     className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-colors"
@@ -1122,7 +1122,7 @@ export default function SuperAdminPage() {
                         <th className="px-5 py-3">Agency & Founder</th>
                         <th className="px-5 py-3">Custom White-Label Domain</th>
                         <th className="px-5 py-3">Client Stores</th>
-                        <th className="px-5 py-3">Oddo Wholesale (৳4,990/st)</th>
+                        <th className="px-5 py-3">Zyncoo Wholesale (৳4,990/st)</th>
                         <th className="px-5 py-3">Agency Resale Margin</th>
                         <th className="px-5 py-3">CNAME DNS</th>
                         <th className="px-5 py-3 text-right">Affiliate Commission</th>
@@ -1143,7 +1143,7 @@ export default function SuperAdminPage() {
                               <Globe className="w-3.5 h-3.5 text-purple-400" />
                               <span>{agency.customDomain}</span>
                             </div>
-                            <div className="text-[10px] text-slate-500 mt-0.5">CNAME: cname.oddo.ai</div>
+                            <div className="text-[10px] text-slate-500 mt-0.5">CNAME: cname.zyncoo.ai</div>
                           </td>
                           <td className="px-5 py-4">
                             <span className="font-mono text-xs font-bold bg-slate-800 text-white px-2 py-0.5 rounded border border-slate-700">
@@ -1210,7 +1210,7 @@ export default function SuperAdminPage() {
                       </span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      When one merchant reports a fake COD order or phone switch-off, all 58 Oddo client stores instantly block parcel dispatch to this number.
+                      When one merchant reports a fake COD order or phone switch-off, all 58 Zyncoo client stores instantly block parcel dispatch to this number.
                     </p>
                   </div>
                 </div>

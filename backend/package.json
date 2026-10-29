@@ -1,7 +1,7 @@
 {
-  "name": "oddo-ai-backend",
+  "name": "zyncoo-ai-backend",
   "version": "1.0.0",
-  "description": "Oddo AI Autonomous Social Commerce & Logistics Backend Server",
+  "description": "Zyncoo AI Autonomous Social Commerce & Logistics Backend Server",
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",

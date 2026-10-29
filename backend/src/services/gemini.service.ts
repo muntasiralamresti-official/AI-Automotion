@@ -129,7 +129,7 @@ export class GeminiService {
       const totalAmount = catalogItem.price + catalogItem.codInsideDhaka;
 
       if (rtoRiskLevel === "HIGH") {
-        replyText = `ধন্যবাদ ভাইয়া! আপনার Ultra Watch 9 অর্ডারটি প্রসেস করতে কুরিয়ারের জন্য মাত্র ৳১০০ টাকা ডেলিভারি চার্জ অগ্রিম প্রযোজ্য। বিকাশ মারচেন্ট একাউন্টে পে করার লিংক: https://pay.bka.sh/oddo-shield?amt=100&ord=${orderId}`;
+        replyText = `ধন্যবাদ ভাইয়া! আপনার Ultra Watch 9 অর্ডারটি প্রসেস করতে কুরিয়ারের জন্য মাত্র ৳১০০ টাকা ডেলিভারি চার্জ অগ্রিম প্রযোজ্য। বিকাশ মারচেন্ট একাউন্টে পে করার লিংক: https://pay.bka.sh/zyncoo-shield?amt=100&ord=${orderId}`;
       } else {
         replyText = `আলহামদুলিল্লাহ! আপনার অর্ডারটি গ্রহণ করা হয়েছে। 
 📦 অর্ডার আইডি: #${orderId}
@@ -156,8 +156,8 @@ export class GeminiService {
       };
     } else if (isBargaining) {
       intent = "negotiation";
-      appliedCoupon = { code: "ODDO100", discountBDT: 100 };
-      replyText = `ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনি যেহেতু আজকেই নিতে চাচ্ছেন, আপনার জন্য স্পেশাল ৳১০০ টাকা ক্যাশব্যাক ডিসকাউন্ট কুপন [ODDO100] অ্যাপ্লাই করে দিচ্ছি! 🎉
+      appliedCoupon = { code: "ZYNCOO100", discountBDT: 100 };
+      replyText = `ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনি যেহেতু আজকেই নিতে চাচ্ছেন, আপনার জন্য স্পেশাল ৳১০০ টাকা ক্যাশব্যাক ডিসকাউন্ট কুপন [ZYNCOO100] অ্যাপ্লাই করে দিচ্ছি! 🎉
 এখন অর্ডার কনফার্ম করতে শুধু আপনার নাম, সম্পূর্ণ ঠিকানা ও মোবাইল নম্বরটি পাঠিয়ে দিন।`;
     } else {
       replyText = `আসসালামু আলাইকুম ভাইয়া! ${storeName}-এ স্বাগতম। 

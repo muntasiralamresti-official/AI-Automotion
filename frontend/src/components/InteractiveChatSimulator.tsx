@@ -184,7 +184,7 @@ export default function InteractiveChatSimulator() {
       sender: "user",
       text: "bhaiya ei watch ta ki stock e ache? dam koto?",
       isImage: true,
-      imageUrl: "/oddo-icon.png",
+      imageUrl: "/zyncoo-icon.png",
       visionDetection: "Multimodal Vision Analysis: Ultra Watch 9 AMOLED identified (99.8% confidence)",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
@@ -284,7 +284,7 @@ export default function InteractiveChatSimulator() {
         <div className="text-center my-1">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-100/90 px-3 py-1 rounded-full shadow-2xs">
             <Zap className="w-3 h-3 text-emerald-600" />
-            Live Oddo Simulator • Test Voice Notes & Product Photos below
+            Live Zyncoo Simulator • Test Voice Notes & Product Photos below
           </span>
         </div>
 
@@ -308,7 +308,7 @@ export default function InteractiveChatSimulator() {
               {msg.sender === "bot" && (
                 <div className="flex items-center gap-1.5 mb-1.5 text-xs font-bold text-emerald-700">
                   <Bot className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Oddo AI Agent</span>
+                  <span>Zyncoo AI Agent</span>
                   <span className="text-[10px] font-normal text-slate-400 bg-slate-100 px-1 rounded">24/7 Autonomous</span>
                 </div>
               )}
@@ -350,7 +350,7 @@ export default function InteractiveChatSimulator() {
                 <div className="space-y-2 mb-1.5">
                   <div className="w-40 h-28 relative rounded-xl overflow-hidden border border-slate-300 shadow-xs bg-slate-100 flex items-center justify-center">
                     <Image
-                      src={msg.imageUrl || "/oddo-icon.png"}
+                      src={msg.imageUrl || "/zyncoo-icon.png"}
                       alt="Uploaded product photo"
                       fill
                       className="object-contain p-2"
@@ -420,7 +420,7 @@ export default function InteractiveChatSimulator() {
         {isTyping && (
           <div className="flex items-center gap-2 text-xs text-slate-500 bg-white border border-slate-200 px-3.5 py-2.5 rounded-2xl w-fit shadow-xs">
             <Bot className="w-3.5 h-3.5 text-emerald-600 animate-spin" />
-            <span className="font-medium text-emerald-700">Oddo is typing...</span>
+            <span className="font-medium text-emerald-700">Zyncoo is typing...</span>
             <span className="flex gap-1 items-center">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-bounce"></span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-bounce [animation-delay:0.2s]"></span>

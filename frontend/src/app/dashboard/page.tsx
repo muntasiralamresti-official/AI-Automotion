@@ -50,7 +50,7 @@ import {
   Smartphone,
   Building
 } from "lucide-react";
-import OddoLogo from "@/components/OddoLogo";
+import ZyncooLogo from "@/components/ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
 
 interface Order {
@@ -389,7 +389,7 @@ export default function DashboardPage() {
       channel: "instagram" as const,
       unread: false,
       priority: false,
-      lastMsg: "Special ৳100 coupon ODDO100 applied",
+      lastMsg: "Special ৳100 coupon ZYNCOO100 applied",
       time: "08:30 AM",
       location: "Sector 3, Uttara, Dhaka",
       rtoSuccessRate: "88%",
@@ -400,7 +400,7 @@ export default function DashboardPage() {
       stage: "Negotiation Closed",
       messages: [
         { sender: "customer", text: "Watch tar dam kisu komano jabe na? 1300 taka dile akhon e nibo.", time: "08:28 AM" },
-        { sender: "bot", text: "ভাইয়া প্রোডাক্টটি ১০০% অরিজিনাল ও ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি সহ। তবে আপনার জন্য স্পেশাল অনার হিসেবে ৳১০০ ডিসকাউন্ট কুপন 'ODDO100' অ্যাড করে দিয়েছি (মাত্র ৳১,৩৯০)। এখন কি পার্সেল বুক করে দেব ভাইয়া?", time: "08:29 AM" },
+        { sender: "bot", text: "ভাইয়া প্রোডাক্টটি ১০০% অরিজিনাল ও ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি সহ। তবে আপনার জন্য স্পেশাল অনার হিসেবে ৳১০০ ডিসকাউন্ট কুপন 'ZYNCOO100' অ্যাড করে দিয়েছি (মাত্র ৳১,৩৯০)। এখন কি পার্সেল বুক করে দেব ভাইয়া?", time: "08:29 AM" },
         { sender: "customer", text: "Thik ache confirm koren. Name: Kamrul Islam, Phone: 01712-112233, Sector 3, Road 7, Uttara, Dhaka.", time: "08:30 AM" },
         { sender: "bot", text: "অসংখ্য ধন্যবাদ কামরুল ভাই! আপনার অর্ডারটি গ্রহণ করা হয়েছে। ট্র্যাকিং কোড প্রস্তুত হচ্ছে।", time: "08:30 AM" },
       ],
@@ -420,13 +420,13 @@ export default function DashboardPage() {
         invoiceData: { amount: 100, verified: false },
       };
     } else if (actionType === "tracking") {
-      replyText = `আপনার পার্সেলটির লাইভ কুরিয়ার ট্র্যাকিং লিঙ্ক: https://oddo.ai/track/ST-9821471 । রাইডার রওনা দিলে স্বয়ংক্রিয় এসএমএস পাবেন!`;
+      replyText = `আপনার পার্সেলটির লাইভ কুরিয়ার ট্র্যাকিং লিঙ্ক: https://zyncoo.ai/track/ST-9821471 । রাইডার রওনা দিলে স্বয়ংক্রিয় এসএমএস পাবেন!`;
       extraData = {
         isBookingPill: true,
         bookingData: { consignmentId: "ST-9821471", courier: "Steadfast Courier", trackingCode: "TRK-9821" },
       };
     } else if (actionType === "discount") {
-      replyText = `আপনার জন্য স্পেশাল অফার হিসেবে ৳১০০ ডিসকাউন্ট ভাউচার 'ODDO100' অ্যাক্টিভ করা হয়েছে! অর্ডারটি এখনই কনফার্ম করতে নাম ও ঠিকানা দিন ভাইয়া।`;
+      replyText = `আপনার জন্য স্পেশাল অফার হিসেবে ৳১০০ ডিসকাউন্ট ভাউচার 'ZYNCOO100' অ্যাক্টিভ করা হয়েছে! অর্ডারটি এখনই কনফার্ম করতে নাম ও ঠিকানা দিন ভাইয়া।`;
     } else if (actionType === "autobook") {
       replyText = `অর্ডার সফলভাবে কনফার্ম করা হয়েছে (#ORD-9821)! পার্সেলটি স্টেডফাস্ট কুরিয়ারে স্বয়ংক্রিয়ভাবে বুক করা হয়েছে।`;
       extraData = {
@@ -648,7 +648,7 @@ export default function DashboardPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `oddo-courier-orders-${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `zyncoo-courier-orders-${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -686,10 +686,10 @@ export default function DashboardPage() {
             {/* Logo & Store */}
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2.5">
-                <OddoLogo className="w-8 h-8" />
+                <ZyncooLogo className="w-8 h-8" />
                 <div>
                   <div className="font-extrabold text-lg text-slate-900 leading-tight">
-                    oddo<span className="text-emerald-600">.ai</span>
+                    zyncoo<span className="text-emerald-600">.ai</span>
                   </div>
                   <div className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
                     Client Portal
@@ -958,7 +958,7 @@ export default function DashboardPage() {
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-semibold text-slate-500">Oddo AI Speed</div>
+                    <div className="text-xs font-semibold text-slate-500">Zyncoo AI Speed</div>
                     <div className="text-2xl font-black text-slate-900 font-mono mt-1">1.8s</div>
                     <div className="text-[11px] text-emerald-700 font-bold mt-1">
                       Sub-2s response velocity
@@ -1016,7 +1016,7 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">
                     <span className="flex items-center gap-1.5">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Oddo RTO Saved Cash</span>
+                      <span>Zyncoo RTO Saved Cash</span>
                     </span>
                     <span className="bg-emerald-200 text-emerald-900 text-[10px] px-2 py-0.5 rounded-full font-black">
                       THIS MONTH
@@ -1096,15 +1096,15 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Row 4: Oddo AI Smart Recommendations & Low Stock Radar */}
+              {/* Row 4: Zyncoo AI Smart Recommendations & Low Stock Radar */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 
-                {/* Oddo AI Smart Recommendations (7 cols) */}
+                {/* Zyncoo AI Smart Recommendations (7 cols) */}
                 <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-emerald-600" />
-                      <h4 className="font-black text-sm text-slate-900">Oddo AI Smart Recommendations</h4>
+                      <h4 className="font-black text-sm text-slate-900">Zyncoo AI Smart Recommendations</h4>
                     </div>
                     <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-mono">
                       Real-Time
@@ -1406,7 +1406,7 @@ export default function DashboardPage() {
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1">
                   <div className="text-[10px] uppercase font-bold text-slate-400">Automated WhatsApp Follow-Up:</div>
                   <p className="bg-white p-3 rounded-lg border border-slate-200 leading-relaxed font-sans text-xs">
-                    &quot;Assalamu Alaikum [Customer Name]! 😊 Your parcel has been delivered by courier today. We hope you love your <strong>[Product Name]</strong>! Could you give us a quick 5-star rating on our Facebook Page? Here is your exclusive 10% discount coupon code for your next order or to share with friends: <strong>ODDO10</strong> (Valid for 30 days)!&quot;
+                    &quot;Assalamu Alaikum [Customer Name]! 😊 Your parcel has been delivered by courier today. We hope you love your <strong>[Product Name]</strong>! Could you give us a quick 5-star rating on our Facebook Page? Here is your exclusive 10% discount coupon code for your next order or to share with friends: <strong>ZYNCOO10</strong> (Valid for 30 days)!&quot;
                   </p>
                 </div>
 
@@ -1595,7 +1595,7 @@ export default function DashboardPage() {
                       <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-emerald-700 font-semibold">
-                          {humanTakeover ? "Live Human Agent Active" : "Oddo AI 24/7 Autonomous Mode"}
+                          {humanTakeover ? "Live Human Agent Active" : "Zyncoo AI 24/7 Autonomous Mode"}
                         </span>
                         <span>•</span>
                         <span>{activeConversation.location}</span>
@@ -1643,7 +1643,7 @@ export default function DashboardPage() {
                         >
                           {!isClient && (
                             <div className="text-[10px] font-bold mb-1 opacity-90 flex items-center gap-1">
-                              {m.sender === "human_agent" ? "👤 You (Live Human Agent)" : "🤖 Oddo AI Co-Pilot"}
+                              {m.sender === "human_agent" ? "👤 You (Live Human Agent)" : "🤖 Zyncoo AI Co-Pilot"}
                             </div>
                           )}
 
@@ -1765,7 +1765,7 @@ export default function DashboardPage() {
                     className="px-2.5 py-1 rounded-lg bg-white hover:bg-amber-50 border border-amber-200 text-amber-800 font-bold whitespace-nowrap cursor-pointer shadow-2xs flex items-center gap-1 transition-all"
                   >
                     <Tag className="w-3 h-3" />
-                    <span>Offer ৳100 Discount (ODDO100)</span>
+                    <span>Offer ৳100 Discount (ZYNCOO100)</span>
                   </button>
 
                   <button
@@ -2092,7 +2092,7 @@ export default function DashboardPage() {
                     <span>Real-time Courier Network Intelligence</span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                    Oddo RTO Fraud Shield
+                    Zyncoo RTO Fraud Shield
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                     Every inbound customer phone number is cross-referenced across courier delivery databases (Steadfast, Pathao, RedX). 
@@ -2136,7 +2136,7 @@ export default function DashboardPage() {
                     <span>Live Customer Phone Fraud Verification</span>
                   </h4>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Test any customer mobile number to simulate Oddo&apos;s automated fraud verification check.
+                    Test any customer mobile number to simulate Zyncoo&apos;s automated fraud verification check.
                   </p>
                 </div>
 
@@ -2232,7 +2232,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="bg-white/90 p-3.5 rounded-xl border border-slate-200/80 text-xs">
-                      <span className="font-bold text-slate-900 block mb-1">Oddo AI Autonomous Action:</span>
+                      <span className="font-bold text-slate-900 block mb-1">Zyncoo AI Autonomous Action:</span>
                       <p className="text-slate-700 font-medium leading-relaxed">
                         {fraudResult.recommendation}
                       </p>
@@ -2266,7 +2266,7 @@ export default function DashboardPage() {
                         <th className="px-5 py-3">Customer Name</th>
                         <th className="px-5 py-3">Delivery Rate</th>
                         <th className="px-5 py-3">Risk Tier</th>
-                        <th className="px-5 py-3">Oddo Action</th>
+                        <th className="px-5 py-3">Zyncoo Action</th>
                         <th className="px-5 py-3 text-right">Saved Courier Loss</th>
                       </tr>
                     </thead>
@@ -2851,7 +2851,7 @@ export default function DashboardPage() {
                 </div>
                 <h4 className="text-base font-bold text-slate-900">Connected & Verified!</h4>
                 <p className="text-xs text-slate-500">
-                  Oddo AI is now actively monitoring your Facebook Page and WhatsApp chats.
+                  Zyncoo AI is now actively monitoring your Facebook Page and WhatsApp chats.
                 </p>
               </div>
             )}
@@ -2954,7 +2954,7 @@ export default function DashboardPage() {
                   <PhoneCall className="w-4 h-4 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">Oddo AI Voice Caller</h3>
+                  <h3 className="font-bold text-sm text-white">Zyncoo AI Voice Caller</h3>
                   <div className="text-[10px] text-emerald-400 font-mono">Bangla IVR Engine v2.4</div>
                 </div>
               </div>
@@ -2983,7 +2983,7 @@ export default function DashboardPage() {
             {/* Audio Waveform / Bengali Speech Box */}
             <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
               <div className="flex items-center justify-between text-[11px] text-slate-400">
-                <span className="font-bold text-emerald-400">Oddo Bengali Speech:</span>
+                <span className="font-bold text-emerald-400">Zyncoo Bengali Speech:</span>
                 {ivrStep === 2 && (
                   <div className="flex items-end gap-0.5 h-3">
                     <span className="w-0.5 bg-emerald-400 h-2 animate-pulse"></span>
@@ -2995,7 +2995,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-xs text-slate-200 leading-relaxed italic">
                 {ivrStep === 1 && "ডায়ালিং হচ্ছে..."}
-                {ivrStep === 2 && `&quot;আসসালামু আলাইকুম ${ivrOrder.customer}! গ্যাজেট জোন বিডি থেকে অডোর অটোমেটেড এআই বলছি। আপনার ৳${ivrOrder.amount} টাকার ${ivrOrder.item} অর্ডারটি কনফার্ম করতে ১ চাপুন অথবা ক্যান্সেল করতে ২ চাপুন।&quot;`}
+                {ivrStep === 2 && `&quot;আসসালামু আলাইকুম ${ivrOrder.customer}! গ্যাজেট জোন বিডি থেকে জিনকো এআই বলছি। আপনার ৳${ivrOrder.amount} টাকার ${ivrOrder.item} অর্ডারটি কনফার্ম করতে ১ চাপুন অথবা ক্যান্সেল করতে ২ চাপুন।&quot;`}
                 {ivrStep === 3 && `&quot;ধন্যবাদ! আপনার অর্ডারটি কনফার্ম করা হয়েছে। আগামীকাল কুরিয়ারে বুকিং দেওয়া হবে।&quot;`}
               </p>
             </div>
@@ -3133,7 +3133,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between text-[9px] text-slate-600 pt-0.5">
                 <span className="flex items-center gap-1 font-bold text-emerald-800">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  Verified by Oddo Fraud Shield
+                  Verified by Zyncoo Fraud Shield
                 </span>
                 <span className="font-mono">Date: 27-OCT-2026</span>
               </div>

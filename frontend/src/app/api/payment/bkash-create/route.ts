@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     // Generate dynamic bKash PGW checkout simulation session
     const paymentID = "TRX-BK-" + Math.floor(100000 + Math.random() * 900000);
     const bkashURL = `https://checkout.pay.bka.sh/v1.2.0-beta/tokenized/checkout?paymentID=${paymentID}&amount=${amount}`;
-    const qrData = `bkash://payment?merchant=01700000000&amount=${amount}&ref=${orderId || "ODDO"}`;
+    const qrData = `bkash://payment?merchant=01700000000&amount=${amount}&ref=${orderId || "ZYNCOO"}`;
 
     return NextResponse.json({
       success: true,

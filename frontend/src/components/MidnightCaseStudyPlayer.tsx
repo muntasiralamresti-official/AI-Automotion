@@ -28,7 +28,7 @@ interface SceneStep {
   title: string;
   description: string;
   chatBubbleCustomer?: string;
-  chatBubbleOddo?: string;
+  chatBubbleZyncoo?: string;
   actionDetails?: string;
   cumulativeRevenue: number;
   ordersCount: number;
@@ -40,9 +40,9 @@ const scenes: SceneStep[] = [
     time: "03:00 AM",
     badge: "Staff Sleeping • Dhaka Office Offline",
     title: "অফিস লাইট বন্ধ, সব পেইজ অ্যাডমিন ঘুমাচ্ছে",
-    description: "রাত ৩টায় সাধারণ শপগুলো কাস্টমারের মেসেজ মিস করে। কিন্তু Oddo AI জাগ্রত ও অ্যালার্ট থাকে।",
+    description: "রাত ৩টায় সাধারণ শপগুলো কাস্টমারের মেসেজ মিস করে। কিন্তু Zyncoo AI জাগ্রত ও অ্যালার্ট থাকে।",
     chatBubbleCustomer: "ভাইয়া T900 Ultra ওয়াচটার ব্ল্যাক কালার কি স্টকে আছে? মিরপুর ১০ এ কালকে ডেলিভারি পাওয়া যাবে?",
-    chatBubbleOddo: "আসসালামু আলাইকুম ভাইয়া! জি, T900 Ultra ব্ল্যাক কালার ফুল স্টক এভেইলেবল আছে। প্রাইস মাত্র ৳১,৫৫০। মিরপুরে আগামীকালকের মধ্যেই স্টেডফাস্ট কুরিয়ারে ক্যাশ অন ডেলিভারি পাবেন। আপনার নাম, ফুল অ্যাড্রেস ও ফোন নম্বরটি দিলে এখনই পার্সেল বুক করে দিচ্ছি!",
+    chatBubbleZyncoo: "আসসালামু আলাইকুম ভাইয়া! জি, T900 Ultra ব্ল্যাক কালার ফুল স্টক এভেইলেবল আছে। প্রাইস মাত্র ৳১,৫৫০। মিরপুরে আগামীকালকের মধ্যেই স্টেডফাস্ট কুরিয়ারে ক্যাশ অন ডেলিভারি পাবেন। আপনার নাম, ফুল অ্যাড্রেস ও ফোন নম্বরটি দিলে এখনই পার্সেল বুক করে দিচ্ছি!",
     actionDetails: "AI উত্তর দিল মাত্র ১.২ সেকেন্ডে (Zero Delay)",
     cumulativeRevenue: 1550,
     ordersCount: 1,
@@ -52,9 +52,9 @@ const scenes: SceneStep[] = [
     time: "03:08 AM",
     badge: "Automated bKash Advance QR",
     title: "ইন-চ্যাট ১০০ টাকা বিকাশ ডেলিভারি চার্জ ভেরিফিকেশন",
-    description: "কাস্টমার যাতে পার্সেল রিসিভ না করে ফেরত না দেয়, সেজন্য Oddo স্বয়ংক্রিয়ভাবে ১০০ টাকা অ্যাডভান্স পেমেন্ট লিংক দিল।",
+    description: "কাস্টমার যাতে পার্সেল রিসিভ না করে ফেরত না দেয়, সেজন্য Zyncoo স্বয়ংক্রিয়ভাবে ১০০ টাকা অ্যাডভান্স পেমেন্ট লিংক দিল।",
     chatBubbleCustomer: "অর্ডার কনফার্ম করেন। নাম: তানভির আহমেদ, মিরপুর ১০, ব্লক সি, রোড ৪, বাসা ১২। মোবাইল: 01712-345678",
-    chatBubbleOddo: "অসংখ্য ধন্যবাদ তানভির ভাইয়া! ক্যাশ অন ডেলিভারির ডেলিভারি চার্জ বাবদ ৳১০০ নিচে দেওয়া বিকাশ মার্চেন্ট কিউআর বা পেমেন্ট লিংকে পে করে TrxID টি দিন। বাকি ৳১,৪৫০ ডেলিভারি ম্যানের হাতে দিবেন।",
+    chatBubbleZyncoo: "অসংখ্য ধন্যবাদ তানভির ভাইয়া! ক্যাশ অন ডেলিভারির ডেলিভারি চার্জ বাবদ ৳১০০ নিচে দেওয়া বিকাশ মার্চেন্ট কিউআর বা পেমেন্ট লিংকে পে করে TrxID টি দিন। বাকি ৳১,৪৫০ ডেলিভারি ম্যানের হাতে দিবেন।",
     actionDetails: "বিকাশ TrxID 9K38FX91Q ভেরিফাইড (৳১০০ জমা হয়েছে)",
     cumulativeRevenue: 1550,
     ordersCount: 1,
@@ -66,7 +66,7 @@ const scenes: SceneStep[] = [
     title: "অটোমেটিক কুরিয়ার পার্সেল এন্ট্রি ও বারকোড রেডি",
     description: "মানুষের কোনো হাত দেওয়া ছাড়াই স্টেডফাস্ট কুরিয়ারে পার্সেল বুক হয়ে গেল এবং ট্র্যাকিং আইডি কাস্টমারকে পাঠানো হলো।",
     chatBubbleCustomer: "বিকাশে পেমেন্ট করে দিয়েছি। TrxID: 9K38FX91Q",
-    chatBubbleOddo: "পেমেন্ট সফলভাবে ভেরিফাই হয়েছে ভাইয়া! আপনার পার্সেলটি স্টেডফাস্ট কুরিয়ারে বুক করা হয়েছে। কনসাইনমেন্ট আইডি: ST-9921471। সকালে রাইডার পিকআপ করলেই আপনার ফোনে ট্র্যাকিং লিংক যাবে। শুভরাত্রি!",
+    chatBubbleZyncoo: "পেমেন্ট সফলভাবে ভেরিফাই হয়েছে ভাইয়া! আপনার পার্সেলটি স্টেডফাস্ট কুরিয়ারে বুক করা হয়েছে। কনসাইনমেন্ট আইডি: ST-9921471। সকালে রাইডার পিকআপ করলেই আপনার ফোনে ট্র্যাকিং লিংক যাবে। শুভরাত্রি!",
     actionDetails: "Steadfast API: Consignment Created (#ST-9921471)",
     cumulativeRevenue: 1550,
     ordersCount: 1,
@@ -76,9 +76,9 @@ const scenes: SceneStep[] = [
     time: "03:42 AM",
     badge: "High Velocity Night Conversions",
     title: "আরও ৩টি অর্ডার কনফার্ম হলো ঘুমের মধ্যেই",
-    description: "উত্তরা, চট্টগ্রাম ও সিলেট থেকে আরও ৩ জন কাস্টমার ঘড়ি ও ইয়ারবাডস অর্ডার করলো এবং Oddo সবার সাথে চ্যাট করে কনফার্ম করলো।",
+    description: "উত্তরা, চট্টগ্রাম ও সিলেট থেকে আরও ৩ জন কাস্টমার ঘড়ি ও ইয়ারবাডস অর্ডার করলো এবং Zyncoo সবার সাথে চ্যাট করে কনফার্ম করলো।",
     chatBubbleCustomer: "চট্টগ্রামে ক্যাশ অন ডেলিভারি দেওয়া যাবে? ২টা ওয়াচ নিতে চাই (ব্ল্যাক + সিলভার)।",
-    chatBubbleOddo: "জি অবশ্যই ভাইয়া! চট্টগ্রামের যেকোনো জায়গায় ৪৮ ঘণ্টার মধ্যে পাঠাও/স্টেডফাস্ট কুরিয়ারে হোম ডেলিভারি পাবেন। ২টির জন্য মোট ৳৩,১০০। আপনার ডেলিভারি অ্যাড্রেস দিন প্লিজ!",
+    chatBubbleZyncoo: "জি অবশ্যই ভাইয়া! চট্টগ্রামের যেকোনো জায়গায় ৪৮ ঘণ্টার মধ্যে পাঠাও/স্টেডফাস্ট কুরিয়ারে হোম ডেলিভারি পাবেন। ২টির জন্য মোট ৳৩,১০০। আপনার ডেলিভারি অ্যাড্রেস দিন প্লিজ!",
     actionDetails: "চট্টগ্রাম ও উত্তরা থেকে আরও ৩টি অর্ডার বুকড",
     cumulativeRevenue: 6200,
     ordersCount: 4,
@@ -128,11 +128,11 @@ export default function MidnightCaseStudyPlayer() {
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.2]">
-            কীভাবে রাত ৩টায় যখন <span className="text-emerald-400">সব স্টাফ ঘুমাচ্ছিল</span>, Oddo AI ৪টি ওয়াচের অর্ডার পাঠিয়ে দিল কুরিয়ারে
+            কীভাবে রাত ৩টায় যখন <span className="text-emerald-400">সব স্টাফ ঘুমাচ্ছিল</span>, Zyncoo AI ৪টি ওয়াচের অর্ডার পাঠিয়ে দিল কুরিয়ারে
           </h2>
 
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            বাংলাদেশের অধিকাংশ ফেসবুক শপ রাত ১২টা থেকে সকাল ৯টা পর্যন্ত কোনো সেলস পায় না কারণ কাস্টমার রিপ্লাই পায় না। দেখুন কীভাবে Oddo আপনার ঘুমন্ত সময়কে সর্বোচ্চ প্রফিটেবল সময়ে রূপান্তর করে।
+            বাংলাদেশের অধিকাংশ ফেসবুক শপ রাত ১২টা থেকে সকাল ৯টা পর্যন্ত কোনো সেলস পায় না কারণ কাস্টমার রিপ্লাই পায় না। দেখুন কীভাবে Zyncoo আপনার ঘুমন্ত সময়কে সর্বোচ্চ প্রফিটেবল সময়ে রূপান্তর করে।
           </p>
         </div>
 
@@ -178,13 +178,13 @@ export default function MidnightCaseStudyPlayer() {
               <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">
-                    OD
+                    ZY
                   </div>
                   <div>
                     <div className="font-bold text-xs text-white">Royal Gadget BD • WhatsApp Store</div>
                     <div className="text-[10px] text-emerald-400 flex items-center gap-1 font-mono">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-                      Oddo AI Active (03:00 AM)
+                      Zyncoo AI Active (03:00 AM)
                     </div>
                   </div>
                 </div>
@@ -208,14 +208,14 @@ export default function MidnightCaseStudyPlayer() {
                   </div>
                 )}
 
-                {currentScene.chatBubbleOddo && (
+                {currentScene.chatBubbleZyncoo && (
                   <div className="flex justify-start">
                     <div className="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-xs p-3.5 max-w-[90%] text-xs leading-relaxed border border-slate-700 shadow-sm space-y-2">
                       <div className="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
                         <Sparkles className="w-2.5 h-2.5" />
-                        <span>Oddo AI Assistant</span>
+                        <span>Zyncoo AI Assistant</span>
                       </div>
-                      <p>{currentScene.chatBubbleOddo}</p>
+                      <p>{currentScene.chatBubbleZyncoo}</p>
                     </div>
                   </div>
                 )}

@@ -1,8 +1,8 @@
 {
-  "name": "oddo-ai-monorepo",
+  "name": "zyncoo-ai-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Oddo AI - Full-Stack Monorepo (Next.js Frontend + Express.js Backend)",
+  "description": "Zyncoo AI - Full-Stack Monorepo (Next.js Frontend + Express.js Backend)",
   "workspaces": [
     "frontend",
     "backend"

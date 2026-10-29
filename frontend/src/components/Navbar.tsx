@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, LayoutDashboard, Menu, X, Flame, Truck } from "lucide-react";
-import OddoLogo from "./OddoLogo";
+import ZyncooLogo from "./ZyncooLogo";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -14,7 +14,7 @@ export default function Navbar() {
       <div className="bg-emerald-950 text-emerald-200 text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 border-b border-emerald-900/40">
         <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
         <span>
-          ⚡ <strong>Oddo AI Engine 2.4:</strong> Autonomous sales automation & verified B2B e-commerce lead packs
+          ⚡ <strong>Zyncoo AI Engine 2.4:</strong> Autonomous sales automation & verified B2B e-commerce lead packs
         </span>
         <span className="hidden md:inline text-emerald-400 font-semibold">• 7-Day Free Pilot</span>
       </div>
@@ -24,13 +24,13 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-17">
             
-            {/* Brand Logo - Oddo AI */}
+            {/* Brand Logo - Zyncoo AI */}
             <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-              <OddoLogo className="w-8 h-8 sm:w-9 sm:h-9 group-hover:scale-105 transition-transform duration-200 shrink-0" />
+              <ZyncooLogo className="w-8 h-8 sm:w-9 sm:h-9 group-hover:scale-105 transition-transform duration-200 shrink-0" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 whitespace-nowrap">
-                    oddo<span className="text-emerald-600">.ai</span>
+                    zyncoo<span className="text-emerald-600">.ai</span>
                   </span>
                   <span className="bg-emerald-50 text-emerald-700 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md border border-emerald-200 uppercase tracking-widest shrink-0">
                     PRO

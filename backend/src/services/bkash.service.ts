@@ -5,7 +5,7 @@ export class BkashService {
   public static createPayment(payload: BkashPaymentPayload) {
     const paymentID = "TRX-BK-" + Math.floor(100000 + Math.random() * 900000);
     const bkashURL = `${CONFIG.BKASH.CHECKOUT_BASE}?paymentID=${paymentID}&amount=${payload.amount}`;
-    const qrData = `bkash://payment?merchant=01700000000&amount=${payload.amount}&ref=${payload.orderId || "ODDO"}`;
+    const qrData = `bkash://payment?merchant=01700000000&amount=${payload.amount}&ref=${payload.orderId || "ZYNCOO"}`;
 
     return {
       success: true,

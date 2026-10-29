@@ -1,4 +1,4 @@
-# Oddo AI — Enterprise E-Commerce Automation Platform
+# Zyncoo AI — Enterprise E-Commerce Automation Platform
 
 > **Full-Stack Monorepo Architecture** cleanly decoupled into **`frontend/`** (Next.js 16 + Tailwind CSS) and **`backend/`** (Node.js + Express + TypeScript API Server).
 
@@ -9,7 +9,7 @@
 ```plaintext
 AI Automotion/
 ├── frontend/                     # 🌐 Frontend Client Application (Next.js 16)
-│   ├── public/                   # Static media, logos (oddo-logo.png), audio assets
+│   ├── public/                   # Static media, logos (zyncoo-logo.png, zyncoo-icon.png), audio assets
 │   ├── src/
 │   │   ├── app/                  # App Router Pages & Layouts
 │   │   │   ├── admin/            # Super Admin HQ & Command Center

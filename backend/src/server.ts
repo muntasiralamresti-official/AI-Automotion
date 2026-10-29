@@ -20,7 +20,7 @@ app.get("/health", (req, res) => {
     status: "healthy",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    service: "Oddo AI Backend Server",
+    service: "Zyncoo AI Backend Server",
   });
 });
 
@@ -32,7 +32,7 @@ app.use(errorHandler);
 
 const PORT = CONFIG.PORT;
 app.listen(PORT, () => {
-  console.log(`🚀 [Oddo AI Backend] Server running on http://localhost:${PORT}`);
+  console.log(`🚀 [Zyncoo AI Backend] Server running on http://localhost:${PORT}`);
   console.log(`📡 [Health Check] http://localhost:${PORT}/health`);
   console.log(`🤖 [AI Endpoint]  http://localhost:${PORT}/api/ai/chat`);
   console.log(`🚚 [Courier Endpoints] http://localhost:${PORT}/api/courier`);
