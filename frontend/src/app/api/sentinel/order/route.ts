@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       paymentMethod: body.paymentMethod,
       trxId: body.trxId || "PENDING_VERIFY",
       status: body.paymentMethod === "cod" ? "CONFIRMED_COD" : "PAYMENT_AWAITING_VERIFY",
-      downloadUrl: "https://github.com/muntasiralamresti-official/AI-Automotion/releases/download/v1.0/Zyncoo-Driver-Sentinel-v1.0.zip",
+      downloadUrl: "/downloads/Zyncoo-Driver-Sentinel-v1.0.zip",
       setupGuideUrl: "https://zyncoo.ai/sentinel/guide",
       createdAt: new Date().toISOString(),
     };

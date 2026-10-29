@@ -43,6 +43,8 @@ export default function SentinelProductPage() {
   const [speedKmh, setSpeedKmh] = useState(65);
   const [earValue, setEarValue] = useState(0.31);
   const [audioSupported, setAudioSupported] = useState(true);
+  const [cameraSource, setCameraSource] = useState<"webcam" | "engine">("webcam");
+  const [engineError, setEngineError] = useState(false);
 
   // Purchase Modal State
   const [selectedPlan, setSelectedPlan] = useState<"starter" | "fleet_pro" | "enterprise">("starter");
@@ -421,17 +423,49 @@ export default function SentinelProductPage() {
                   <span>{audioMuted ? "Sound Unmute" : "Sound Mute"}</span>
                 </button>
 
-                <button
-                  onClick={toggleCamera}
-                  className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                    cameraActive
-                      ? "bg-red-500/20 text-red-300 border-red-500/30"
-                      : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>{cameraActive ? "Stop Camera" : "Start Webcam"}</span>
-                </button>
+                <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                  <button
+                    onClick={() => {
+                      setCameraSource("webcam");
+                      setEngineError(false);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                      cameraSource === "webcam"
+                        ? "bg-slate-800 text-white"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    📷 Browser Webcam
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCameraSource("engine");
+                      setEngineError(false);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 ${
+                      cameraSource === "engine"
+                        ? "bg-[#b8e900] text-slate-950 font-bold"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <Car className="w-3.5 h-3.5" />
+                    <span>🚗 Drive Cam Engine (Port 8000)</span>
+                  </button>
+                </div>
+
+                {cameraSource === "webcam" && (
+                  <button
+                    onClick={toggleCamera}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                      cameraActive
+                        ? "bg-red-500/20 text-red-300 border-red-500/30"
+                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                    }`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>{cameraActive ? "Stop Camera" : "Start Webcam"}</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -443,32 +477,71 @@ export default function SentinelProductPage() {
                 <div className={`relative rounded-2xl bg-black border-2 overflow-hidden aspect-video flex items-center justify-center transition-all ${
                   isAlarmPlaying ? "border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)]" : "border-slate-800"
                 }`}>
-                  {/* Real video if camera active */}
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className={`w-full h-full object-cover ${cameraActive ? "block" : "hidden"}`}
-                  />
-
-                  {/* Fallback Graphic HUD when camera not on */}
-                  {!cameraActive && (
-                    <div className="text-center p-6">
-                      <div className="relative inline-block mb-3">
-                        <div className={`w-20 h-20 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isAlarmPlaying ? "border-red-500 bg-red-500/10 animate-pulse" : "border-emerald-500/40 bg-slate-900"
-                        }`}>
-                          <Car className={`w-10 h-10 ${isAlarmPlaying ? "text-red-400" : "text-emerald-400"}`} />
+                  {/* Local Python Engine MJPEG stream */}
+                  {cameraSource === "engine" ? (
+                    <div className="w-full h-full relative flex items-center justify-center bg-black">
+                      {!engineError ? (
+                        <>
+                          <img
+                            src="http://localhost:8000/api/video_feed"
+                            alt="Live MediaPipe Drive Camera Feed"
+                            className="w-full h-full object-cover"
+                            onError={() => setEngineError(true)}
+                          />
+                          <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-black/80 border border-emerald-500/40 text-[10px] font-mono text-[#b8e900] flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>CONNECTED TO PYTHON FASTAPI DRIVE CAMERA (PORT 8000)</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center p-6 space-y-2">
+                          <Car className="w-10 h-10 text-amber-400 mx-auto" />
+                          <div className="text-sm font-bold text-white">Drive Camera Engine Offline</div>
+                          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                            আপনার গাড়ির ড্রাইভার ক্যামেরা চালু করতে <code className="text-[#b8e900] bg-slate-900 px-1 py-0.5 rounded">sentinel-camera-engine/start_all.bat</code> রান করুন। অথবা "Browser Webcam" মোডে টেস্ট করুন।
+                          </p>
+                          <button
+                            onClick={() => {
+                              setEngineError(false);
+                              setCameraSource("webcam");
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 cursor-pointer"
+                          >
+                            Switch to Browser Webcam
+                          </button>
                         </div>
-                      </div>
-                      <div className="text-sm font-bold text-white">
-                        {cameraActive ? "Live Face Mesh Feed" : "Virtual Driver HUD Simulator"}
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1">
-                        ক্যামেরা চালু করুন অথবা ডানের কন্ট্রোল দিয়ে তন্দ্রা পরীক্ষা করুন
-                      </div>
+                      )}
                     </div>
+                  ) : (
+                    <>
+                      {/* Real video if camera active */}
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className={`w-full h-full object-cover ${cameraActive ? "block" : "hidden"}`}
+                      />
+
+                      {/* Fallback Graphic HUD when camera not on */}
+                      {!cameraActive && (
+                        <div className="text-center p-6">
+                          <div className="relative inline-block mb-3">
+                            <div className={`w-20 h-20 rounded-full border-2 flex items-center justify-center transition-all ${
+                              isAlarmPlaying ? "border-red-500 bg-red-500/10 animate-pulse" : "border-emerald-500/40 bg-slate-900"
+                            }`}>
+                              <Car className={`w-10 h-10 ${isAlarmPlaying ? "text-red-400" : "text-emerald-400"}`} />
+                            </div>
+                          </div>
+                          <div className="text-sm font-bold text-white">
+                            {cameraActive ? "Live Face Mesh Feed" : "Virtual Driver HUD Simulator"}
+                          </div>
+                          <div className="text-xs text-slate-400 mt-1">
+                            ক্যামেরা চালু করুন অথবা ডানের কন্ট্রোল দিয়ে তন্দ্রা পরীক্ষা করুন
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {/* Red Alert Overlay */}
@@ -940,9 +1013,9 @@ export default function SentinelProductPage() {
 
                 <div className="mt-5 flex flex-col sm:flex-row gap-3">
                   <a
-                    href="https://github.com/muntasiralamresti-official/AI-Automotion"
-                    target="_blank"
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#b8e900] hover:bg-[#a6d200] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                    href="/downloads/Zyncoo-Driver-Sentinel-v1.0.zip"
+                    download="Zyncoo-Driver-Sentinel-v1.0.zip"
+                    className="flex-1 py-3 px-4 rounded-xl bg-[#b8e900] hover:bg-[#a6d200] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                   >
                     <Download className="w-4 h-4" />
                     <span>সফটওয়্যার প্যাকেজ ডাউনলোড (.zip)</span>

@@ -4980,9 +4980,9 @@ export default function DashboardPage() {
                   </Link>
 
                   <a
-                    href="https://github.com/muntasiralamresti-official/AI-Automotion"
-                    target="_blank"
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-semibold transition-all flex items-center gap-2"
+                    href="/downloads/Zyncoo-Driver-Sentinel-v1.0.zip"
+                    download="Zyncoo-Driver-Sentinel-v1.0.zip"
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer shadow-xs"
                   >
                     <Download className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Download Software (.zip)</span>
