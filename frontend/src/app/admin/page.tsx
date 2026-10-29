@@ -1003,7 +1003,7 @@ export default function SuperAdminPage() {
           {/* Header */}
           <div className="p-5 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <ZyncooLogo className="w-9.5 h-9.5" />
+              <ZyncooLogo className="w-10 h-10" />
               <div>
                 <div className="font-extrabold text-base text-white tracking-wide">
                   zyncoo<span className="text-[#b8e900]">.ai</span> HQ
@@ -1473,134 +1473,190 @@ export default function SuperAdminPage() {
           {/* TAB: LEAD ORDERS & FULFILLMENT MANAGER */}
           {adminTab === "leads" && (
             <div className="space-y-6">
-              {/* KPI Header */}
+              
+              {/* KPI Header Cards with Sleek Badges & Icons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
-                  <div className="text-xs text-slate-400">Total Lead Marketplace Revenue</div>
-                  <div className="text-2xl font-black text-white font-mono mt-1">৳17,470</div>
-                  <div className="text-[11px] text-emerald-400 font-bold flex items-center gap-1 mt-1">
-                    <TrendingUp className="w-3 h-3" />
-                    <span>100% Net Profit Margin</span>
+                <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="text-xs text-slate-400 font-medium">Marketplace Revenue</div>
+                    <div className="text-2xl font-black text-white font-mono tracking-tight mt-0.5">
+                      ৳17,470
+                    </div>
+                    <div className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      <TrendingUp className="w-3 h-3" />
+                      <span>100% Net Profit Margin</span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-[#b8e900]/15 flex items-center justify-center border border-[#b8e900]/30 shrink-0">
+                    <DollarSign className="w-5 h-5 text-[#b8e900]" />
                   </div>
                 </div>
 
-                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
-                  <div className="text-xs text-slate-400">Pending Lead Dispatches</div>
-                  <div className="text-2xl font-black text-amber-400 font-mono mt-1">
-                    {leadOrders.filter((o) => o.status !== "Dispatched").length} Orders
+                <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="text-xs text-slate-400 font-medium">Pending Lead Orders</div>
+                    <div className="text-2xl font-black text-amber-400 font-mono tracking-tight mt-0.5">
+                      {leadOrders.filter((o) => o.status !== "Dispatched").length} Orders
+                    </div>
+                    <div className="inline-flex items-center gap-1 text-[11px] text-amber-300 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                      <Clock className="w-3 h-3" />
+                      <span>Awaiting Trx / Dispatch</span>
+                    </div>
                   </div>
-                  <div className="text-[11px] text-slate-400 font-mono mt-1">Awaiting Trx or Dispatch</div>
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center border border-amber-500/30 shrink-0">
+                    <Package className="w-5 h-5 text-amber-400" />
+                  </div>
                 </div>
 
-                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
-                  <div className="text-xs text-slate-400">Total Verified Leads Delivered</div>
-                  <div className="text-2xl font-black text-white font-mono mt-1">3,000+</div>
-                  <div className="text-[11px] text-emerald-400 font-mono mt-1">Courier Verified Clean</div>
+                <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="text-xs text-slate-400 font-medium">Verified Clean Leads</div>
+                    <div className="text-2xl font-black text-white font-mono tracking-tight mt-0.5">
+                      3,000+
+                    </div>
+                    <div className="inline-flex items-center gap-1 text-[11px] text-blue-300 font-mono bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                      <CheckCircle2 className="w-3 h-3 text-blue-400" />
+                      <span>Steadfast & Pathao Clean</span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center border border-blue-500/30 shrink-0">
+                    <Users className="w-5 h-5 text-blue-400" />
+                  </div>
                 </div>
 
-                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
-                  <div className="text-xs text-slate-400">Automated Dispatch Channel</div>
-                  <div className="text-2xl font-black text-emerald-400 font-mono mt-1">WhatsApp API</div>
-                  <div className="text-[11px] text-slate-400 mt-1">Instant .CSV Vault Link</div>
+                <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 shadow-sm flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="text-xs text-slate-400 font-medium">Automated Dispatcher</div>
+                    <div className="text-2xl font-black text-emerald-400 font-mono tracking-tight mt-0.5">
+                      WhatsApp Cloud
+                    </div>
+                    <div className="inline-flex items-center gap-1 text-[11px] text-emerald-300 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      <Radio className="w-3 h-3 text-emerald-400" />
+                      <span>Instant Secure Link Delivery</span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                    <Send className="w-5 h-5 text-emerald-400" />
+                  </div>
                 </div>
               </div>
 
-              {/* Lead Orders Table */}
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-md">
-                <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              {/* Lead Orders Table Card */}
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <h3 className="font-bold text-sm text-white">Merchant Lead Purchase Queue</h3>
-                    <p className="text-xs text-slate-400">
+                    <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                      <span>Merchant Lead Purchase Queue</span>
+                      <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                        {leadOrders.length} Total Orders
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
                       Verify bKash / Nagad Trx and 1-Click dispatch verified buyer CSV directly to merchant WhatsApp.
                     </p>
                   </div>
-                  <div className="text-xs font-mono bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
-                    Auto-Verification: <span className="text-emerald-400 font-bold">bKash Webhook Active</span>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span>Auto-Verification: bKash Webhook Active</span>
+                    </span>
                   </div>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-800/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                    <thead className="bg-slate-950/70 text-slate-400 uppercase font-bold border-b border-slate-800 text-[11px] tracking-wider">
                       <tr>
-                        <th className="px-5 py-3">Order ID</th>
-                        <th className="px-5 py-3">Buyer & Store</th>
-                        <th className="px-5 py-3">Package & Category</th>
-                        <th className="px-5 py-3">Trx ID & Method</th>
-                        <th className="px-5 py-3">Amount</th>
-                        <th className="px-5 py-3">Status</th>
-                        <th className="px-5 py-3 text-right">Fulfillment Actions</th>
+                        <th className="px-5 py-3.5 min-w-[100px]">Order ID</th>
+                        <th className="px-5 py-3.5 min-w-[180px]">Buyer & Store</th>
+                        <th className="px-5 py-3.5 min-w-[200px]">Package & Category</th>
+                        <th className="px-5 py-3.5 min-w-[160px]">Trx ID & Method</th>
+                        <th className="px-5 py-3.5 min-w-[110px]">Amount</th>
+                        <th className="px-5 py-3.5 min-w-[140px]">Payment Status</th>
+                        <th className="px-5 py-3.5 text-right min-w-[300px]">Fulfillment Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-800/80 font-medium">
                       {leadOrders.map((order) => (
                         <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
-                          <td className="px-5 py-4 font-mono font-bold text-slate-300">
-                            <div>{order.id}</div>
-                            <div className="text-[10px] text-slate-500 font-normal">{order.date}</div>
+                          <td className="px-5 py-4 font-mono font-bold text-slate-300 whitespace-nowrap">
+                            <div className="text-white font-extrabold">{order.id}</div>
+                            <div className="text-[10px] text-slate-500 font-mono mt-0.5">{order.date}</div>
                           </td>
                           <td className="px-5 py-4">
                             <div className="font-bold text-white text-sm">{order.buyerName}</div>
-                            <div className="text-slate-400 font-mono text-xs">{order.phone}</div>
-                          </td>
-                          <td className="px-5 py-4">
-                            <div className="font-semibold text-slate-200">{order.packTitle}</div>
-                            <div className="text-[11px] text-emerald-400 font-mono">
-                              {order.category} • {order.leadsCount} leads
+                            <div className="text-slate-400 font-mono text-xs flex items-center gap-1 mt-0.5">
+                              <Phone className="w-3 h-3 text-slate-500" />
+                              <span>{order.phone}</span>
                             </div>
                           </td>
                           <td className="px-5 py-4">
-                            <span className="font-mono text-xs text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-                              {order.method}: {order.trxId}
+                            <div className="font-semibold text-slate-200">{order.packTitle}</div>
+                            <div className="text-[11px] text-emerald-400 font-mono mt-0.5">
+                              {order.category} • {order.leadsCount} leads
+                            </div>
+                          </td>
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <span className="font-mono text-xs text-slate-300 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 inline-block">
+                              <strong className="text-slate-400">{order.method}:</strong> {order.trxId}
                             </span>
                           </td>
-                          <td className="px-5 py-4 font-mono text-emerald-400 font-bold text-sm">
+                          <td className="px-5 py-4 font-mono text-emerald-400 font-black text-sm whitespace-nowrap">
                             ৳{order.amountBDT.toLocaleString()}
                           </td>
-                          <td className="px-5 py-4">
+                          <td className="px-5 py-4 whitespace-nowrap">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                              className={`whitespace-nowrap inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wide ${
                                 order.status === "Dispatched"
-                                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
                                   : order.status === "Payment Verified"
-                                  ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                  : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                  ? "bg-blue-500/20 text-blue-300 border border-blue-500/40"
+                                  : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
                               }`}
                             >
-                              {order.status}
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                order.status === "Dispatched"
+                                  ? "bg-emerald-400"
+                                  : order.status === "Payment Verified"
+                                  ? "bg-blue-400"
+                                  : "bg-amber-400"
+                              }`} />
+                              <span>{order.status}</span>
                             </span>
                           </td>
-                          <td className="px-5 py-4 text-right space-x-2">
-                            {order.status === "Awaiting Payment" && (
+                          <td className="px-5 py-4 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                              {order.status === "Awaiting Payment" && (
+                                <button
+                                  onClick={() => handleVerifyLeadOrder(order.id)}
+                                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Verify bKash Trx</span>
+                                </button>
+                              )}
+
                               <button
-                                onClick={() => handleVerifyLeadOrder(order.id)}
-                                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"
+                                onClick={() => handleDownloadSampleCsv(order)}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs px-3 py-1.5 rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
+                                title="Download sample leads CSV"
                               >
-                                <Check className="w-3 h-3" />
-                                <span>Verify bKash Trx</span>
+                                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Download CSV</span>
                               </button>
-                            )}
 
-                            <button
-                              onClick={() => handleDownloadSampleCsv(order)}
-                              className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition-colors inline-flex items-center gap-1.5"
-                              title="Download Lead CSV file to inspect"
-                            >
-                              <Download className="w-3 h-3 text-emerald-400" />
-                              <span>Download CSV</span>
-                            </button>
-
-                            <button
-                              onClick={() => handleDispatchLead(order)}
-                              className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-colors inline-flex items-center gap-1.5 ${
-                                order.status === "Dispatched"
-                                  ? "bg-slate-800 text-slate-400 border border-slate-700 hover:text-white"
-                                  : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm"
-                              }`}
-                            >
-                              <Send className="w-3 h-3" />
-                              <span>{order.status === "Dispatched" ? "Re-Dispatch WhatsApp" : "Dispatch WhatsApp 🚀"}</span>
-                            </button>
+                              <button
+                                onClick={() => handleDispatchLead(order)}
+                                className={`text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer ${
+                                  order.status === "Dispatched"
+                                    ? "bg-slate-800 text-slate-400 border border-slate-700 hover:text-white"
+                                    : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white"
+                                }`}
+                              >
+                                <Send className="w-3.5 h-3.5" />
+                                <span>{order.status === "Dispatched" ? "Re-Dispatch WhatsApp" : "Dispatch WhatsApp 🚀"}</span>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
