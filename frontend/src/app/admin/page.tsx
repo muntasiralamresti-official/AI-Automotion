@@ -52,7 +52,10 @@ import {
   Plane,
   Coffee,
   ShieldCheck,
-  Car
+  Car,
+  Copy,
+  Smartphone,
+  Zap
 } from "lucide-react";
 
 export interface ClientAiRule {
@@ -102,10 +105,13 @@ interface ClientStore {
 interface PaymentRecord {
   id: string;
   storeName: string;
-  method: "bKash Merchant" | "Nagad" | "Stripe" | "Bank";
+  customerPhone?: string;
+  serviceType: "Subscription Plan" | "Driver Sentinel Kit" | "Leads Pack";
+  method: "bKash" | "Nagad" | "bKash Merchant" | "Rocket" | "Stripe" | "Bank";
   trxId: string;
   amountBDT: number;
-  status: "Verified" | "Pending Approval";
+  status: "Verified" | "Pending Approval" | "Auto Verified (SMS)" | "Rejected";
+  verifiedVia?: "Manual 1-Click" | "Auto SMS Webhook" | "bKash PGW API";
   date: string;
 }
 
@@ -237,15 +243,20 @@ export default function SuperAdminPage() {
     {
       id: "PAY-501",
       storeName: "GadgetZone BD",
+      customerPhone: "+880 1711-223344",
+      serviceType: "Subscription Plan",
       method: "bKash Merchant",
       trxId: "BKH982716382",
       amountBDT: 4990,
       status: "Verified",
+      verifiedVia: "bKash PGW API",
       date: "Today, 09:30 AM",
     },
     {
       id: "PAY-502",
       storeName: "Organic Honey & Foods",
+      customerPhone: "+880 1912-334455",
+      serviceType: "Subscription Plan",
       method: "Nagad",
       trxId: "NGD882736152",
       amountBDT: 2490,
@@ -254,12 +265,38 @@ export default function SuperAdminPage() {
     },
     {
       id: "PAY-503",
+      storeName: "Tanvir Logistics (Private Car)",
+      customerPhone: "+880 1819-331122",
+      serviceType: "Driver Sentinel Kit",
+      method: "bKash",
+      trxId: "BK99120485",
+      amountBDT: 4490,
+      status: "Pending Approval",
+      date: "Today, 03:10 AM",
+    },
+    {
+      id: "PAY-504",
+      storeName: "Dhaka Gadget Hub",
+      customerPhone: "+880 1712-345678",
+      serviceType: "Leads Pack",
+      method: "bKash",
+      trxId: "BK771029110",
+      amountBDT: 2490,
+      status: "Auto Verified (SMS)",
+      verifiedVia: "Auto SMS Webhook",
+      date: "Yesterday",
+    },
+    {
+      id: "PAY-505",
       storeName: "Aura Skincare Essentials",
+      customerPhone: "+880 1611-445566",
+      serviceType: "Subscription Plan",
       method: "Stripe",
       trxId: "ch_3Pz81729381",
       amountBDT: 9990,
       status: "Verified",
-      date: "Yesterday",
+      verifiedVia: "Manual 1-Click",
+      date: "Oct 28",
     },
   ]);
 
@@ -372,10 +409,54 @@ export default function SuperAdminPage() {
     });
   };
 
-  const handleApprovePayment = (id: string) => {
+  const handleApprovePayment = (id: string, via: "Manual 1-Click" | "Auto SMS Webhook" = "Manual 1-Click") => {
     setPayments((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "Verified" } : p))
+      prev.map((p) => (p.id === id ? { ...p, status: "Verified", verifiedVia: via } : p))
     );
+  };
+
+  const handleRejectPayment = (id: string) => {
+    setPayments((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, status: "Rejected" } : p))
+    );
+  };
+
+  // State for Billing Mode & SMS Webhook Simulator
+  const [billingSubTab, setBillingSubTab] = useState<"queue" | "webhook">("queue");
+  const [smsTestInput, setSmsTestInput] = useState(
+    "You have received Tk 4,490.00 from 01819331122. Ref: ZYNCOO. Fee Tk 0.00. Balance Tk 62,700.35. TrxID BK99120485 at 30/10/2026 03:20"
+  );
+  const [smsSimulationResult, setSmsSimulationResult] = useState<any>(null);
+  const [isSimulatingSms, setIsSimulatingSms] = useState(false);
+  const [copiedWebhook, setCopiedWebhook] = useState(false);
+
+  const handleRunSmsSimulation = async () => {
+    setIsSimulatingSms(true);
+    try {
+      const res = await fetch("/api/payment/sms-webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sms: smsTestInput }),
+      });
+      const data = await res.json();
+      setSmsSimulationResult(data);
+
+      if (data.success && data.parsed && data.parsed.trxId) {
+        const foundTrx = data.parsed.trxId;
+        // Auto-match and approve in payments list
+        setPayments((prev) =>
+          prev.map((p) =>
+            p.trxId.toUpperCase() === foundTrx.toUpperCase()
+              ? { ...p, status: "Auto Verified (SMS)", verifiedVia: "Auto SMS Webhook" }
+              : p
+          )
+        );
+      }
+    } catch (e) {
+      alert("Error sending test SMS to webhook.");
+    } finally {
+      setIsSimulatingSms(false);
+    }
   };
 
   // Lead Orders Queue
@@ -2580,65 +2661,345 @@ export default function SuperAdminPage() {
             </div>
           )}
 
-          {/* TAB 3: BILLING & PAYMENT VERIFICATION */}
+          {/* TAB 3: BILLING & PAYMENT VERIFICATION (DUAL METHOD) */}
           {adminTab === "billing" && (
             <div className="space-y-6">
               
-              <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-sm text-white">Manual Payment & bKash / Nagad Trx Approval</h3>
-                  <p className="text-xs text-slate-400">Review client subscription renewal receipts and activate store licenses.</p>
+              {/* Header & Metrics Strip */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="text-xs text-slate-400">Total Payments Collected</div>
+                  <div className="text-2xl font-black text-emerald-400 mt-1 font-mono">
+                    ৳{payments.filter(p => p.status === "Verified" || p.status === "Auto Verified (SMS)").reduce((acc, p) => acc + p.amountBDT, 0).toLocaleString()} BDT
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">Across all stores & Sentinel IoT</div>
                 </div>
-                <div className="text-xs font-mono bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
-                  Total Collected: <strong className="text-emerald-400">৳184,500 BDT</strong>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="text-xs text-slate-400">Pending Manual Review</div>
+                  <div className="text-2xl font-black text-amber-400 mt-1 font-mono">
+                    {payments.filter(p => p.status === "Pending Approval").length} Payments
+                  </div>
+                  <div className="text-[11px] text-amber-300 mt-1">Awaiting bKash/Nagad match</div>
+                </div>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="text-xs text-slate-400">Auto-Verified via SMS</div>
+                  <div className="text-2xl font-black text-[#b8e900] mt-1 font-mono">
+                    {payments.filter(p => p.status === "Auto Verified (SMS)").length} Instant
+                  </div>
+                  <div className="text-[11px] text-emerald-400 mt-1">0-touch automated match</div>
+                </div>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="text-xs text-slate-400">SMS Webhook Listener</div>
+                  <div className="text-base font-bold text-white mt-1 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active & Listening</span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1 font-mono">Port: /api/payment/sms-webhook</div>
                 </div>
               </div>
 
-              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-800/80 text-slate-400 uppercase font-bold border-b border-slate-800">
-                    <tr>
-                      <th className="px-5 py-3">Invoice ID</th>
-                      <th className="px-5 py-3">Store Name</th>
-                      <th className="px-5 py-3">Payment Method</th>
-                      <th className="px-5 py-3">Trx ID</th>
-                      <th className="px-5 py-3">Amount</th>
-                      <th className="px-5 py-3">Status</th>
-                      <th className="px-5 py-3 text-right">Verification</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {payments.map((p) => (
-                      <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
-                        <td className="px-5 py-4 font-mono font-bold text-slate-300">{p.id}</td>
-                        <td className="px-5 py-4 font-bold text-white">{p.storeName}</td>
-                        <td className="px-5 py-4">{p.method}</td>
-                        <td className="px-5 py-4 font-mono text-slate-300">{p.trxId}</td>
-                        <td className="px-5 py-4 font-mono text-emerald-400 font-bold">৳{p.amountBDT}</td>
-                        <td className="px-5 py-4">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            p.status === "Verified" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-300"
-                          }`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 text-right">
-                          {p.status === "Pending Approval" ? (
-                            <button
-                              onClick={() => handleApprovePayment(p.id)}
-                              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1 rounded-lg transition-colors"
-                            >
-                              Approve Trx ✓
-                            </button>
-                          ) : (
-                            <span className="text-slate-500 text-xs">Approved</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Sub-Tab Navigation (Method 1 vs Method 2) */}
+              <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-2 rounded-2xl border border-slate-800">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setBillingSubTab("queue")}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                      billingSubTab === "queue"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    }`}
+                  >
+                    <span>📋 পদ্ধতি ১: ম্যানুয়াল Trx ভেরিফিকেশন কিউ</span>
+                    <span className="text-[10px] bg-slate-950/60 px-2 py-0.5 rounded-full font-mono">
+                      {payments.filter(p => p.status === "Pending Approval").length} Pending
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setBillingSubTab("webhook")}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                      billingSubTab === "webhook"
+                        ? "bg-[#b8e900] text-slate-950 shadow-sm"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    }`}
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>⚡ পদ্ধতি ২: bKash/Nagad SMS অটো-ডিটেকশন লিসেনার</span>
+                    <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">
+                      LIVE
+                    </span>
+                  </button>
+                </div>
               </div>
+
+              {/* METHOD 1: MANUAL REVIEW QUEUE */}
+              {billingSubTab === "queue" && (
+                <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden space-y-4">
+                  <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-sm text-white">Manual bKash, Nagad & Bank Payment Verification</h4>
+                      <p className="text-xs text-slate-400">Review customer-submitted TrxIDs against your statement and approve with 1 click.</p>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-950 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+                        <tr>
+                          <th className="px-5 py-3">Invoice & Date</th>
+                          <th className="px-5 py-3">Store / Customer & Phone</th>
+                          <th className="px-5 py-3">Service / Package</th>
+                          <th className="px-5 py-3">Payment Method</th>
+                          <th className="px-5 py-3">Submitted TrxID</th>
+                          <th className="px-5 py-3">Amount</th>
+                          <th className="px-5 py-3">Status & Method</th>
+                          <th className="px-5 py-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 font-medium">
+                        {payments.map((p) => (
+                          <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
+                            <td className="px-5 py-3.5 font-mono">
+                              <div className="font-bold text-slate-200">{p.id}</div>
+                              <div className="text-[10px] text-slate-500">{p.date}</div>
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <div className="font-bold text-white">{p.storeName}</div>
+                              <div className="text-[11px] text-slate-400 font-mono">{p.customerPhone || "N/A"}</div>
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <span className="text-[11px] font-semibold text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                                {p.serviceType}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                p.method === "Nagad" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" : "bg-pink-500/20 text-pink-300 border border-pink-500/30"
+                              }`}>
+                                {p.method}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5 font-mono text-emerald-400 font-bold select-all">
+                              {p.trxId}
+                            </td>
+                            <td className="px-5 py-3.5 font-mono text-white font-black text-sm">
+                              ৳{p.amountBDT.toLocaleString()}
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <div className="space-y-0.5">
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  p.status === "Verified"
+                                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                    : p.status === "Auto Verified (SMS)"
+                                    ? "bg-[#b8e900]/20 text-[#b8e900] border border-[#b8e900]/30"
+                                    : p.status === "Rejected"
+                                    ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                                    : "bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse"
+                                }`}>
+                                  {p.status}
+                                </span>
+                                {p.verifiedVia && (
+                                  <div className="text-[9px] text-slate-400 font-mono">
+                                    Via: {p.verifiedVia}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-5 py-3.5 text-right space-x-1.5 whitespace-nowrap">
+                              {p.status === "Pending Approval" ? (
+                                <>
+                                  <button
+                                    onClick={() => handleApprovePayment(p.id, "Manual 1-Click")}
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors shadow-xs"
+                                  >
+                                    Approve Trx ✓
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectPayment(p.id)}
+                                    className="bg-slate-800 hover:bg-red-900/60 text-slate-400 hover:text-red-200 text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 transition-colors"
+                                  >
+                                    Reject
+                                  </button>
+                                </>
+                              ) : (
+                                <a
+                                  href={`https://wa.me/${p.customerPhone?.replace(/[^0-9]/g, "") || "8801700000000"}?text=Hello%20${encodeURIComponent(p.storeName)},%20your%20payment%20of%20Tk%20${p.amountBDT}%20(TrxID:%20${p.trxId})%20has%20been%20successfully%20verified!%20Your%20Zyncoo%20service%20is%20now%20active.`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors inline-flex items-center gap-1"
+                                >
+                                  <span>WhatsApp Msg</span>
+                                  <span>→</span>
+                                </a>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* METHOD 2: AUTOMATED SMS WEBHOOK LISTENER & TESTER */}
+              {billingSubTab === "webhook" && (
+                <div className="space-y-6">
+                  
+                  {/* Webhook Configuration Strip */}
+                  <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h4 className="font-extrabold text-base text-white flex items-center gap-2">
+                          <Radio className="w-4 h-4 text-[#b8e900]" />
+                          <span>Automated bKash & Nagad SMS Webhook Listener</span>
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1">
+                          আপনার bKash/Nagad সিমে এসএমএস আসা মাত্রই সিস্টেম স্বয়ংক্রিয়ভাবে TrxID ও এমাউন্ট ম্যাচ করে কোনো মানুষের স্পর্শ ছাড়াই ০-সেকেন্ডে অর্ডার অ্যাপ্রুভ করবে।
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span className="text-xs font-mono text-emerald-400 font-bold">READY TO RECEIVE</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <span className="font-semibold">Webhook URL (Post Endpoint):</span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/api/payment/sms-webhook`);
+                              setCopiedWebhook(true);
+                              setTimeout(() => setCopiedWebhook(false), 2000);
+                            }}
+                            className="text-[#b8e900] hover:underline flex items-center gap-1 text-[11px]"
+                          >
+                            <Copy className="w-3 h-3" />
+                            <span>{copiedWebhook ? "Copied!" : "Copy URL"}</span>
+                          </button>
+                        </div>
+                        <div className="font-mono text-xs text-slate-200 select-all bg-slate-900 p-2 rounded-lg border border-slate-800 overflow-x-auto">
+                          https://zyncoo.ai/api/payment/sms-webhook
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                        <div className="text-xs text-slate-400 font-semibold">
+                          Supported Mobile SMS Senders:
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
+                          <span className="px-2 py-0.5 rounded bg-pink-500/15 text-pink-300 border border-pink-500/30">bKash (16247)</span>
+                          <span className="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">NAGAD (16167)</span>
+                          <span className="px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">Rocket (16216)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3 Step Android Setup */}
+                    <div className="pt-3 border-t border-slate-800/80">
+                      <div className="text-xs font-bold text-slate-300 mb-2">
+                        📱 ৩-মিনিটে আপনার ফোনে অটোমেশন সেটআপ করার নিয়ম:
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-400">
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+                          <strong className="text-white block mb-1">১. ফ্রি অ্যাপ ইনস্টল:</strong>
+                          Google Play থেকে "SMS Forwarder" অথবা "Tasker" ইনস্টল করুন যে ফোনে bKash সিম আছে।
+                        </div>
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+                          <strong className="text-white block mb-1">২. ফিল্টার সেট:</strong>
+                          Forwarder এ Sender হিসেবে <code>bKash, NAGAD, 16247</code> দিন।
+                        </div>
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+                          <strong className="text-white block mb-1">৩. Webhook পেস্ট:</strong>
+                          Target URL হিসেবে উপরের <code>/api/payment/sms-webhook</code> লিঙ্কটি দিয়ে সেভ করুন।
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interactive Live SMS Simulator */}
+                  <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-sm text-white flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#b8e900]" />
+                        <span>লাইভ এসএমএস সিমুলেটর ও অটো-ডিটেকশন টেস্ট (Live Tester)</span>
+                      </h4>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSmsTestInput("You have received Tk 4,490.00 from 01819331122. Ref: ZYNCOO. Fee Tk 0.00. Balance Tk 62,700.35. TrxID BK99120485 at 30/10/2026 03:20")}
+                          className="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-pink-300 border border-pink-500/30 cursor-pointer"
+                        >
+                          Preset: bKash ৳4,490 (Sentinel)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSmsTestInput("You have received Tk 2,490.00 from 01912334455. TxnID: NGD882736152. Balance: Tk 32,150.00.")}
+                          className="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 cursor-pointer"
+                        >
+                          Preset: Nagad ৳2,490 (Honey Store)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs text-slate-400">
+                        মোবাইলে আসা বিকাশ বা নগদের রিসিভড এসএমএস টেক্সট নিচে দিন:
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={smsTestInput}
+                        onChange={(e) => setSmsTestInput(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-emerald-300 focus:outline-hidden focus:border-[#b8e900]"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={handleRunSmsSimulation}
+                        disabled={isSimulatingSms}
+                        className="px-5 py-2.5 rounded-xl bg-[#b8e900] hover:bg-[#a6d200] text-slate-950 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-[#b8e900]/20"
+                      >
+                        {isSimulatingSms ? (
+                          <span>অটো-ডিটেক্ট হচ্ছে...</span>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4" />
+                            <span>Run Webhook Auto-Detection & Match TrxID</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Simulation Result Box */}
+                    {smsSimulationResult && (
+                      <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 font-mono text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span>{smsSimulationResult.message}</span>
+                          </span>
+                          <span className="text-[10px] bg-[#b8e900] text-slate-950 font-bold px-2 py-0.5 rounded">
+                            MATCHED & AUTO-VERIFIED
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 text-[11px] text-slate-300 border-t border-slate-900">
+                          <div>Gateway: <strong className="text-white">{smsSimulationResult.parsed?.gateway}</strong></div>
+                          <div>TrxID: <strong className="text-[#b8e900] select-all">{smsSimulationResult.parsed?.trxId}</strong></div>
+                          <div>Amount: <strong className="text-white">৳{smsSimulationResult.parsed?.amount}</strong></div>
+                          <div>Sender: <strong className="text-slate-400">{smsSimulationResult.parsed?.senderPhone || "Extracted"}</strong></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
 
             </div>
           )}
