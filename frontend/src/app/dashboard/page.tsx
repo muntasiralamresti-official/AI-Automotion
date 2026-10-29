@@ -60,7 +60,11 @@ import {
   Plane,
   Coffee,
   Globe,
-  RefreshCw
+  RefreshCw,
+  Bell,
+  DollarSign,
+  Coins,
+  MessageSquareQuote
 } from "lucide-react";
 import ZyncooLogo from "@/components/ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
@@ -129,11 +133,149 @@ export interface IndustryPreset {
 }
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "inbox" | "orders" | "crm" | "broadcast" | "fraud-shield" | "training" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "inbox" | "orders" | "crm" | "broadcast" | "comments" | "notifications" | "fraud-shield" | "training" | "settings">("overview");
   const [botActive, setBotActive] = useState<boolean>(true);
   const [selectedChatId, setSelectedChatId] = useState<string>("c1");
   const [humanTakeover, setHumanTakeover] = useState<boolean>(false);
   const [chatReplyInput, setChatReplyInput] = useState<string>("");
+
+  // Feature: Facebook Auto Comment-to-Inbox Funnel State
+  const [commentRules, setCommentRules] = useState([
+    {
+      id: "cm-1",
+      triggerKeywords: ["দাম কত", "price", "koto", "dam koto", "কত টাকা"],
+      publicReply: "আসসালামু আলাইকুম ভাইয়া! আমাদের অফার প্রাইস ও অর্ডার লিঙ্ক আপনার ইনবক্সে পাঠিয়ে দিয়েছি, চেক করুন প্লিজ! 😊",
+      privateDm: "হ্যালো ভাইয়া! আমাদের Ultra Watch 9 মডেলটির বর্তমান স্পেশাল অফার প্রাইস ৳১,৪৯০ (রেগুলার ৳২,২০০)। সাথে পাচ্ছেন ১ বছর অফিসিয়াল রিপ্লেসমেন্ট ওয়ারেন্টি। এখনই অর্ডার করতে আপনার ডেলিভারি ঠিকানা ও ফোন নম্বর দিন!",
+      active: true,
+      hits: 142,
+    },
+    {
+      id: "cm-2",
+      triggerKeywords: ["details", "বিস্তারিত", "colour", "কালার"],
+      publicReply: "জি ভাইয়া! কালার ভ্যারিয়েন্ট ও সম্পূর্ণ স্পেসিফিকেশন আপনার ইনবক্সে সেন্ড করা হয়েছে।",
+      privateDm: "ভাইয়া, প্রোডাক্টটির ৩টি কালার এভেইলেবল: ম্যাট ব্ল্যাক, সিলভার এবং মিডনাইট ওশান ব্লু। ফুল ওয়াটারপ্রুফ এবং টানা ৩-৫ দিন ব্যাটারি ব্যাকআপ থাকবে!",
+      active: true,
+      hits: 89,
+    },
+    {
+      id: "cm-3",
+      triggerKeywords: ["delivery", "ডেলিভারি", "kobe pabo", "চার্জ কত"],
+      publicReply: "ঢাকার ভেতর ২৪ ঘণ্টায় হোম ডেলিভারি এবং ঢাকার বাইরে ২-৩ দিন! বিস্তারিত ইনবক্সে দেওয়া হয়েছে ভাইয়া।",
+      privateDm: "হোম ডেলিভারি চার্জ: ঢাকা সিটিতে মাত্র ৬০ টাকা, সারা বাংলাদেশে ১২০ টাকা। সম্পূর্ণ ক্যাশ অন ডেলিভারি (পণ্য পেয়ে টাকা দেবেন)!",
+      active: true,
+      hits: 64,
+    },
+  ]);
+  const [commentInput, setCommentInput] = useState("bhaiya watch tar price koto?");
+  const [commentSimResult, setCommentSimResult] = useState<{
+    publicReply: string;
+    privateDm: string;
+    matchedKeyword: string;
+  } | null>(null);
+
+  const handleTestCommentFunnel = () => {
+    const q = commentInput.toLowerCase();
+    const matched = commentRules.find((r) => r.active && r.triggerKeywords.some((kw) => q.includes(kw.toLowerCase())));
+    if (matched) {
+      setCommentSimResult({
+        publicReply: matched.publicReply,
+        privateDm: matched.privateDm,
+        matchedKeyword: matched.triggerKeywords.find((kw) => q.includes(kw.toLowerCase())) || "price",
+      });
+    } else {
+      setCommentSimResult({
+        publicReply: "ধন্যবাদ ভাইয়া! বিস্তারিত জানতে ইনবক্স চেক করুন অথবা আমাদের পেইজে মেসেজ দিন।",
+        privateDm: "আসসালামু আলাইকুম! আমাদের সকল অফার ও প্রোডাক্ট ক্যাটালগ দেখতে এই লিংকে ভিজিট করুন: https://zyncoo.ai/catalog",
+        matchedKeyword: "default_fallback",
+      });
+    }
+  };
+
+  // Feature: Automated WhatsApp & SMS Notifications State
+  const [notifTemplates, setNotifTemplates] = useState({
+    confirmed: {
+      title: "অর্ডার কনফার্মেশন (Order Confirmed)",
+      smsText: "ধন্যবাদ [Customer Name]! আপনার অর্ডারটি গ্রহণ করা হয়েছে (#ORD-9821)। মূল্য: ৳1,550। ট্র্যাকিং: https://zyncoo.ai/track/ORD-9821 - Zyncoo AI",
+      whatsappText: "আসসালামু আলাইকুম [Customer Name]! 😊\n\nআপনার অর্ডারটি (#ORD-9821) সফলভাবে কনফার্ম করা হয়েছে।\n📦 পণ্য: Ultra Watch 9\n💰 মোট মূল্য: ৳1,550 (Cash on Delivery)\n🚚 কুরিয়ার: Steadfast Courier\n\nলাইভ পার্সেল ট্র্যাকিং লিঙ্ক:\n👉 https://zyncoo.ai/track/ORD-9821\n\nআমাদের সাথে কেনাকাটা করার জন্য ধন্যবাদ!",
+      enabled: true,
+    },
+    outForDelivery: {
+      title: "রাইডার ডেলিভারির জন্য বের হয়েছে (Out for Delivery)",
+      smsText: "আপনার পার্সেল (#ORD-9821) নিয়ে ডেলিভারি রাইডার রওনা হয়েছেন। রাইডার ফোন: 01700-112233। নগদ ৳1,550 প্রস্তুত রাখুন। - Zyncoo AI",
+      whatsappText: "সুসংবাদ [Customer Name]! 🛵\n\nআপনার পার্সেলটি নিয়ে আমাদের কুরিয়ার রাইডার আপনার এলাকার উদ্দেশ্যে রওনা হয়েছেন।\n\n📞 রাইডার মোবাইল: 01700-112233\n💵 সংগ্রহযোগ্য ক্যাশ: ৳1,550\n\nঅনুগ্রহ করে ফোনটি সচল রাখুন এবং পার্সেল খুলে চেক করে রিসিভ করুন!",
+      enabled: true,
+    },
+    deliveredReview: {
+      title: "ডেলিভারি সম্পন্ন ও ৫-স্টার রিভিউ কুপন (Delivered & Review Request)",
+      smsText: "পার্সেলটি পেয়েছেন তো? প্রোডাক্টটি কেমন লাগলো জানিয়ে দিন এবং পরবর্তী অর্ডারে ১০% ছাড় পেতে কুপন ব্যবহার করুন: ZYNCOO10 - Zyncoo AI",
+      whatsappText: "আসসালামু আলাইকুম [Customer Name]! ⭐\n\nআমাদের কুরিয়ার রেকর্ড অনুযায়ী আপনার পার্সেলটি সফলভাবে ডেলিভারি হয়েছে। আশা করি পণ্যটি আপনার পছন্দ হয়েছে!\n\nআমাদের ফেসবুক পেইজে একটি ৫-স্টার রিভিউ দিলে স্পেশাল উপহার হিসেবে পাবেন:\n🎁 ১০% ফ্ল্যাট ডিসকাউন্ট কুপন: ZYNCOO10 (মেয়াদ ৩০ দিন)\n\nরিভিউ লিঙ্ক: https://facebook.com/reviews",
+      enabled: true,
+    },
+  });
+  const [activeNotifTab, setActiveNotifTab] = useState<"confirmed" | "outForDelivery" | "deliveredReview">("confirmed");
+  const [testNotifPhone, setTestNotifPhone] = useState("01711-987654");
+  const [testNotifSuccess, setTestNotifSuccess] = useState<string | null>(null);
+
+  const handleSendTestNotification = (channel: "sms" | "whatsapp") => {
+    setTestNotifSuccess(`✓ টেস্ট ${channel.toUpperCase()} সফলভাবে ${testNotifPhone} নম্বরে পাঠানো হয়েছে!`);
+    setTimeout(() => setTestNotifSuccess(null), 3500);
+  };
+
+  // Ad Spend & Unit Economics Calculator State
+  const [adSpendInput, setAdSpendInput] = useState<number>(42000);
+
+  // Client Sub-Accounts & Team Permissions State
+  const [clientAccounts, setClientAccounts] = useState([
+    {
+      id: "acc-1",
+      name: "Tanvir Rahman",
+      email: "tanvir@gadgetzone.com",
+      assignedStore: "GadgetZone BD (Electronics)",
+      role: "Store Admin",
+      status: "Active",
+      lastLogin: "15 mins ago",
+    },
+    {
+      id: "acc-2",
+      name: "Sabrina Mostafa",
+      email: "sabrina@luxelifestyle.com",
+      assignedStore: "Luxe Lifestyle BD (Fashion)",
+      role: "Store Manager",
+      status: "Active",
+      lastLogin: "2 hours ago",
+    },
+    {
+      id: "acc-3",
+      name: "Rezaul Karim",
+      email: "rezaul@flyhighholidays.com",
+      assignedStore: "FlyHigh Travel & Visa Holidays",
+      role: "Store Viewer",
+      status: "Active",
+      lastLogin: "Yesterday",
+    },
+  ]);
+  const [newSubAccount, setNewSubAccount] = useState({ name: "", email: "", assignedStore: "GadgetZone BD (Electronics)", role: "Store Admin" });
+  const [isAddingSubAccount, setIsAddingSubAccount] = useState(false);
+  const [subAccountToast, setSubAccountToast] = useState<string | null>(null);
+
+  const handleCreateSubAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSubAccount.name || !newSubAccount.email) return;
+    const acc = {
+      id: "acc-" + Date.now(),
+      name: newSubAccount.name,
+      email: newSubAccount.email,
+      assignedStore: newSubAccount.assignedStore,
+      role: newSubAccount.role,
+      status: "Active",
+      lastLogin: "Just created",
+    };
+    setClientAccounts((prev) => [acc, ...prev]);
+    setIsAddingSubAccount(false);
+    setNewSubAccount({ name: "", email: "", assignedStore: "GadgetZone BD (Electronics)", role: "Store Admin" });
+    setSubAccountToast(`✓ সাব-অ্যাকাউন্ট তৈরি হয়েছে! ইনভাইটেশন লিংক পাঠানো হয়েছে: ${acc.email}`);
+    setTimeout(() => setSubAccountToast(null), 4000);
+  };
 
   // Advanced Messaging & Omnichannel Inbox State
   const [inboxFilter, setInboxFilter] = useState<"all" | "whatsapp" | "facebook" | "instagram" | "priority">("all");
@@ -2982,37 +3124,22 @@ export default function DashboardPage() {
                   <div className="space-y-1">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
                       <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Bangladeshi E-Commerce NLP Customizer</span>
+                      <span>Store AI Knowledge & Rule Customizer</span>
                     </div>
                     <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                      Client & Store-Wise AI Keyword Rules & Training (এআই প্রশ্নোত্তর ও কিওয়ার্ড রুলস)
+                      Store AI Training & Custom Q&A Rules (স্টোর এআই প্রশিক্ষণ ও প্রশ্নোত্তর)
                     </h3>
                     <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      বাংলা ও বাংলিশে কাস্টমারের নির্দিষ্ট প্রশ্নের বিপরীতে কিওয়ার্ড ও ট্রিগার সেট করুন। প্রতিটি ক্লায়েন্ট/স্টোরের জন্য আলাদা বা গ্লোবাল রুল নির্ধারণ করতে পারবেন।
+                      বাংলা ও বাংলিশে আপনার স্টোরের (GadgetZone BD) কাস্টমারদের প্রশ্নের জন্য এআই কিওয়ার্ড রুলস ও স্বয়ংক্রিয় উত্তর সেট করুন।
                     </p>
                   </div>
 
-                  {/* Client Filter & Add Button */}
+                  {/* Add Rule Button */}
                   <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-                    <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                      <Building className="w-3.5 h-3.5 text-slate-500 ml-2" />
-                      <select
-                        value={selectedClientStore}
-                        onChange={(e) => setSelectedClientStore(e.target.value)}
-                        className="bg-transparent text-xs font-bold text-slate-800 focus:outline-hidden pr-2 cursor-pointer"
-                      >
-                        {clientStores.map((store) => (
-                          <option key={store} value={store}>
-                            {store}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
                     <button
                       onClick={() => {
                         setRuleForm({
-                          clientStore: selectedClientStore,
+                          clientStore: "GadgetZone BD (Electronics)",
                           category: "Bargaining",
                           name: "",
                           keywordsInput: "",
@@ -3030,108 +3157,30 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* 1-Click Multi-Industry Presets Carousel/Grid */}
-                <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white p-5 rounded-2xl border border-emerald-800/50 space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-800/40 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">⚡</span>
-                      <div>
-                        <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
-                          <span>১-ক্লিকে ইন্ডাস্ট্রি টেমপ্লেট লোড করুন (1-Click Industry Templates)</span>
-                          <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
-                            Instant Setup
-                          </span>
-                        </h4>
-                        <p className="text-xs text-slate-300 mt-0.5">
-                          ডাক্তার, রিয়েল এস্টেট, আইটি কোচিং বা ট্রাভেলের মতো যেকোনো ইন্ডাস্ট্রির জন্য এআই পারসোনা ও ২০+ প্রশ্নোত্তর এক ক্লিকে লোড করুন।
-                        </p>
+                {/* Central Admin Hub Callout */}
+                <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-4.5 rounded-2xl border border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-400/30 shrink-0">
+                      <Brain className="w-5 h-5 text-[#b8e900]" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <span>Looking for Agency-Wide Multi-Store AI Control & 1-Click Templates?</span>
+                        <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                          Super Admin Feature
+                        </span>
                       </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        সকল ক্লায়েন্ট স্টোরের রুলস সেন্ট্রালি ম্যানেজ এবং ১-ক্লিকে ডক্টর, রিয়েল এস্টেট, আইটি কোচিং টেমপ্লেট ডিপ্লয় করতে সুপার অ্যাডমিন প্যানেলে যান।
+                      </p>
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    {industryPresets.map((preset) => (
-                      <div
-                        key={preset.id}
-                        onClick={() => setSelectedIndustryPreset(preset)}
-                        className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between group ${
-                          selectedIndustryPreset?.id === preset.id
-                            ? "bg-emerald-500/20 border-emerald-400 shadow-md shadow-emerald-500/20"
-                            : "bg-slate-800/80 hover:bg-slate-800 border-slate-700/80 hover:border-emerald-500/50"
-                        }`}
-                      >
-                        <div>
-                          <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{preset.emoji}</div>
-                          <div className="font-bold text-xs text-white leading-tight">{preset.name}</div>
-                          <div className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-snug">{preset.description}</div>
-                        </div>
-                        <div className="mt-3 pt-2 border-t border-slate-700/50 flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-emerald-400">
-                            {preset.rules.length} রুলস
-                          </span>
-                          <span className="text-[10px] text-slate-400 group-hover:text-white transition-colors">
-                            প্রিভিউ →
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Preset Preview & Quick Apply Modal */}
-                  {selectedIndustryPreset && (
-                    <div className="bg-slate-900/90 border border-emerald-500/40 rounded-xl p-4 space-y-3 animate-in fade-in duration-200">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl">{selectedIndustryPreset.emoji}</span>
-                          <div>
-                            <span className="font-bold text-sm text-white">
-                              {selectedIndustryPreset.name} — টেমপ্লেট প্রিভিউ
-                            </span>
-                            <span className="text-xs text-slate-400 ml-2 font-mono">({selectedIndustryPreset.targetClient})</span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setSelectedIndustryPreset(null)}
-                          className="text-slate-400 hover:text-white cursor-pointer"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800 text-xs space-y-1">
-                        <span className="font-bold text-emerald-400 block text-[11px] uppercase tracking-wider">AI System Persona (ভূমিকা):</span>
-                        <p className="text-slate-300 leading-relaxed italic">&quot;{selectedIndustryPreset.systemPersona}&quot;</p>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <span className="font-bold text-slate-300 text-xs block">প্রি-বিল্ড প্রশ্নোত্তর ({selectedIndustryPreset.rules.length}টি রুল অন্তর্ভুক্ত):</span>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                          {selectedIndustryPreset.rules.map((r, rIdx) => (
-                            <div key={rIdx} className="bg-slate-800/70 p-2.5 rounded-lg border border-slate-700 space-y-1">
-                              <div className="font-bold text-white flex items-center justify-between">
-                                <span>{r.name}</span>
-                                <span className="text-[10px] text-emerald-400 font-mono">({r.category})</span>
-                              </div>
-                              <p className="text-[11px] text-slate-300 line-clamp-2">&quot;{r.replyText}&quot;</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-                        <div className="text-xs text-slate-400">
-                          টার্গেট স্টোর: <strong className="text-emerald-400">{selectedIndustryPreset.targetClient}</strong>
-                        </div>
-                        <button
-                          onClick={() => handleApplyIndustryPreset(selectedIndustryPreset)}
-                          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>এই টেমপ্লেটটি সক্রিয় করুন (Apply Template)</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <Link
+                    href="/admin"
+                    className="shrink-0 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                  >
+                    <span>Open Super Admin Hub →</span>
+                  </Link>
                 </div>
 
                 {/* Save Feedback Toast */}

@@ -38,8 +38,51 @@ import {
   Check,
   Globe,
   RefreshCw,
-  Package
+  Package,
+  Brain,
+  Plus,
+  Trash2,
+  Edit3,
+  Filter,
+  Tag,
+  X,
+  CheckSquare,
+  Stethoscope,
+  GraduationCap,
+  Plane,
+  Coffee,
+  ShieldCheck
 } from "lucide-react";
+
+export interface ClientAiRule {
+  id: string;
+  clientStore: string;
+  category: "Bargaining" | "Delivery & COD" | "Fraud & Advance" | "Address Sanitizer" | "Product & Warranty" | "Custom" | "Appointment & Booking";
+  name: string;
+  triggerKeywords: string[];
+  matchType: "contains" | "exact" | "ai_intent";
+  replyText: string;
+  actionTrigger: "apply_coupon_100" | "send_bkash_advance" | "request_full_address" | "none";
+  active: boolean;
+}
+
+export interface IndustryPreset {
+  id: string;
+  name: string;
+  category: string;
+  emoji: string;
+  targetClient: string;
+  systemPersona: string;
+  description: string;
+  rules: {
+    category: ClientAiRule["category"];
+    name: string;
+    triggerKeywords: string[];
+    matchType: ClientAiRule["matchType"];
+    replyText: string;
+    actionTrigger: ClientAiRule["actionTrigger"];
+  }[];
+}
 
 interface ClientStore {
   id: string;
@@ -110,7 +153,7 @@ interface FraudEntry {
 
 export default function SuperAdminPage() {
   const [adminTab, setAdminTab] = useState<
-    "overview" | "clients" | "leads" | "agencies" | "fraud-blacklist" | "billing" | "llm" | "features"
+    "overview" | "clients" | "leads" | "agencies" | "fraud-blacklist" | "billing" | "llm" | "features" | "training"
   >("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [blacklistSearch, setBlacklistSearch] = useState("");
@@ -448,6 +491,495 @@ export default function SuperAdminPage() {
     setFraudBlacklist((prev) => prev.filter((f) => f.phone !== phone));
   };
 
+  // Client-Wise AI Keyword Training & Custom Q&A Rules State
+  const [clientStores, setClientStores] = useState<string[]>([
+    "All Stores (Global Default)",
+    "GadgetZone BD",
+    "FashionHub Dhaka",
+    "Organic Honey & Foods",
+    "Apex Dental & Medical Care",
+    "Skyline Luxury Properties BD",
+    "ByteCraft IT Academy",
+    "FlyHigh Travel & Visa",
+  ]);
+  const [selectedClientStore, setSelectedClientStore] = useState<string>("All Stores (Global Default)");
+  const [ruleSearchQuery, setRuleSearchQuery] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [isAddingRule, setIsAddingRule] = useState<boolean>(false);
+  const [ruleSaveMessage, setRuleSaveMessage] = useState<string | null>(null);
+
+  // 1-Click Multi-Industry Presets
+  const industryPresets: IndustryPreset[] = [
+    {
+      id: "clinic",
+      name: "ডাক্তার ও ক্লিনিক চেম্বার",
+      category: "Healthcare & Doctor Chamber",
+      emoji: "🩺",
+      targetClient: "Apex Dental & Medical Care",
+      systemPersona: "তুমি একটি আধুনিক বিশেষজ্ঞ ডক্টরস চেম্বার ও ক্লিনিকের অফিসিয়াল রিসেপশনিস্ট AI। রোগীদের সাথে সবসময় বিনম্র ভাষায় কথা বলবে। সিরিয়াল বুকিং, চেম্বার শিডিউল, ভিজিট ফি ও রিপোর্ট পাওয়ার সময় বিস্তারিত জানাবে।",
+      description: "সিরিয়াল বুকিং, ডাক্তারের ভিজিট ফি, চেম্বারের সময়সূচি ও ল্যাব রিপোর্ট ডেলিভারির ২০+ প্রি-বিল্ড রুলস।",
+      rules: [
+        {
+          category: "Appointment & Booking",
+          name: "ডাক্তারের শিডিউল ও সিরিয়াল বুকিং",
+          triggerKeywords: ["সিরিয়াল", "serial", "appointment", "কখন বসেন", "ডাক্তার দেখতে চাই", "doctor ache"],
+          matchType: "contains",
+          replyText: "আসসালামু আলাইকুম। আমাদের স্পেশালিস্ট ডাক্তার প্রতিদিন বিকাল ৫টা থেকে রাত ৯টা পর্যন্ত রোগী দেখেন। আপনার নাম ও মোবাইল নম্বর দিলে আজকেই সিরিয়াল বুক করে দেওয়া হবে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Appointment & Booking",
+          name: "কনসালটেশন ও ভিজিট ফি",
+          triggerKeywords: ["ভিজিট কত", "visit fee", "কত টাকা ভিজিট", "ডাক্তারের ফি", "consultation fee"],
+          matchType: "contains",
+          replyText: "নতুন রোগীর জন্য বিশেষজ্ঞ ডাক্তারের কনসালটেশন ফি ৳৮০০ টাকা এবং পুরাতন রোগীর ফলো-আপ ফি ৳৫০০ টাকা (৩০ দিনের মধ্যে প্রযোজ্য)।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "টেস্ট রিপোর্ট ডেলিভারি টাইম",
+          triggerKeywords: ["রিপোর্ট কবে", "test report", "রিপোর্ট পেয়েছি কি না", "report delivery"],
+          matchType: "contains",
+          replyText: "সাধারণ ব্লাড ও ইউরিন টেস্টের রিপোর্ট টেস্ট করার ৩ ঘণ্টার মধ্যে ডেলিভারি দেওয়া হয়। আল্ট্রাসনোগ্রাম ও এক্স-রে রিপোর্ট তাৎক্ষণিকভাবে ডাক্তারের স্বাক্ষরসহ প্রদান করা হয়।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "চেম্বারের ঠিকানা ও গুগল ম্যাপ",
+          triggerKeywords: ["ঠিকানা কোথায়", "location", "chamber address", "গুগল ম্যাপ", "thikana ki"],
+          matchType: "contains",
+          replyText: "আমাদের চেম্বার: বাড়ি নং ১২, রোড নং ৭, ধানমন্ডি (ল্যাবএইড হাসপাতালের বিপরীতে), ঢাকা। গুগল ম্যাপ লোকেশন লিংক: https://maps.google.com/apex-dental",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "realestate",
+      name: "রিয়েল এস্টেট ও প্রোপার্টি",
+      category: "Real Estate & Developers",
+      emoji: "🏢",
+      targetClient: "Skyline Luxury Properties BD",
+      systemPersona: "তুমি একটি স্বনামধন্য রিয়েল এস্টেট ডেভেলপার কোম্পানির সিনিয়র প্রোপার্টি কনসালট্যান্ট। ক্রেতাদের ফ্ল্যাটের সাইজ, কিস্তির প্ল্যান এবং সাইট ভিজিট শিডিউল করতে সাহায্য করো।",
+      description: "স্কয়ারফিট সাইজ, কিস্তির হিসাব, সাইট ভিজিট বুকিং এবং ব্রোশিওর PDF শেয়ারিং রুলস।",
+      rules: [
+        {
+          category: "Custom",
+          name: "ফ্ল্যাট সাইজ ও স্কয়ারফিট",
+          triggerKeywords: ["স্কয়ার ফিট কত", "sqft", "flat size", "কত বড় ফ্ল্যাট", "koto sqft"],
+          matchType: "contains",
+          replyText: "আমাদের চলতি প্রজেক্টে ১,২৫০ স্কয়ার ফিট (৩ বেড, ৩ বাথ) এবং ১,৬৫০ স্কয়ার ফিট (৪ বেড, ৪ বাথ) এর প্রিমিয়াম অ্যাপার্টমেন্ট এভেইলেবল আছে। আপনি কোন সাইজটি খুঁজছেন?",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "দাম ও কিস্তির সুবিধা",
+          triggerKeywords: ["দাম কত", "flat price", "installment", "কিস্তিতে দেওয়া যাবে", "kisti ache"],
+          matchType: "contains",
+          replyText: "প্রতি স্কয়ার ফিট রেট শুরু মাত্র ৳৬,২০০ থেকে। এছাড়া ৩০% ডাউনপেমেন্টে টানা ৫ বছরের সহজ ব্যাংক লোন ও সরাসরি কোম্পানি কিস্তির সুবিধা রয়েছে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Appointment & Booking",
+          name: "সাইট ভিজিট বুকিং",
+          triggerKeywords: ["সাইট ভিজিট", "site visit", "দেখতে যেতে চাই", "কবে যাওয়া যাবে", "dekhte chai"],
+          matchType: "contains",
+          replyText: "জি অবশ্যই! প্রতি শুক্র ও শনিবার সকাল ১০টা থেকে বিকাল ৫টার মধ্যে আমাদের প্রজেক্ট ভিজিট করতে পারেন। আপনার সুবিধাজনক তারিখ এবং ফোন নম্বর দিলে আমরা ভিজিট শিডিউল কনফার্ম করে রাখব।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ব্রোশিওর ও ফ্লোর প্ল্যান PDF",
+          triggerKeywords: ["brochure", "ফ্লোর প্ল্যান", "floor plan", "পিডিএফ দিন", "pdf pathan"],
+          matchType: "contains",
+          replyText: "আমাদের প্রজেক্টের থ্রি-ডি ফ্লোর প্ল্যান এবং অফিশিয়াল ব্রোশিওর PDF ফাইলটি ডাউনলোড করতে পারেন অথবা আপনার WhatsApp নম্বর দিলে সরাসরি পাঠিয়ে দিচ্ছি।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "coaching",
+      name: "কোচিং ও আইটি একাডেমি",
+      category: "IT Academy & Coaching",
+      emoji: "🎓",
+      targetClient: "ByteCraft IT Academy",
+      systemPersona: "তুমি একটি শীর্ষস্থানীয় স্কিল ডেভেলপমেন্ট ও আইটি একাডেমির অ্যাডমিশন কাউন্সেলর AI। শিক্ষার্থীদের সঠিক কোর্স নির্বাচন, ব্যাচের সময়সূচি এবং স্কলারশিপে ভর্তি হতে সহায়তা করো।",
+      description: "কোর্স সিলেবাস, ব্যাচ টাইমিং, স্কলারশিপ ফি এবং ভেরিফায়েড সার্টিফিকেটের প্রশ্নোত্তর।",
+      rules: [
+        {
+          category: "Custom",
+          name: "কোর্স ফি ও স্কলারশিপ অফার",
+          triggerKeywords: ["কোর্স ফি কত", "course fee", "discount ache", "কত টাকা লাগবে", "koto tk lagbe"],
+          matchType: "contains",
+          replyText: "আমাদের ফুল-স্ট্যাক ওয়েব ও এআই অটোমেশন কোর্সের রেগুলার ফি ৳১২,০০০, তবে চলতি ব্যাচে প্রথম ২০ জনের জন্য ৫০% স্কলারশিপে মাত্র ৳৫,৯৯৯ টাকায় ভর্তি চলছে!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ক্লাস শুরুর তারিখ ও ব্যাচ শিডিউল",
+          triggerKeywords: ["কবে শুরু", "batch kobe shuru", "class time", "ক্লাসের সময়", "kobe theke shuru"],
+          matchType: "contains",
+          replyText: "আমাদের নতুন সান্ধ্যকালীন ব্যাচ আগামী শুক্রবার থেকে শুরু হচ্ছে। প্রতি শুক্র ও শনিবার রাত ৮:৩০ থেকে ১০:৩০ পর্যন্ত জুম লাইভে ক্লাস হবে এবং লাইভ ক্লাসের ফুল এইচডি রেকর্ডিং প্রদান করা হবে।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "সার্টিফিকেট ও জব প্লেসমেন্ট",
+          triggerKeywords: ["সার্টিফিকেট পাব", "job placement", "চাকরি হবে", "certificate ache", "internship"],
+          matchType: "contains",
+          replyText: "জি, কোর্স সফলভাবে সম্পন্ন করার পর ভেরিফায়েড প্রফেশনাল সার্টিফিকেট প্রদান করা হয়। এছাড়া সেরা শিক্ষার্থীদের আমাদের সহযোগী আইটি কোম্পানিতে ইন্টার্নশিপ ও জব রেফারেল দেওয়া হয়।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "travel",
+      name: "ভ্রমণ ও ট্যুরিজম এজেন্সি",
+      category: "Travel & Visa Holidays",
+      emoji: "✈️",
+      targetClient: "FlyHigh Travel & Visa",
+      systemPersona: "তুমি একটি অভিজ্ঞ ট্যুরিজম ও ভিসা কনসালটেন্সি এজেন্সির ট্রাভেল গাইড AI। পর্যটকদের আকর্ষণীয় বাজেট প্যাকেজ ও ভিসা প্রসেসিং রিকোয়ারমেন্টস জানাও।",
+      description: "সাজেক/কক্সবাজার প্যাকেজ, এয়ার টিকিট কোটেশন ও ভিসা প্রসেসিং রিকোয়ারমেন্টস।",
+      rules: [
+        {
+          category: "Custom",
+          name: "সাজেক ও কক্সবাজার ট্যুর প্যাকেজ",
+          triggerKeywords: ["সাজেক ট্যুর", "sajek package", "coxs bazar", "ট্যুর প্যাকেজ", "sajek tour"],
+          matchType: "contains",
+          replyText: "আমাদের ৩ রাত ২ দিনের প্রিমিয়াম সাজেক ভ্যালি কাপল প্যাকেজ মাত্র ৳১২,৫০০ (রিসোর্ট, এসি গাড়ি, সকল খাবার ও চান্দের গাড়ি সহ)। আর গ্রুপ ট্যুরে জনপ্রতি মাত্র ৳৫,৫০০!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "ভিসা প্রসেসিং রিকোয়ারমেন্টস",
+          triggerKeywords: ["ভিসা প্রসেসিং", "tourist visa", "কী কী কাগজ লাগবে", "visa requirement", "visa lagbe"],
+          matchType: "contains",
+          replyText: "থাইল্যান্ড, মালয়েশিয়া ও দুবাই ট্যুরিস্ট ভিসার জন্য প্রয়োজন: অন্তত ৭ মাসের মেয়াদসহ পাসপোর্ট, ২ কপি ছবি (৩৫x৪৫ মিমি), লাস্ট ৬ মাসের ব্যাংক স্টেটমেন্ট ও সলভেন্সি এবং নোমিনেশন/ভিজিটিং কার্ড।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "এয়ার টিকিট কোটেশন",
+          triggerKeywords: ["air ticket", "বিমান টিকিট", "flight ticket", "টিকিটের দাম", "ticket koto"],
+          matchType: "contains",
+          replyText: "আমরা Biman, US-Bangla, Emirates সহ সকল আন্তর্জাতিক ও অভ্যন্তরীণ ফ্লাইটের সবচেয়ে কম ভাড়ায় নিশ্চিত টিকিট ইস্যু করি। আপনার যাত্রার তারিখ ও গন্তব্য জানালে সাথে সাথে টিকিটের দাম জানিয়ে দেব।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "restaurant",
+      name: "রেস্তোরাঁ ও ক্যাফে",
+      category: "Restaurant & Cafe",
+      emoji: "🍽️",
+      targetClient: "The Rooftop Bistro & Cafe",
+      systemPersona: "তুমি একটি ট্রেন্ডি রুফটপ রেস্তোরাঁ ও ক্যাফের গেস্ট রিলেশন অফিসার AI। টেবিল রিজার্ভেশন, মেনু ও স্পেশাল প্ল্যাটার অফার জানাও।",
+      description: "টেবিল বুকিং, মেনু চার্ট, বার্থডে পার্টি আয়োজন ও হোম ডেলিভারি রুলস।",
+      rules: [
+        {
+          category: "Appointment & Booking",
+          name: "টেবিল রিজার্ভেশন বুকিং",
+          triggerKeywords: ["টেবিল বুকিং", "table reservation", "আজকে সিট আছে", "table book", "seat pabo"],
+          matchType: "contains",
+          replyText: "আসসালামু আলাইকুম! আমাদের রুফটপ ও ফ্যামিলি ডাইনিংয়ে টেবিল রিজার্ভেশনের জন্য আপনার নাম, কতজন মেহমান এবং আসার সময়টি জানালে আমরা টেবিল রেডি করে রাখব।",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "আজকের মেনু ও স্পেশাল অফার",
+          triggerKeywords: ["menu card", "মেনু আছে", "signature dish", "আজকের মেনু", "platter offer"],
+          matchType: "contains",
+          replyText: "আমাদের সিগনেচার প্ল্যাটার, স্মোকড বিব ও পাস্তার ফুল মেনু দেখতে পারেন। এছাড়া আজ আমাদের যেকোনো ২টি প্ল্যাটারে ২০% ফ্ল্যাট ছাড় চলছে!",
+          actionTrigger: "none",
+        },
+        {
+          category: "Custom",
+          name: "বার্থডে ও পার্টি আয়োজন",
+          triggerKeywords: ["birthday celebration", "পার্টি করতে চাই", "rooftop party", "ইভেন্ট", "birthday party"],
+          matchType: "contains",
+          replyText: "বার্থডে, অ্যানিভার্সারি বা ফ্রেন্ডস গেট-টুগেদারের জন্য আমাদের প্রাইভেট রুফটপ ডেক বুক করতে পারেন। ফ্রি মিউজিক সিস্টেম ও স্পেশাল ডেকোরেশন সুবিধা দেওয়া হবে।",
+          actionTrigger: "none",
+        },
+      ],
+    },
+    {
+      id: "ecommerce",
+      name: "ই-কমার্স ও গ্যাজেট শপ",
+      category: "E-Commerce & Retail",
+      emoji: "🛒",
+      targetClient: "GadgetZone BD",
+      systemPersona: "তুমি একটি গ্যাজেট ও ই-কমার্স স্টোরের স্মার্ট সেলস এক্সিকিউটিভ AI। পণ্যের ফিচার, জেনুইন ওয়ারেন্টি, ফাস্ট ডেলিভারি ও রিটার্ন পলিসি দিয়ে কাস্টমারকে অর্ডারে কনভার্ট করো।",
+      description: "ক্যাশ অন ডেলিভারি, বার্গেনিং ডিফেন্স, বিকাশ অগ্রিম ও ওপেন-বক্স চেকিং রুলস।",
+      rules: [
+        {
+          category: "Bargaining",
+          name: "বার্গেনিং ডিফেন্স ও কুপন ডিসকাউন্ট",
+          triggerKeywords: ["দাম কম", "লাস্ট কত", "একদাম কত", "dam kom", "discount den"],
+          matchType: "contains",
+          replyText: "ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আজকেই অর্ডার করলে আপনার জন্য স্পেশাল ৳১০০ ডিসকাউন্ট কুপন [ZYNCOO100] কার্যকর থাকবে!",
+          actionTrigger: "apply_coupon_100",
+        },
+        {
+          category: "Delivery & COD",
+          name: "ডেলিভারি চার্জ ও হোম ডেলিভারি",
+          triggerKeywords: ["ডেলিভারি চার্জ কত", "কবে পাবো", "delivery charge", "kobe pabo"],
+          matchType: "contains",
+          replyText: "ঢাকার ভেতর হোম ডেলিভারি মাত্র ৬০ টাকা (২৪-৪৮ ঘণ্টা) এবং ঢাকার বাইরে ১২০ টাকা। সম্পূর্ণ ক্যাশ অন ডেলিভারি!",
+          actionTrigger: "none",
+        },
+      ],
+    },
+  ];
+
+  const [selectedIndustryPreset, setSelectedIndustryPreset] = useState<IndustryPreset | null>(null);
+
+  const [ruleForm, setRuleForm] = useState<{
+    id?: string;
+    clientStore: string;
+    category: ClientAiRule["category"];
+    name: string;
+    keywordsInput: string;
+    matchType: ClientAiRule["matchType"];
+    replyText: string;
+    actionTrigger: ClientAiRule["actionTrigger"];
+  }>({
+    clientStore: "All Stores (Global Default)",
+    category: "Bargaining",
+    name: "",
+    keywordsInput: "",
+    matchType: "contains",
+    replyText: "",
+    actionTrigger: "none",
+  });
+
+  const [aiRules, setAiRules] = useState<ClientAiRule[]>([
+    {
+      id: "rule-1",
+      clientStore: "All Stores (Global Default)",
+      category: "Bargaining",
+      name: "দামাদামি ও কুপন ডিসকাউন্ট রুল (৳১০০ অফার)",
+      triggerKeywords: ["দাম কম", "লাস্ট কত", "একদাম কত", "কম রাখেন", "dam kom", "discount den", "last price", "kisu kom"],
+      matchType: "contains",
+      replyText: "ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনি যেহেতু আজকেই নিতে চাচ্ছেন, আপনার জন্য স্পেশাল ৳১০০ ডিসকাউন্ট কুপন [ZYNCOO100] অ্যাপ্লাই করে দিয়েছি (মাত্র ৳১,৩৯০)। এখন কি পার্সেল বুক করে দেব ভাইয়া?",
+      actionTrigger: "apply_coupon_100",
+      active: true,
+    },
+    {
+      id: "rule-2",
+      clientStore: "All Stores (Global Default)",
+      category: "Delivery & COD",
+      name: "ডেলিভারি চার্জ ও সময় (SLA) তথ্য",
+      triggerKeywords: ["ডেলিভারি চার্জ কত", "কবে পাবো", "কয়দিন লাগবে", "delivery charge", "kobe pabo", "dhaka baire koto"],
+      matchType: "contains",
+      replyText: "ঢাকার ভেতরে হোম ডেলিভারি চার্জ মাত্র ৬০ টাকা (২৪ থেকে ৪৮ ঘণ্টার মধ্যে ডেলিভারি)। ঢাকার বাইরে জেলা ও থানা পর্যায়ে চার্জ ১২০ টাকা (২-৩ কার্যদিবস)। সম্পূর্ণ ক্যাশ অন ডেলিভারি—পণ্য হাতে পেয়ে টাকা পরিশোধ করবেন!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-3",
+      clientStore: "All Stores (Global Default)",
+      category: "Fraud & Advance",
+      name: "অগ্রিম পেমেন্ট দ্বিধা দূরীকরণ (১০০ টাকা বিকাশ)",
+      triggerKeywords: ["অগ্রিম কেন দেব", "আগে টাকা কেন", "ডেলিভারি চার্জ আগে কেন", "advance keno dibo", "age taka dibo na"],
+      matchType: "contains",
+      replyText: "ভাইয়া আপনার বিষয়টি আমরা অত্যন্ত সম্মান করি। কিন্তু কিছু ফেইক অর্ডার বা পার্সেল রিফিউজের কারণে কুরিয়ার সার্ভিসের সিকিউরিটি পলিসি অনুযায়ী শুধুমাত্র ১০০ টাকা ডেলিভারি চার্জ আমরা বিকাশ মার্চেন্টে অগ্রিম ভেরিফাই করি। পণ্যের সম্পূর্ণ মূল্যের বাকি টাকা আপনি রাইডারের সামনে পার্সেল হাতে পেয়ে ক্যাশ দেবেন।",
+      actionTrigger: "send_bkash_advance",
+      active: true,
+    },
+    {
+      id: "rule-4",
+      clientStore: "All Stores (Global Default)",
+      category: "Product & Warranty",
+      name: "প্যাকেট খুলে চেক করার পারমিশন (Open Box)",
+      triggerKeywords: ["দেখে নিতে পারব", "চেক করে নেওয়া যাবে", "খুলে দেখা যাবে", "deke nite parbo", "check kore nebo"],
+      matchType: "contains",
+      replyText: "জি অবশ্যই ভাইয়া! আমাদের কুরিয়ার পার্টনারকে বলে দেওয়া আছে—ডেলিভারি ম্যানের সামনেই আপনি প্যাকেট খুলে প্রোডাক্ট চেক করে নিশ্চিত হয়ে মূল্য পরিশোধ করবেন। কোনো সমস্যা থাকলে অন-স্পট রিটার্ন করতে পারবেন!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-5",
+      clientStore: "All Stores (Global Default)",
+      category: "Address Sanitizer",
+      name: "অসম্পূর্ণ ঠিকানা ডিটেকশন ও কারেকশন",
+      triggerKeywords: ["মিরপুর", "ধানমন্ডি", "উত্তরা", "চট্টগ্রাম", "সিলেট", "খুলনা", "shudhu city", "dhaka"],
+      matchType: "contains",
+      replyText: "অসংখ্য ধন্যবাদ ভাইয়া! আপনার পার্সেলটি স্টেডফাস্ট কুরিয়ারে নির্ভুলভাবে পৌঁছে দেওয়ার জন্য আপনার সম্পূর্ণ রোড নম্বর, বাড়ি নম্বর/ফ্ল্যাট নম্বর বা এলাকার বিস্তারিত ঠিকানাটি দয়া করে লিখে দেবেন?",
+      actionTrigger: "request_full_address",
+      active: true,
+    },
+    {
+      id: "rule-6",
+      clientStore: "All Stores (Global Default)",
+      category: "Product & Warranty",
+      name: "৭-দিনের রিপ্লেসমেন্ট ও অফিসিয়াল ওয়ারেন্টি",
+      triggerKeywords: ["নষ্ট বের হলে কি হবে", "ওয়ারেন্টি আছে", "সমস্যা হলে", "replecement pabo", "warranty ache"],
+      matchType: "contains",
+      replyText: "আমাদের প্রতিটি পণ্যের সাথে পাচ্ছেন ৭ দিনের ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি এবং ১ বছরের অফিশিয়াল সার্ভিস ওয়ারেন্টি। কোনো ধরণের ত্রুটি পেলে আমরা সরাসরি নতুন আরেকটি পিস পাঠিয়ে পরিবর্তন করে দেব—১০০% টেনশন ফ্রি কেনাকাটা!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-7",
+      clientStore: "FashionHub Dhaka",
+      category: "Custom",
+      name: "পোশাকের সাইজ চার্ট ও কালার গাইড",
+      triggerKeywords: ["সাইজ চার্ট", "কোন সাইজ হবে", "size chart", "xl ache", "color ki ki"],
+      matchType: "contains",
+      replyText: "আপু/ভাইয়া! আমাদের সাইজ চার্ট: M (বুক ৩৮\", দৈর্ঘ্য ২৭\"), L (বুক ৪০\", দৈর্ঘ্য ২৮\"), XL (বুক ৪২\", দৈর্ঘ্য ২৯\"), XXL (বুক ৪৪\", দৈর্ঘ্য ৩০\")। এছাড়া ব্ল্যাক, নেভি ব্লু ও অলিভ কালার ফুল স্টক এভেইলেবল আছে। আপনার হাইট ও ওজন বললে পারফেক্ট সাইজটি সাজেস্ট করে দেব!",
+      actionTrigger: "none",
+      active: true,
+    },
+    {
+      id: "rule-8",
+      clientStore: "GadgetZone BD",
+      category: "Custom",
+      name: "স্মার্টওয়াচ ওয়াটারপ্রুফ ও ব্যাটারি ব্যাকআপ",
+      triggerKeywords: ["waterproof", "পানি ঢুকবে", "চার্জ কতক্ষণ থাকে", "battery backup"],
+      matchType: "contains",
+      replyText: "ভাইয়া, এই মডেলটি IP68 সার্টিফাইড ওয়াটারপ্রুফ—বৃষ্টির পানি বা হাত ধোয়ার পানিতে কোনো সমস্যা হবে না। আর একবার ফুল চার্জে স্বাভাবিক ব্যবহারে টানা ৩-৫ দিন এবং স্ট্যান্ডবাই মোডে ৭ দিন পর্যন্ত ব্যাটারি ব্যাকআপ পাবেন!",
+      actionTrigger: "none",
+      active: true,
+    }
+  ]);
+
+  // Live Rule Match Sandbox State
+  const [sandboxInput, setSandboxInput] = useState<string>("bhaiya dam kisu kom rakha jabe?");
+  const [sandboxResult, setSandboxResult] = useState<{
+    matchedRule: ClientAiRule | null;
+    confidence: string;
+    actionNote: string | null;
+  } | null>(null);
+
+  const handleApplyIndustryPreset = (preset: IndustryPreset) => {
+    if (!clientStores.includes(preset.targetClient)) {
+      setClientStores((prev) => [...prev, preset.targetClient]);
+    }
+    setSelectedClientStore(preset.targetClient);
+
+    const newRules: ClientAiRule[] = preset.rules.map((r, idx) => ({
+      id: `rule-${preset.id}-${Date.now()}-${idx}`,
+      clientStore: preset.targetClient,
+      category: r.category,
+      name: r.name,
+      triggerKeywords: r.triggerKeywords,
+      matchType: r.matchType,
+      replyText: r.replyText,
+      actionTrigger: r.actionTrigger,
+      active: true,
+    }));
+
+    setAiRules((prev) => [...newRules, ...prev]);
+    setSelectedIndustryPreset(null);
+    setRuleSaveMessage(`✓ "${preset.name}" টেমপ্লেটের ${newRules.length}টি প্রি-বিল্ড রুলস "${preset.targetClient}"-এ সক্রিয় করা হয়েছে!`);
+    setTimeout(() => setRuleSaveMessage(null), 4000);
+  };
+
+  const handleTestSandbox = (testText?: string) => {
+    const query = (testText ?? sandboxInput).trim().toLowerCase();
+    if (!query) return;
+
+    const candidateRules = aiRules.filter((r) => 
+      r.active && (r.clientStore === selectedClientStore || r.clientStore === "All Stores (Global Default)")
+    );
+
+    let match: ClientAiRule | null = null;
+    for (const rule of candidateRules) {
+      const isMatched = rule.triggerKeywords.some((kw) => query.includes(kw.toLowerCase()));
+      if (isMatched) {
+        match = rule;
+        break;
+      }
+    }
+
+    if (match) {
+      let actionNote: string | null = null;
+      if (match.actionTrigger === "apply_coupon_100") actionNote = "🎁 ৳১০০ ডিসকাউন্ট ভাউচার [ZYNCOO100] সংযুক্ত হয়েছে";
+      else if (match.actionTrigger === "send_bkash_advance") actionNote = "💳 ১০০ টাকা বিকাশ পেমেন্ট লিংক ও QR জেনারেট হয়েছে";
+      else if (match.actionTrigger === "request_full_address") actionNote = "📍 কুরিয়ার অ্যাড্রেস স্যানিটাইজার সক্রিয় হয়েছে";
+
+      setSandboxResult({
+        matchedRule: match,
+        confidence: "99.2% Intent Match",
+        actionNote,
+      });
+    } else {
+      setSandboxResult({
+        matchedRule: null,
+        confidence: "Default Catalog Fallback",
+        actionNote: null,
+      });
+    }
+  };
+
+  const handleSaveRule = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ruleForm.name || !ruleForm.keywordsInput || !ruleForm.replyText) return;
+
+    const rawKeywords = ruleForm.keywordsInput
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
+
+    if (rawKeywords.length === 0) return;
+
+    if (ruleForm.id) {
+      setAiRules((prev) =>
+        prev.map((r) =>
+          r.id === ruleForm.id
+            ? {
+                ...r,
+                clientStore: ruleForm.clientStore,
+                category: ruleForm.category,
+                name: ruleForm.name,
+                triggerKeywords: rawKeywords,
+                matchType: ruleForm.matchType,
+                replyText: ruleForm.replyText,
+                actionTrigger: ruleForm.actionTrigger,
+              }
+            : r
+        )
+      );
+      setRuleSaveMessage("রুলটি সফলভাবে আপডেট করা হয়েছে!");
+    } else {
+      const newRule: ClientAiRule = {
+        id: "rule-" + Date.now(),
+        clientStore: ruleForm.clientStore,
+        category: ruleForm.category,
+        name: ruleForm.name,
+        triggerKeywords: rawKeywords,
+        matchType: ruleForm.matchType,
+        replyText: ruleForm.replyText,
+        actionTrigger: ruleForm.actionTrigger,
+        active: true,
+      };
+      setAiRules((prev) => [newRule, ...prev]);
+      setRuleSaveMessage("নতুন কিওয়ার্ড রুল AI মডেলে যুক্ত করা হয়েছে!");
+    }
+
+    setIsAddingRule(false);
+    setRuleForm({
+      clientStore: selectedClientStore,
+      category: "Bargaining",
+      name: "",
+      keywordsInput: "",
+      matchType: "contains",
+      replyText: "",
+      actionTrigger: "none",
+    });
+
+    setTimeout(() => setRuleSaveMessage(null), 3000);
+  };
+
+  const handleDeleteRule = (id: string) => {
+    setAiRules((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleToggleRule = (id: string) => {
+    setAiRules((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, active: !r.active } : r))
+    );
+  };
+
   const filteredBlacklist = fraudBlacklist.filter(
     (f) =>
       f.phone.includes(blacklistSearch) ||
@@ -525,6 +1057,23 @@ export default function SuperAdminPage() {
               </div>
               <span className="text-[10px] font-mono bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">
                 {clients.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setAdminTab("training")}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+                adminTab === "training"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Brain className="w-4 h-4 text-emerald-400" />
+                <span>AI Rules & Training</span>
+              </div>
+              <span className="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                {aiRules.length} Rules
               </span>
             </button>
 
@@ -655,6 +1204,7 @@ export default function SuperAdminPage() {
               {adminTab === "billing" && "Subscription Invoices & Payment Approvals"}
               {adminTab === "llm" && "LLM Tokens, Latency & API Infrastructure"}
               {adminTab === "features" && "Global Feature Flags & Master Prompts"}
+              {adminTab === "training" && "Client & Store-Wise AI Keyword Rules & Industry Templates"}
             </h1>
           </div>
 
@@ -1661,6 +2211,607 @@ export default function SuperAdminPage() {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB 6: CLIENT & STORE-WISE AI RULES & INDUSTRY TEMPLATES */}
+          {adminTab === "training" && (
+            <div className="space-y-6">
+              
+              {/* Top Banner & Multi-Store Selector */}
+              <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
+                    <Sparkles className="w-3.5 h-3.5 text-[#b8e900]" />
+                    <span>Bangladeshi NLP Engine & Client Customizer</span>
+                  </div>
+                  <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                    <span>Client & Store-Wise AI Keyword Rules & Training</span>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      Agency Hub
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+                    বাংলা ও বাংলিশ কাস্টমারের নির্দিষ্ট প্রশ্নের বিপরীতে কিওয়ার্ড ও ট্রিগার সেট করুন। প্রতিটি ক্লায়েন্ট/স্টোরের জন্য আলাদা বা গ্লোবাল রুল নির্ধারণ করতে পারবেন।
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                  <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800">
+                    <Building className="w-4 h-4 text-emerald-400 ml-1" />
+                    <select
+                      value={selectedClientStore}
+                      onChange={(e) => setSelectedClientStore(e.target.value)}
+                      className="bg-transparent text-xs font-bold text-white focus:outline-hidden pr-2 cursor-pointer"
+                    >
+                      {clientStores.map((store) => (
+                        <option key={store} value={store} className="bg-slate-900 text-white">
+                          {store}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setRuleForm({
+                        clientStore: selectedClientStore,
+                        category: "Bargaining",
+                        name: "",
+                        keywordsInput: "",
+                        matchType: "contains",
+                        replyText: "",
+                        actionTrigger: "none",
+                      });
+                      setIsAddingRule(true);
+                    }}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Custom Rule</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 1-Click Multi-Industry Templates Carousel / Grid */}
+              <div className="bg-gradient-to-r from-emerald-950/60 via-slate-900 to-emerald-950/60 p-6 rounded-2xl border border-emerald-500/30 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-400/30">
+                      <Sparkles className="w-4 h-4 text-[#b8e900]" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
+                        <span>১-ক্লিকে ইন্ডাস্ট্রি টেমপ্লেট লোড করুন (1-Click Industry Templates)</span>
+                        <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                          Instant Deploy
+                        </span>
+                      </h4>
+                      <p className="text-xs text-slate-300 mt-0.5">
+                        ডাক্তার, রিয়েল এস্টেট, আইটি কোচিং বা ট্রাভেলের মতো যেকোনো ইন্ডাস্ট্রির জন্য এআই পারসোনা ও ২০+ প্রশ্নোত্তর এক ক্লিকে ক্লায়েন্ট স্টোরে ডিপ্লয় করুন।
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {industryPresets.map((preset) => (
+                    <div
+                      key={preset.id}
+                      onClick={() => setSelectedIndustryPreset(preset)}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between group ${
+                        selectedIndustryPreset?.id === preset.id
+                          ? "bg-emerald-500/20 border-emerald-400 shadow-md shadow-emerald-500/20"
+                          : "bg-slate-950/70 hover:bg-slate-800/80 border-slate-800 hover:border-emerald-500/40"
+                      }`}
+                    >
+                      <div>
+                        <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{preset.emoji}</div>
+                        <div className="font-bold text-xs text-white leading-tight">{preset.name}</div>
+                        <div className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-snug">{preset.description}</div>
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-emerald-400">
+                          {preset.rules.length} রুলস
+                        </span>
+                        <span className="text-[10px] text-slate-400 group-hover:text-emerald-300 transition-colors">
+                          প্রিভিউ →
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Preset Preview & Quick Apply Modal */}
+                {selectedIndustryPreset && (
+                  <div className="bg-slate-950 border border-emerald-500/40 rounded-xl p-5 space-y-4 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-2xl">{selectedIndustryPreset.emoji}</span>
+                        <div>
+                          <div className="font-bold text-sm text-white">
+                            {selectedIndustryPreset.name} — ইন্ডাস্ট্রি টেমপ্লেট প্রিভিউ
+                          </div>
+                          <div className="text-xs text-slate-400 font-mono">
+                            Target Client: {selectedIndustryPreset.targetClient} ({selectedIndustryPreset.category})
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setSelectedIndustryPreset(null)}
+                        className="text-slate-400 hover:text-white cursor-pointer p-1"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="bg-slate-900 p-3.5 rounded-xl border border-slate-800 text-xs space-y-1">
+                      <span className="font-bold text-emerald-400 block text-[11px] uppercase tracking-wider">AI System Persona (পারসোনা):</span>
+                      <p className="text-slate-300 leading-relaxed italic">&quot;{selectedIndustryPreset.systemPersona}&quot;</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="font-bold text-slate-300 text-xs block">
+                        প্রি-বিল্ড প্রশ্নোত্তর ({selectedIndustryPreset.rules.length}টি রুল অন্তর্ভুক্ত):
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                        {selectedIndustryPreset.rules.map((r, rIdx) => (
+                          <div key={rIdx} className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                            <div className="font-bold text-white flex items-center justify-between">
+                              <span>{r.name}</span>
+                              <span className="text-[10px] text-emerald-400 font-mono px-2 py-0.5 rounded bg-emerald-500/10">
+                                {r.category}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400 flex flex-wrap gap-1">
+                              {r.triggerKeywords.map((kw, i) => (
+                                <span key={i} className="bg-slate-800 px-1.5 py-0.5 rounded text-[10px] text-slate-300 font-mono">
+                                  &quot;{kw}&quot;
+                                </span>
+                              ))}
+                            </div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed">&quot;{r.replyText}&quot;</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
+                      <div className="text-xs text-slate-400">
+                        টার্গেট ক্লায়েন্ট: <strong className="text-emerald-400">{selectedIndustryPreset.targetClient}</strong>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSelectedIndustryPreset(null)}
+                          className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800 cursor-pointer"
+                        >
+                          বন্ধ করুন
+                        </button>
+                        <button
+                          onClick={() => handleApplyIndustryPreset(selectedIndustryPreset)}
+                          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>এই টেমপ্লেটটি ক্লায়েন্টে সক্রিয় করুন (Deploy Template)</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Toast Message */}
+              {ruleSaveMessage && (
+                <div className="p-3.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs rounded-xl font-bold flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{ruleSaveMessage}</span>
+                </div>
+              )}
+
+              {/* Inline Add / Edit Rule Form Modal */}
+              {isAddingRule && (
+                <div className="bg-slate-900 p-6 rounded-2xl border-2 border-emerald-500 shadow-xl space-y-4 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Brain className="w-4 h-4 text-emerald-400" />
+                      <h4 className="font-bold text-sm text-white">
+                        {ruleForm.id ? "Edit AI Rule" : "নতুন AI কিওয়ার্ড ও প্রশ্নোত্তর রুল যুক্ত করুন"}
+                      </h4>
+                    </div>
+                    <button
+                      onClick={() => setIsAddingRule(false)}
+                      className="text-slate-400 hover:text-white cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSaveRule} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    {/* Store Selector */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300">Target Client Store (কোন ক্লায়েন্ট স্টোরে?)</label>
+                      <select
+                        value={ruleForm.clientStore}
+                        onChange={(e) => setRuleForm({ ...ruleForm, clientStore: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500"
+                      >
+                        {clientStores.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Category */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300">Rule Category</label>
+                      <select
+                        value={ruleForm.category}
+                        onChange={(e) => setRuleForm({ ...ruleForm, category: e.target.value as any })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500"
+                      >
+                        <option value="Bargaining">Bargaining (দামাদামি ও অফার)</option>
+                        <option value="Delivery & COD">Delivery & COD (ডেলিভারি ও চার্জ)</option>
+                        <option value="Fraud & Advance">Fraud & Advance (অগ্রিম ১০০টাকা)</option>
+                        <option value="Address Sanitizer">Address Sanitizer (অসম্পূর্ণ ঠিকানা)</option>
+                        <option value="Product & Warranty">Product & Warranty (ওয়ারেন্টি ও রিপ্লেসমেন্ট)</option>
+                        <option value="Appointment & Booking">Appointment & Booking (সিরিয়াল ও বুকিং)</option>
+                        <option value="Custom">Custom (কাস্টম প্রশ্ন)</option>
+                      </select>
+                    </div>
+
+                    {/* Rule Title */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300">Rule Title (রুল শিরোনাম)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. ১০০ টাকা কুপন অফার ও বার্গেনিং ডিফেন্স"
+                        value={ruleForm.name}
+                        onChange={(e) => setRuleForm({ ...ruleForm, name: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white focus:outline-hidden focus:border-emerald-500"
+                      />
+                    </div>
+
+                    {/* Match Mode */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300">Match Mode (ম্যাচিং মোড)</label>
+                      <select
+                        value={ruleForm.matchType}
+                        onChange={(e) => setRuleForm({ ...ruleForm, matchType: e.target.value as any })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500"
+                      >
+                        <option value="contains">Contains Keyword (মেসেজে যেকোনো একটি শব্দ থাকলে)</option>
+                        <option value="exact">Exact Match (হুবহু নির্দিষ্ট বাক্য মিললে)</option>
+                        <option value="ai_intent">Semantic AI Intent (ভাবার্থ বা কনটেক্সট মিললে)</option>
+                      </select>
+                    </div>
+
+                    {/* Trigger Keywords */}
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="font-bold text-slate-300 flex items-center justify-between">
+                        <span>Trigger Keywords / Phrases (যেসব বাক্য কাস্টমার লিখলে AI উত্তর দেবে)</span>
+                        <span className="text-[11px] text-slate-400 font-normal">কমা দিয়ে একাধিক কিওয়ার্ড লিখুন</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. দাম কম, লাস্ট কত, একদাম কত, কম রাখেন, dam kom, discount den"
+                        value={ruleForm.keywordsInput}
+                        onChange={(e) => setRuleForm({ ...ruleForm, keywordsInput: e.target.value })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono focus:outline-hidden focus:border-emerald-500"
+                      />
+                      <div className="text-[11px] text-slate-400 pt-1 flex flex-wrap gap-1 items-center">
+                        <span className="font-semibold text-slate-300">দ্রুত কিওয়ার্ড যুক্ত করুন:</span>
+                        <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, dam kom` : "dam kom" }))} className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded cursor-pointer hover:bg-slate-700">+ dam kom</span>
+                        <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, kobe pabo` : "kobe pabo" }))} className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded cursor-pointer hover:bg-slate-700">+ kobe pabo</span>
+                        <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, delivery charge` : "delivery charge" }))} className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded cursor-pointer hover:bg-slate-700">+ delivery charge</span>
+                        <span onClick={() => setRuleForm(prev => ({ ...prev, keywordsInput: prev.keywordsInput ? `${prev.keywordsInput}, advance keno` : "advance keno" }))} className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded cursor-pointer hover:bg-slate-700">+ advance keno</span>
+                      </div>
+                    </div>
+
+                    {/* Reply Text */}
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="font-bold text-slate-300 flex items-center justify-between">
+                        <span>AI Custom Reply Message (কাস্টমারকে AI হুবহু যা বলবে)</span>
+                        <span className="text-[11px] text-emerald-400 font-semibold">100% Conversational Bangla</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        placeholder="ভাইয়া, আমাদের প্রোডাক্ট কোয়ালিটি ১০০% জেনুইন এবং প্রাইস একদম ফিক্সড। তবে আপনি যেহেতু আজকেই নিতে চাচ্ছেন..."
+                        value={ruleForm.replyText}
+                        onChange={(e) => setRuleForm({ ...ruleForm, replyText: e.target.value })}
+                        className="w-full p-3 rounded-xl border border-slate-700 bg-slate-950 text-white focus:outline-hidden focus:border-emerald-500 leading-relaxed"
+                      />
+                    </div>
+
+                    {/* Attached Action */}
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="font-bold text-slate-300">Attach Automated Action (অটোমেটেড অ্যাকশন ট্রিগার)</label>
+                      <select
+                        value={ruleForm.actionTrigger}
+                        onChange={(e) => setRuleForm({ ...ruleForm, actionTrigger: e.target.value as any })}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-semibold focus:outline-hidden focus:border-emerald-500"
+                      >
+                        <option value="none">None (শুধুমাত্র লিখিত বার্তা দেবে)</option>
+                        <option value="apply_coupon_100">Apply ৳100 Discount Coupon [ZYNCOO100] (ডিসকাউন্ট কুপন সক্রিয় করবে)</option>
+                        <option value="send_bkash_advance">Send ৳100 bKash Advance Payment QR/Link (বিকাশ পেমেন্ট লিংক পাঠাবে)</option>
+                        <option value="request_full_address">Request Full Address (কুরিয়ার অ্যাড্রেস স্যানিটাইজার চালাবে)</option>
+                      </select>
+                    </div>
+
+                    {/* Form Actions */}
+                    <div className="sm:col-span-2 flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingRule(false)}
+                        className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!ruleForm.name || !ruleForm.keywordsInput || !ruleForm.replyText}
+                        className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold transition-all shadow-sm cursor-pointer"
+                      >
+                        Save Rule to AI Brain
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* Filter and Search Bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {["all", "Bargaining", "Delivery & COD", "Fraud & Advance", "Address Sanitizer", "Product & Warranty", "Appointment & Booking", "Custom"].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setCategoryFilter(cat)}
+                      className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
+                        categoryFilter === cat
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700 hover:text-white"
+                      }`}
+                    >
+                      {cat === "all" ? "All Categories" : cat}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
+                  <input
+                    type="text"
+                    placeholder="Search keywords or rules..."
+                    value={ruleSearchQuery}
+                    onChange={(e) => setRuleSearchQuery(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-slate-950 text-white border border-slate-800 focus:outline-hidden focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              {/* Rules List Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {aiRules
+                  .filter((rule) => {
+                    const matchesStore = selectedClientStore === "All Stores (Global Default)"
+                      ? true
+                      : (rule.clientStore === selectedClientStore || rule.clientStore === "All Stores (Global Default)");
+                    const matchesCategory = categoryFilter === "all" ? true : rule.category === categoryFilter;
+                    const matchesSearch = ruleSearchQuery.trim() === ""
+                      ? true
+                      : (rule.name.toLowerCase().includes(ruleSearchQuery.toLowerCase()) ||
+                         rule.triggerKeywords.some(kw => kw.toLowerCase().includes(ruleSearchQuery.toLowerCase())) ||
+                         rule.replyText.toLowerCase().includes(ruleSearchQuery.toLowerCase()));
+                    return matchesStore && matchesCategory && matchesSearch;
+                  })
+                  .map((rule) => (
+                    <div
+                      key={rule.id}
+                      className={`p-5 rounded-2xl border transition-all space-y-3.5 ${
+                        rule.active 
+                          ? "bg-slate-900 border-slate-800 hover:border-emerald-500/50 shadow-sm" 
+                          : "bg-slate-950/60 border-slate-800/60 opacity-60"
+                      }`}
+                    >
+                      {/* Top Bar: Store & Category + Active Switch */}
+                      <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-950 text-emerald-400 border border-slate-800">
+                            {rule.clientStore}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                            {rule.category}
+                          </span>
+                          {rule.matchType === "contains" && (
+                            <span className="text-[9px] font-mono text-slate-400 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
+                              Contains
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleToggleRule(rule.id)}
+                            className="text-xs flex items-center gap-1 font-bold cursor-pointer"
+                          >
+                            {rule.active ? (
+                              <span className="text-emerald-400 flex items-center gap-1 text-[11px]">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" /> Active
+                              </span>
+                            ) : (
+                              <span className="text-slate-500 text-[11px]">Inactive</span>
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteRule(rule.id)}
+                            className="text-slate-500 hover:text-rose-400 transition-colors p-1 cursor-pointer"
+                            title="Delete rule"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Rule Name */}
+                      <div>
+                        <h4 className="font-extrabold text-sm text-white">{rule.name}</h4>
+                      </div>
+
+                      {/* Trigger Keyword Chips */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">
+                          Trigger Keywords ({rule.triggerKeywords.length}):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {rule.triggerKeywords.map((kw, i) => (
+                            <span
+                              key={i}
+                              onClick={() => handleTestSandbox(kw)}
+                              className="text-[11px] font-mono bg-slate-950 text-slate-300 px-2 py-0.5 rounded-md border border-slate-800 cursor-pointer hover:bg-emerald-500/20 hover:text-emerald-300 hover:border-emerald-500/40 transition-colors"
+                              title="Click to test in sandbox"
+                            >
+                              &quot;{kw}&quot;
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* AI Reply Bubble */}
+                      <div className="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-xs text-slate-200 leading-relaxed space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-400 block uppercase tracking-wider flex items-center gap-1">
+                          <Bot className="w-3 h-3 text-emerald-400" />
+                          AI Trained Response:
+                        </span>
+                        <p className="italic">&quot;{rule.replyText}&quot;</p>
+                      </div>
+
+                      {/* Attached Action Tag */}
+                      {rule.actionTrigger !== "none" && (
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                          <Sparkles className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <span>
+                            {rule.actionTrigger === "apply_coupon_100" && "অটোমেটেড অ্যাকশন: ৳১০০ ডিসকাউন্ট ভাউচার সংযুক্ত হবে"}
+                            {rule.actionTrigger === "send_bkash_advance" && "অটোমেটেড অ্যাকশন: বিকাশ ১০০ টাকা অগ্রিম পেমেন্ট লিংক তৈরি হবে"}
+                            {rule.actionTrigger === "request_full_address" && "অটোমেটেড অ্যাকশন: কুরিয়ার অ্যাড্রেস স্যানিটাইজার পূর্ণ ঠিকানা চাইবে"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+
+              {/* Live Bangla NLP Match Sandbox Simulator */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                      <Bot className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-white flex items-center gap-2">
+                        <span>Live Bangladeshi NLP Rule-Match Sandbox Simulator</span>
+                        <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                          Super Admin Testing Tool
+                        </span>
+                      </h4>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        যেকোনো ক্লায়েন্টের কাস্টমার মেসেজ লিখে সরাসরি পরীক্ষা করুন AI কিওয়ার্ড ম্যাচ করে সঠিক উত্তর ও অ্যাকশন ট্রিগার করছে কি না।
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-400 font-mono">
+                    Testing Store: <strong className="text-emerald-400">{selectedClientStore}</strong>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1 relative">
+                    <input
+                      type="text"
+                      placeholder="e.g. bhaiya dam kisu kom rakha jabe? or সিরিয়াল বুকিং কখন?"
+                      value={sandboxInput}
+                      onChange={(e) => setSandboxInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleTestSandbox()}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-xs focus:outline-hidden focus:border-emerald-500"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleTestSandbox()}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Test AI Match</span>
+                  </button>
+                </div>
+
+                {/* Sandbox Quick Test Suggestions */}
+                <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+                  <span className="font-semibold text-slate-300">Quick Test Samples:</span>
+                  {[
+                    "bhaiya dam kisu kom hobe?",
+                    "kobe delivery pabo?",
+                    "ডাক্তারের সিরিয়াল নিতে চাই",
+                    "advance taka keno debo?",
+                    "সাইট ভিজিট করতে চাই",
+                    "টেবিল বুকিং আছে?",
+                    "sajek tour package koto?"
+                  ].map((sample) => (
+                    <button
+                      key={sample}
+                      onClick={() => {
+                        setSandboxInput(sample);
+                        handleTestSandbox(sample);
+                      }}
+                      className="px-2 py-1 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-emerald-300 hover:border-emerald-500/50 cursor-pointer transition-colors"
+                    >
+                      {sample}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Sandbox Live Response Output */}
+                {sandboxResult && (
+                  <div className="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-3 animate-in fade-in duration-200">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        {sandboxResult.matchedRule ? (
+                          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            Rule Matched: {sandboxResult.matchedRule.name}
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                            <AlertTriangle className="w-4 h-4 text-amber-400" />
+                            Fallback: Default AI Persona Active
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                        Confidence: {sandboxResult.confidence}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs">
+                      <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
+                        Simulated AI Output:
+                      </span>
+                      <p className="text-slate-100 bg-slate-900 p-3 rounded-lg border border-slate-800 leading-relaxed font-sans">
+                        {sandboxResult.matchedRule
+                          ? sandboxResult.matchedRule.replyText
+                          : "আসসালামু আলাইকুম! Zyncoo AI এসিস্ট্যান্ট বলছি। আপনার প্রশ্নটির উত্তর দিতে পারছি না, তবে আমাদের সাপোর্ট টিম শীঘ্রই যোগাযোগ করবে।"}
+                      </p>
+                    </div>
+
+                    {sandboxResult.actionNote && (
+                      <div className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-500/30 flex items-center gap-2">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>অটোমেটেড অ্যাকশন ট্রিগার: {sandboxResult.actionNote}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
             </div>
           )}
 
