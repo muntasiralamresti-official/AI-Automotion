@@ -269,6 +269,26 @@ export default function DashboardPage() {
   const [isAddingSubAccount, setIsAddingSubAccount] = useState(false);
   const [subAccountToast, setSubAccountToast] = useState<string | null>(null);
 
+  // Live Fleet Telematics from IoT Drive Cameras
+  const [fleetVehicles, setFleetVehicles] = useState<any[]>([]);
+  useEffect(() => {
+    if (activeTab === "sentinel") {
+      const fetchTelemetry = () => {
+        fetch("/api/sentinel/telemetry")
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.vehicles && data.vehicles.length > 0) {
+              setFleetVehicles(data.vehicles);
+            }
+          })
+          .catch(() => {});
+      };
+      fetchTelemetry();
+      const interval = setInterval(fetchTelemetry, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
   const handleCreateSubAccount = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubAccount.name || !newSubAccount.email) return;
@@ -5071,92 +5091,85 @@ export default function DashboardPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-medium">
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-5">
-                          <div className="font-bold text-slate-900">DHAKA-METRO-GA-11-2091</div>
-                          <div className="text-[11px] text-slate-400">Toyota HiAce (Logistics #1)</div>
-                        </td>
-                        <td className="py-3.5 px-5 font-semibold text-slate-700">রফিক মিয়া (+880 1711-290011)</td>
-                        <td className="py-3.5 px-5 font-mono font-bold text-cyan-700">72 km/h</td>
-                        <td className="py-3.5 px-5 font-mono text-emerald-700 font-bold">0.31 (Awake)</td>
-                        <td className="py-3.5 px-5">
-                          <div className="w-20 bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-emerald-500 h-full w-[4%]"></div>
-                          </div>
-                          <span className="text-[10px] text-emerald-600 font-mono">0% Threat</span>
-                        </td>
-                        <td className="py-3.5 px-5">
-                          <span className="text-emerald-700 font-bold text-[11px] flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Normal Active
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-5 text-right">
-                          <button
-                            onClick={() => alert("Simulated speaker chime test sent to vehicle.")}
-                            className="text-xs text-slate-600 hover:text-emerald-700 font-semibold"
-                          >
-                            Test Siren
-                          </button>
-                        </td>
-                      </tr>
-
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3.5 px-5">
-                          <div className="font-bold text-slate-900">DHAKA-METRO-CHA-53-9012</div>
-                          <div className="text-[11px] text-slate-400">Hino 1J Bus (Route: Dhaka-Ctg)</div>
-                        </td>
-                        <td className="py-3.5 px-5 font-semibold text-slate-700">সেলিম শেখ (+880 1819-440099)</td>
-                        <td className="py-3.5 px-5 font-mono font-bold text-cyan-700">88 km/h</td>
-                        <td className="py-3.5 px-5 font-mono text-emerald-700 font-bold">0.29 (Awake)</td>
-                        <td className="py-3.5 px-5">
-                          <div className="w-20 bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-emerald-500 h-full w-[12%]"></div>
-                          </div>
-                          <span className="text-[10px] text-emerald-600 font-mono">10% Threat</span>
-                        </td>
-                        <td className="py-3.5 px-5">
-                          <span className="text-emerald-700 font-bold text-[11px] flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Normal Active
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-5 text-right">
-                          <button
-                            onClick={() => alert("Simulated speaker chime test sent to vehicle.")}
-                            className="text-xs text-slate-600 hover:text-emerald-700 font-semibold"
-                          >
-                            Test Siren
-                          </button>
-                        </td>
-                      </tr>
-
-                      <tr className="bg-red-50/40 hover:bg-red-50/60 transition-colors border-l-4 border-red-500">
-                        <td className="py-3.5 px-5">
-                          <div className="font-bold text-red-950">CHATTA-METRO-BA-12-4011</div>
-                          <div className="text-[11px] text-red-700">Cover Van 3-Ton (Delivery Unit)</div>
-                        </td>
-                        <td className="py-3.5 px-5 font-semibold text-red-950">কামরুল হাসান (+880 1912-334455)</td>
-                        <td className="py-3.5 px-5 font-mono font-bold text-red-700">65 km/h</td>
-                        <td className="py-3.5 px-5 font-mono text-red-600 font-bold">0.14 (Closed &gt; 2.2s)</td>
-                        <td className="py-3.5 px-5">
-                          <div className="w-20 bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-red-500 h-full w-[90%]"></div>
-                          </div>
-                          <span className="text-[10px] text-red-600 font-mono font-bold">85% Threat</span>
-                        </td>
-                        <td className="py-3.5 px-5">
-                          <span className="text-red-700 font-bold text-[11px] flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-600 animate-ping"></span> 🚨 Siren Sounding
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-5 text-right">
-                          <button
-                            onClick={() => alert("Emergency alert dispatched to driver mobile & fleet supervisor.")}
-                            className="text-xs text-red-700 hover:text-red-900 font-bold"
-                          >
-                            Dispatch SOS
-                          </button>
-                        </td>
-                      </tr>
+                      {(fleetVehicles.length > 0 ? fleetVehicles : [
+                        {
+                          vehicleId: "DHAKA-METRO-GA-11-2091",
+                          vehicleModel: "Toyota HiAce (Logistics #1)",
+                          driverName: "রফিক মিয়া",
+                          driverPhone: "+880 1711-290011",
+                          speedKmh: 72,
+                          ear: 0.31,
+                          threatLevel: 0,
+                          status: "Safe & Awake",
+                          isAlarming: false,
+                        },
+                        {
+                          vehicleId: "DHAKA-METRO-CHA-53-9012",
+                          vehicleModel: "Hino 1J Bus (Route: Dhaka-Ctg)",
+                          driverName: "সেলিম শেখ",
+                          driverPhone: "+880 1819-440099",
+                          speedKmh: 88,
+                          ear: 0.29,
+                          threatLevel: 10,
+                          status: "Safe & Awake",
+                          isAlarming: false,
+                        },
+                        {
+                          vehicleId: "CHATTA-METRO-BA-12-4011",
+                          vehicleModel: "Cover Van 3-Ton (Delivery Unit)",
+                          driverName: "কামরুল হাসান",
+                          driverPhone: "+880 1912-334455",
+                          speedKmh: 65,
+                          ear: 0.14,
+                          threatLevel: 85,
+                          status: "Critical Sleep Alarm",
+                          isAlarming: true,
+                        },
+                      ]).map((v) => (
+                        <tr
+                          key={v.vehicleId}
+                          className={`transition-colors ${
+                            v.isAlarming
+                              ? "bg-red-50/40 hover:bg-red-50/60 border-l-4 border-red-500"
+                              : "hover:bg-slate-50"
+                          }`}
+                        >
+                          <td className="py-3.5 px-5">
+                            <div className="font-bold text-slate-900">{v.vehicleId}</div>
+                            <div className="text-[11px] text-slate-400">{v.vehicleModel || "Standard Vehicle"}</div>
+                          </td>
+                          <td className="py-3.5 px-5 font-semibold text-slate-700">
+                            {v.driverName} ({v.driverPhone || "N/A"})
+                          </td>
+                          <td className="py-3.5 px-5 font-mono font-bold text-cyan-700">{v.speedKmh} km/h</td>
+                          <td className="py-3.5 px-5 font-mono font-bold text-emerald-700">{v.ear} (EAR)</td>
+                          <td className="py-3.5 px-5">
+                            <div className="w-20 bg-slate-100 h-2 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full ${v.threatLevel > 50 ? "bg-red-500" : "bg-emerald-500"}`}
+                                style={{ width: `${Math.max(5, v.threatLevel)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-[10px] text-slate-500 font-mono">{v.threatLevel}% Threat</span>
+                          </td>
+                          <td className="py-3.5 px-5">
+                            <span className={`text-[11px] font-bold flex items-center gap-1 ${
+                              v.isAlarming ? "text-red-600" : "text-emerald-700"
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${v.isAlarming ? "bg-red-600 animate-ping" : "bg-emerald-500"}`}></span>
+                              <span>{v.status || (v.isAlarming ? "Critical Alarm" : "Active")}</span>
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-5 text-right">
+                            <button
+                              onClick={() => alert(`Remote test ping sent to ${v.vehicleId}`)}
+                              className="text-xs text-slate-600 hover:text-emerald-700 font-semibold"
+                            >
+                              Ping Unit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
