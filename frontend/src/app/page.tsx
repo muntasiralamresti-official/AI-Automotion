@@ -5,6 +5,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import HowItWorks from "@/components/HowItWorks";
 import RtoAuditCalculator from "@/components/RtoAuditCalculator";
 import LeadGenSection from "@/components/LeadGenSection";
+import DriverSentinelSection from "@/components/DriverSentinelSection";
 import RoiCalculator from "@/components/RoiCalculator";
 import PricingSection from "@/components/PricingSection";
 import FaqSection from "@/components/FaqSection";
@@ -21,6 +22,7 @@ export default function Home() {
         <HowItWorks />
         <RtoAuditCalculator />
         <LeadGenSection />
+        <DriverSentinelSection />
         <RoiCalculator />
         <PricingSection />
         <FaqSection />

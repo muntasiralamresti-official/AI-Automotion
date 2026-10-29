@@ -91,12 +91,22 @@ export default function PricingSection() {
           </p>
 
           {/* Quick Cross-Link to Lead Generation Section */}
-          <div className="mt-5 inline-flex items-center gap-2 p-1.5 px-4 bg-rose-50 border border-rose-200 rounded-full text-xs text-rose-800 font-semibold shadow-2xs">
-            <Flame className="w-4 h-4 text-rose-600 fill-rose-600" />
-            <span>সরাসরি ক্রেতা বা মার্চেন্ট লিড কিনতে চান?</span>
-            <a href="#leads" className="text-rose-700 font-black underline hover:text-rose-900 ml-1">
-              লিডস প্যাক দেখুন (৳২,৪৯০ থেকে শুরু) →
-            </a>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <div className="inline-flex items-center gap-2 p-1.5 px-4 bg-rose-50 border border-rose-200 rounded-full text-xs text-rose-800 font-semibold shadow-2xs">
+              <Flame className="w-4 h-4 text-rose-600 fill-rose-600" />
+              <span>সরাসরি ক্রেতা বা মার্চেন্ট লিড কিনতে চান?</span>
+              <a href="#leads" className="text-rose-700 font-black underline hover:text-rose-900 ml-1">
+                লিডস প্যাক দেখুন (৳২,৪৯০ থেকে শুরু) →
+              </a>
+            </div>
+
+            <div className="inline-flex items-center gap-2 p-1.5 px-4 bg-slate-950 border border-slate-800 rounded-full text-xs text-slate-200 font-semibold shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#b8e900] animate-pulse"></span>
+              <span className="text-white font-bold">🚗 গাড়ি ও বাসের ড্রাইভার স্লিপ অ্যালার্ট সিস্টেম?</span>
+              <Link href="/sentinel" className="text-[#b8e900] font-black underline hover:text-white ml-1">
+                Driver Sentinel দেখুন (৳৪,৪৯০) →
+              </Link>
+            </div>
           </div>
 
           {/* Dual Controls: Currency & Billing */}

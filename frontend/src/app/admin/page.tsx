@@ -51,7 +51,8 @@ import {
   GraduationCap,
   Plane,
   Coffee,
-  ShieldCheck
+  ShieldCheck,
+  Car
 } from "lucide-react";
 
 export interface ClientAiRule {
@@ -153,7 +154,7 @@ interface FraudEntry {
 
 export default function SuperAdminPage() {
   const [adminTab, setAdminTab] = useState<
-    "overview" | "clients" | "leads" | "agencies" | "fraud-blacklist" | "billing" | "llm" | "features" | "training"
+    "overview" | "clients" | "leads" | "agencies" | "sentinel" | "fraud-blacklist" | "billing" | "llm" | "features" | "training"
   >("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [blacklistSearch, setBlacklistSearch] = useState("");
@@ -1213,6 +1214,23 @@ export default function SuperAdminPage() {
             </button>
 
             <button
+              onClick={() => setAdminTab("sentinel")}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+                adminTab === "sentinel"
+                  ? "bg-emerald-500/15 text-white border border-emerald-500/40 font-semibold shadow-xs"
+                  : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 border border-transparent font-medium"
+              }`}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Car className="w-4 h-4 text-[#b8e900] shrink-0" />
+                <span className="truncate whitespace-nowrap">Driver Sentinel IoT</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#b8e900]/15 text-[#b8e900] border border-[#b8e900]/30 px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap">
+                3 Orders
+              </span>
+            </button>
+
+            <button
               onClick={() => setAdminTab("fraud-blacklist")}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                 adminTab === "fraud-blacklist"
@@ -1306,6 +1324,7 @@ export default function SuperAdminPage() {
               {adminTab === "clients" && "Onboarded Client Stores & Bots"}
               {adminTab === "leads" && "Lead Orders & Delivery Fulfillment"}
               {adminTab === "agencies" && "Agency White-Label Ecosystem & Partner Payouts"}
+              {adminTab === "sentinel" && "Zyncoo Driver Sentinel (AI Driver Drowsiness & Fleet Safety IoT Orders)"}
               {adminTab === "fraud-blacklist" && "Platform Central Fraud Blacklist & Threat Defense"}
               {adminTab === "billing" && "Subscription Invoices & Payment Approvals"}
               {adminTab === "llm" && "LLM Tokens, Latency & API Infrastructure"}
@@ -2176,6 +2195,231 @@ export default function SuperAdminPage() {
                   </table>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: DRIVER SENTINEL IOT FLEET & LICENSES */}
+          {adminTab === "sentinel" && (
+            <div className="space-y-6">
+              
+              {/* Sentinel Revenue & Fleet Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>Sentinel IoT Revenue</span>
+                    <span className="text-[#b8e900] text-[10px] font-mono font-bold bg-[#b8e900]/10 px-2 py-0.5 rounded border border-[#b8e900]/30">
+                      100% MARGIN
+                    </span>
+                  </div>
+                  <div className="text-2xl font-black text-white mt-1 font-mono">
+                    ৳47,470
+                  </div>
+                  <div className="text-[11px] text-emerald-400 mt-1">
+                    ↑ 3 Direct Commercial Packages Sold
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>Active Vehicle Units</span>
+                    <span className="text-cyan-400 text-[10px] font-mono">OBD-II SYNC</span>
+                  </div>
+                  <div className="text-2xl font-black text-cyan-400 mt-1 font-mono">
+                    26 Vehicles
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">
+                    Fleet Pro & Enterprise Node Licenses
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>Active Drowsiness Alarms</span>
+                    <span className="text-emerald-400 text-[10px] font-mono">SYSTEM OK</span>
+                  </div>
+                  <div className="text-2xl font-black text-emerald-400 mt-1 font-mono">
+                    0 Critical
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-1">
+                    All 26 Drivers Alert & Awake
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <span>Hardware / Software Package</span>
+                    <span className="text-purple-400 text-[10px] font-mono">v1.0.4</span>
+                  </div>
+                  <div className="text-base font-bold text-white mt-1">
+                    FastAPI + MediaPipe
+                  </div>
+                  <div className="mt-1">
+                    <Link
+                      href="/sentinel"
+                      target="_blank"
+                      className="text-[11px] text-[#b8e900] hover:underline font-bold inline-flex items-center gap-1"
+                    >
+                      <span>Public Product Page & Demo</span>
+                      <span>→</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sentinel Customer Orders Queue Table */}
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+                <div className="p-5 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-bold text-base text-white flex items-center gap-2">
+                      <Car className="w-4 h-4 text-[#b8e900]" />
+                      <span>Commercial Sentinel Customer Orders & Issued Licenses</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      ওয়েবসাইট থেকে ক্রেতাদের কেনা ড্রাইভার স্লিপ সেন্টিনেল প্যাকেজ ও লাইসেন্স কি তালিকা
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/sentinel#pricing"
+                      target="_blank"
+                      className="px-3.5 py-1.5 rounded-xl bg-[#b8e900] hover:bg-[#a6d200] text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5"
+                    >
+                      <span>+ Open Buy Page</span>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-950 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
+                      <tr>
+                        <th className="py-3 px-4">Order ID & Date</th>
+                        <th className="py-3 px-4">Customer & Transport Fleet</th>
+                        <th className="py-3 px-4">Purchased Package</th>
+                        <th className="py-3 px-4">Amount & TrxID</th>
+                        <th className="py-3 px-4">Generated License Key</th>
+                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 font-medium">
+                      
+                      <tr className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3.5 px-4 font-mono">
+                          <div className="font-bold text-white">SNT-9082</div>
+                          <div className="text-[10px] text-slate-500">Today, 01:14 AM</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-white">Shohagh Paribahan Network</div>
+                          <div className="text-[11px] text-slate-400 font-mono">+880 1712-449900 (Dhaka)</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="font-semibold text-purple-300 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                            Enterprise (20 Vehicles)
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-[#b8e900] font-mono">৳29,990</div>
+                          <div className="text-[10px] text-slate-400 font-mono">Nagad: NG991204</div>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-emerald-400 font-bold select-all">
+                          ZYNCOO-SNT-99B2-K811
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                            PAID & ACTIVE
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right space-x-2">
+                          <a
+                            href="https://wa.me/8801712449900?text=Hello%20Shohagh%20Paribahan,%20your%20Zyncoo%20Driver%20Sentinel%20license%20is%20ZYNCOO-SNT-99B2-K811"
+                            target="_blank"
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[11px] transition-colors font-semibold"
+                          >
+                            WhatsApp Link
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3.5 px-4 font-mono">
+                          <div className="font-bold text-white">SNT-9081</div>
+                          <div className="text-[10px] text-slate-500">Yesterday</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-white">Tanvir Logistics & Cargo</div>
+                          <div className="text-[11px] text-slate-400 font-mono">+880 1819-331122 (Chittagong)</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="font-semibold text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            Fleet Pro (5 Vehicles)
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-[#b8e900] font-mono">৳12,990</div>
+                          <div className="text-[10px] text-slate-400 font-mono">bKash: BK883912</div>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-emerald-400 font-bold select-all">
+                          ZYNCOO-SNT-77A9-F2E1
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                            PAID & ACTIVE
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right space-x-2">
+                          <a
+                            href="https://wa.me/8801819331122?text=Hello%20Tanvir,%20your%20Zyncoo%20Driver%20Sentinel%20license%20is%20ZYNCOO-SNT-77A9-F2E1"
+                            target="_blank"
+                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-400 text-[11px] transition-colors font-semibold"
+                          >
+                            WhatsApp Link
+                          </a>
+                        </td>
+                      </tr>
+
+                      <tr className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3.5 px-4 font-mono">
+                          <div className="font-bold text-white">SNT-9083</div>
+                          <div className="text-[10px] text-slate-500">Oct 28</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-white">Dr. Mahbub Alam</div>
+                          <div className="text-[11px] text-slate-400 font-mono">+880 1911-002233 (Dhaka)</div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="font-semibold text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+                            Personal Car Starter Kit
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <div className="font-bold text-[#b8e900] font-mono">৳4,490</div>
+                          <div className="text-[10px] text-amber-400 font-mono">Cash on Delivery</div>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-emerald-400 font-bold select-all">
+                          ZYNCOO-SNT-11C4-M402
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="text-[10px] font-mono text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 px-2 py-0.5 rounded-full">
+                            COD DISPATCHED
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right space-x-2">
+                          <button
+                            onClick={() => alert("Marked paid")}
+                            className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] transition-colors font-semibold"
+                          >
+                            Verify & Complete
+                          </button>
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
           )}
 

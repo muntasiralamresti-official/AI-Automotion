@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, LayoutDashboard, Menu, X, Flame } from "lucide-react";
+import { ArrowRight, Sparkles, LayoutDashboard, Menu, X, Flame, Car } from "lucide-react";
 import ZyncooLogo from "./ZyncooLogo";
 
 export default function Navbar() {
@@ -86,6 +86,17 @@ export default function Navbar() {
               >
                 Packages
               </a>
+
+              <Link 
+                href="/sentinel" 
+                className="hover:text-emerald-700 transition-colors text-slate-800 font-bold flex items-center gap-1.5 whitespace-nowrap py-1"
+              >
+                <Car className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Driver Sentinel</span>
+                <span className="bg-[#b8e900] text-slate-950 text-[9px] px-1.5 py-0.5 rounded-md font-black shrink-0 leading-none">
+                  IoT
+                </span>
+              </Link>
 
               <Link 
                 href="/affiliate" 
@@ -179,6 +190,17 @@ export default function Navbar() {
               </span>
               <span className="text-[10px] bg-rose-200 text-rose-900 font-black px-1.5 py-0.5 rounded-md">HOT PACKS</span>
             </a>
+            <Link
+              href="/sentinel"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 text-sm font-semibold text-slate-900 bg-emerald-50/90 rounded-lg flex items-center justify-between"
+            >
+              <span className="flex items-center gap-1.5">
+                <Car className="w-4 h-4 text-emerald-600" />
+                <span>🚗 Driver Sentinel IoT (Driver Sleep Alert)</span>
+              </span>
+              <span className="text-[10px] bg-[#b8e900] text-slate-950 font-black px-1.5 py-0.5 rounded-md">NEW</span>
+            </Link>
             <a
               href="#pricing"
               onClick={() => setMobileMenuOpen(false)}
