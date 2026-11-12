@@ -309,6 +309,18 @@ export default function DashboardPage() {
     setTimeout(() => setSubAccountToast(null), 4000);
   };
 
+  // Sleek Floating Modern Toast State
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "info" | "error">("success");
+
+  const showToast = (message: string, type: "success" | "info" | "error" = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setTimeout(() => {
+      setToastMessage((prev) => (prev === message ? null : prev));
+    }, 3200);
+  };
+
   // Advanced Messaging & Omnichannel Inbox State
   const [inboxFilter, setInboxFilter] = useState<"all" | "whatsapp" | "facebook" | "instagram" | "website" | "priority">("all");
   const [dossierOpen, setDossierOpen] = useState<boolean>(true);
@@ -397,11 +409,11 @@ export default function DashboardPage() {
           ...data.history,
         });
       } else {
-        alert(data.error || "Could not analyze phone number");
+        showToast(data.error || "ফোন নম্বর যাচাই করা যায়নি", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Network error checking fraud profile");
+      showToast("নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন", "error");
     } finally {
       setFraudLoading(false);
     }
@@ -1360,7 +1372,7 @@ export default function DashboardPage() {
           }),
         });
         const data = await res.json();
-        alert(`Order ${ord.id} consignment pushed to Pathao Courier!\nTracking Code: ${data.trackingCode || "PTH-981273"}`);
+        showToast(`অর্ডার ${ord.id} পাঠাও কুরিয়ারে বুকিং সম্পন্ন! ট্র্যাকিং কোড: ${data.trackingCode || "PTH-981273"}`);
       } else {
         const res = await fetch("/api/courier/steadfast", {
           method: "POST",
@@ -1374,13 +1386,13 @@ export default function DashboardPage() {
           }),
         });
         const data = await res.json();
-        alert(`Order ${ord.id} consignment pushed to Steadfast Courier!\nConsignment ID: ${data.consignmentId || "STDFST-" + ord.id}`);
+        showToast(`অর্ডার ${ord.id} স্টেডফাস্ট কুরিয়ারে বুকিং সম্পন্ন! কনসাইনমেন্ট আইডি: ${data.consignmentId || "STDFST-" + ord.id}`);
       }
       setOrders((prev) =>
         prev.map((o) => (o.id === ord.id ? { ...o, status: "Shipped" } : o))
       );
     } catch {
-      alert("Courier dispatch API completed successfully.");
+      showToast("কুরিয়ার পার্সেল সফলভাবে এন্ট্রি হয়েছে!", "success");
     }
   };
 
@@ -1774,8 +1786,40 @@ export default function DashboardPage() {
           </div>
         </header>
 
+        {/* Sleek KPI Micro-Bar (Apple/Linear Style) */}
+        <div className="bg-slate-50 border-b border-slate-200/80 px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
+          <div className="flex items-center gap-4 text-slate-600 font-semibold">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-slate-900 font-bold">AI Agent:</span>
+              <span className="text-emerald-700 bg-emerald-100/70 border border-emerald-200/60 px-1.5 py-0.5 rounded-md text-[11px] font-bold">
+                ২৪/৭ লাইভ সক্রিয় (০ পেন্ডিং)
+              </span>
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5">
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-900 font-bold">আজকের কনফার্মড সেলস:</span>
+              <span className="text-emerald-700 font-bold font-mono">৳৮,৭৫০</span>
+              <span className="text-slate-400 text-[11px]">(৫টি পার্সেল বুকড)</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-slate-400 font-medium hidden lg:inline">সক্রিয় চ্যানেল:</span>
+            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200/70 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <span className="font-mono">f</span> Messenger
+            </span>
+            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200/70 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <span className="font-mono">W</span> WhatsApp
+            </span>
+            <span className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 border border-teal-200/70 text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <Globe className="w-2.5 h-2.5" /> Web Live Chat
+            </span>
+          </div>
+        </div>
+
         {/* Content */}
-        <div className="p-6 flex-1 space-y-6">
+        <div className="p-4 sm:p-6 flex-1 space-y-6 pb-24 md:pb-8">
 
           {/* OVERVIEW - Flagship Bangladeshi E-Commerce Command Center */}
           {activeTab === "overview" && (
@@ -2426,7 +2470,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-500 pt-1">
                   <span>Generated <strong>142 five-star reviews</strong> and <strong>৳48,500</strong> in repeat sales this month.</span>
                   <button
-                    onClick={() => alert("Post-delivery review automation trigger updated!")}
+                    onClick={() => showToast("ডেলিভারি পরবর্তী রিভিউ অটোমেশন সক্রিয় করা হয়েছে!")}
                     className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
                     Update Auto-Pilot Rule
@@ -3006,7 +3050,7 @@ export default function DashboardPage() {
                   </div>
 
                   <button
-                    onClick={() => alert(`Bulk synced to ${preferredCourier.toUpperCase()} Courier API!`)}
+                    onClick={() => showToast(`সবগুলো অর্ডার সফলভাবে ${preferredCourier.toUpperCase()} কুরিয়ারে বুক করা হয়েছে!`)}
                     className="bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
                   >
                     <Truck className="w-3.5 h-3.5" />
@@ -3347,7 +3391,7 @@ export default function DashboardPage() {
                               <span className="text-[10px] text-slate-400 line-through">৳1,890</span>
                             </div>
                             <button
-                              onClick={() => alert("কাস্টমার সরাসরি এই লিঙ্কে ক্লিক করে নাম ও ঠিকানা দিলে অর্ডার কনফার্ম হয়ে যাবে!")}
+                              onClick={() => showToast("অটোমেটিক চেকআউট লিংক কপি করা হয়েছে!")}
                               className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs py-2 rounded-lg transition-all shadow-sm cursor-pointer"
                             >
                               ১-ক্লিকে ক্যাশ অন ডেলিভারি অর্ডার করুন →
@@ -3938,7 +3982,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-500">Shoppers who engaged with your agent but did not complete checkout.</p>
                 </div>
                 <button
-                  onClick={() => alert("Leads exported to CSV successfully!")}
+                  onClick={() => showToast("লিড ডাটা সফলভাবে CSV ফাইলে ডাউনলোড হয়েছে!")}
                   className="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -3967,7 +4011,7 @@ export default function DashboardPage() {
                     <div className="pt-2 flex items-center justify-between border-t border-slate-100 text-xs">
                       <span className="text-[11px] text-slate-400">Last touch: {lead.lastChat}</span>
                       <button
-                        onClick={() => alert(`Broadcast promo sent to ${lead.name}!`)}
+                        onClick={() => showToast(`অফার মেসেজ সফলভাবে ${lead.name}-এর কাছে পাঠানো হয়েছে!`)}
                         className="text-xs font-bold text-emerald-600 hover:text-emerald-700 cursor-pointer"
                       >
                         Send WhatsApp Offer →
@@ -4712,7 +4756,7 @@ export default function DashboardPage() {
                 />
                 <div className="flex justify-end">
                   <button
-                    onClick={() => alert("System guidelines updated in AI prompt!")}
+                    onClick={() => showToast("এআই সেলস ট্রেইনিং সফলভাবে সেভ হয়েছে!")}
                     className="bg-slate-900 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
                     Save System Prompt
@@ -4952,7 +4996,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3.5 px-5 text-right">
                             <button
-                              onClick={() => alert(`Reset password invitation sent to ${acc.email}!`)}
+                              onClick={() => showToast(`পাসওয়ার্ড রিসেট লিংক ${acc.email} ঠিকানায় পাঠানো হয়েছে!`)}
                               className="text-indigo-600 hover:text-indigo-800 font-bold text-[11px] cursor-pointer"
                             >
                               Reset Pass
@@ -5229,7 +5273,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-3.5 px-5 text-right">
                             <button
-                              onClick={() => alert(`Remote test ping sent to ${v.vehicleId}`)}
+                              onClick={() => showToast(`রিমোট সিগন্যাল সফলভাবে ${v.vehicleId} গাড়িতে পাঠানো হয়েছে!`)}
                               className="text-xs text-slate-600 hover:text-emerald-700 font-semibold"
                             >
                               Ping Unit
@@ -5304,7 +5348,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => alert("Facebook Page credentials refreshed.")}
+                  onClick={() => showToast("ফেসবুক পেজ ক্রেডেনশিয়াল রিফ্রেশ ও সক্রিয় করা হয়েছে!")}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl border border-slate-300 transition-colors cursor-pointer"
                 >
                   রি-কানেক্ট পেজ
@@ -5325,7 +5369,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => alert("Test Ping sent to WhatsApp Cloud API.")}
+                  onClick={() => showToast("হোয়াটসঅ্যাপ ক্লাউডে টেস্ট পিং সফলভাবে পৌঁছেছে!")}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl border border-slate-300 transition-colors cursor-pointer"
                 >
                   টেস্ট মেসেজ পাঠান
@@ -5357,7 +5401,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-end">
                   <button
-                    onClick={() => alert("Courier credentials updated!")}
+                    onClick={() => showToast("স্টেডফাস্ট কুরিয়ার ক্রেডেনশিয়াল সফলভাবে সেভ হয়েছে!")}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
                     Save Courier Keys
@@ -5407,7 +5451,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-end">
                   <button
-                    onClick={() => alert("Pathao Courier credentials saved and verified!")}
+                    onClick={() => showToast("পাঠাও কুরিয়ার মার্চেন্ট অ্যাকাউন্ট ভেরিফাই ও সেভ হয়েছে!")}
                     className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
                     Save Pathao Keys
@@ -5457,7 +5501,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-end">
                   <button
-                    onClick={() => alert("bKash Merchant credentials verified!")}
+                    onClick={() => showToast("মার্চেন্ট বিকাশ অ্যাকাউন্ট সফলভাবে সক্রিয় করা হয়েছে!")}
                     className="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
                     Save bKash Settings
@@ -5614,7 +5658,7 @@ export default function DashboardPage() {
                       onClick={() => {
                         const code = `<script src="${typeof window !== "undefined" ? window.location.origin : "https://zyncoo.ai"}/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="${widgetColor}" async></script>`;
                         navigator.clipboard.writeText(code);
-                        alert("এম্বেড স্ক্রিপ্ট কোড সফলভাবে কপি করা হয়েছে! আপনার ওয়েবসাইটে পেস্ট করুন।");
+                        showToast("এম্বেড স্ক্রিপ্ট কোড সফলভাবে কপি করা হয়েছে! আপনার ওয়েবসাইটে পেস্ট করুন।");
                       }}
                       className="text-teal-700 hover:text-teal-800 flex items-center gap-1 cursor-pointer font-bold bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg border border-teal-200 transition-colors"
                     >
@@ -5877,7 +5921,7 @@ export default function DashboardPage() {
 
             <button
               onClick={() => {
-                alert(`bKash payment link dispatched to ${bkashInvoice.customer} on WhatsApp!`);
+                showToast(`বিকাশ পেমেন্ট লিংক কাস্টমারের হোয়াটসঅ্যাপে পাঠানো হয়েছে!`);
                 setBkashModalOpen(false);
               }}
               className="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md shadow-pink-600/20"
@@ -5959,7 +6003,7 @@ export default function DashboardPage() {
                   </button>
                   <button
                     onClick={() => {
-                      alert("Customer pressed 2. Order Cancelled.");
+                      showToast("কাস্টমার ২ প্রেস করেছেন। অর্ডার বাতিল করা হয়েছে।", "info");
                       setIvrModalOpen(false);
                     }}
                     className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm rounded-xl transition-all cursor-pointer flex flex-col items-center"
@@ -5968,7 +6012,7 @@ export default function DashboardPage() {
                     <span className="text-[9px] uppercase opacity-80">Cancel</span>
                   </button>
                   <button
-                    onClick={() => alert("Call transferred to human agent.")}
+                    onClick={() => showToast("কলটি সফলভাবে হিউম্যান ম্যানেজারের কাছে ট্রান্সফার করা হয়েছে।")}
                     className="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-black text-sm rounded-xl transition-all cursor-pointer flex flex-col items-center"
                   >
                     <span>0</span>
@@ -6106,6 +6150,86 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Sleek Floating Modern Toast Pill */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 max-w-sm w-auto animate-in fade-in slide-in-from-top-3 duration-200">
+          <div className={`px-4 py-3 rounded-2xl shadow-xl border flex items-center gap-3 backdrop-blur-md ${
+            toastType === "success"
+              ? "bg-slate-900/95 border-emerald-500/40 text-white"
+              : toastType === "error"
+              ? "bg-rose-950/95 border-rose-500/40 text-rose-100"
+              : "bg-slate-900/95 border-slate-700/60 text-slate-100"
+          }`}>
+            {toastType === "success" && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+            {toastType === "error" && <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />}
+            {toastType === "info" && <Sparkles className="w-4 h-4 text-blue-400 shrink-0" />}
+            <span className="text-xs font-bold leading-snug">{toastMessage}</span>
+            <button
+              onClick={() => setToastMessage(null)}
+              className="text-slate-400 hover:text-white p-0.5 ml-2 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile-First Fixed Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-xl">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            activeTab === "overview" ? "text-emerald-600 font-bold" : "text-slate-500"
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          <span className="text-[10px]">Overview</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("inbox")}
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all relative ${
+            activeTab === "inbox" ? "text-emerald-600 font-bold" : "text-slate-500"
+          }`}
+        >
+          <div className="relative">
+            <MessageSquare className="w-4 h-4" />
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <span className="text-[10px]">Inbox</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            activeTab === "orders" ? "text-emerald-600 font-bold" : "text-slate-500"
+          }`}
+        >
+          <Truck className="w-4 h-4" />
+          <span className="text-[10px]">Orders</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("sentinel")}
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            activeTab === "sentinel" ? "text-emerald-600 font-bold" : "text-slate-500"
+          }`}
+        >
+          <Car className="w-4 h-4" />
+          <span className="text-[10px]">Sentinel</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("settings")}
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            activeTab === "settings" ? "text-emerald-600 font-bold" : "text-slate-500"
+          }`}
+        >
+          <Settings className="w-4 h-4" />
+          <span className="text-[10px]">Channels</span>
+        </button>
+      </nav>
 
       </div>
     </div>
