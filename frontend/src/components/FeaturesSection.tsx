@@ -19,7 +19,7 @@ export default function FeaturesSection() {
       icon: <Zap className="w-6 h-6 text-emerald-600" />,
       title: "Sub-3s Response Velocity",
       description: "Engage prospects instantly at 3 AM or during flash sales. Never let a qualified buyer bounce to a competitor while waiting for a reply.",
-      badge: "Zero Latency",
+      badge: "তাৎক্ষণিক রেসপন্স",
     },
     {
       icon: <ShoppingBag className="w-6 h-6 text-emerald-600" />,
@@ -41,9 +41,9 @@ export default function FeaturesSection() {
     },
     {
       icon: <MessageSquare className="w-6 h-6 text-emerald-600" />,
-      title: "Omnichannel Social Commerce",
-      description: "Connect your official WhatsApp Business Cloud API, Facebook Page, and Instagram DM in a single unified dashboard.",
-      badge: "Unified Inbox",
+      title: "Omnichannel Social & Web Commerce",
+      description: "Connect your WhatsApp Business, Facebook Messenger, Instagram DM, and your website live chat widget in a single unified dashboard.",
+      badge: "WhatsApp + Web",
     },
     {
       icon: <SlidersHorizontal className="w-6 h-6 text-emerald-600" />,
@@ -53,9 +53,9 @@ export default function FeaturesSection() {
     },
     {
       icon: <Truck className="w-6 h-6 text-emerald-600" />,
-      title: "Automated Logistics & Courier APIs",
-      description: "Built-in dispatch routing for Steadfast, RedX, Pathao, and global fulfillment webhooks to generate consignment IDs automatically.",
-      badge: "Fulfillment Ready",
+      title: "স্বয়ংক্রিয় কুরিয়ার বুকিং ও ট্র্যাকিং",
+      description: "স্টেডফাস্ট, পাঠাও ও রেডএক্স কুরিয়ারে কোনো বাড়তি ঝামেলা ছাড়াই স্বয়ংক্রিয়ভাবে পার্সেল এন্ট্রি ও ট্র্যাকিং কোড তৈরি হয়।",
+      badge: "১-ক্লিক পার্সেল",
     },
     {
       icon: <UserCheck className="w-6 h-6 text-emerald-600" />,

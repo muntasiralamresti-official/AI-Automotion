@@ -114,7 +114,7 @@ export default function HeroSection() {
           <span className="text-slate-600 font-medium">zyncoo.ai 2.4</span>
           <span className="text-slate-300">•</span>
           <span className="text-emerald-700 font-bold group-hover:text-emerald-800 flex items-center gap-1">
-            Autonomous Conversational Sales Engine
+            ফেসবুক, হোয়াটসঅ্যাপ ও ওয়েবসাইটের ভার্চুয়াল সেলসম্যান
             <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
           </span>
         </div>
@@ -133,8 +133,7 @@ export default function HeroSection() {
 
         {/* Minimal Subtitle */}
         <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
-          Deploy 24/7 autonomous agents on WhatsApp, Facebook & Instagram. 
-          Fluent in English, Bengali & Banglish—taking orders and syncing couriers while you sleep.
+          আপনার ফেসবুক পেজ, হোয়াটসঅ্যাপ, ইনস্টাগ্রাম এবং নিজস্ব ওয়েবসাইটে মিষ্টি ভাষায় কথা বলে অর্ডার নেবে এবং স্টেডফাস্ট/পাঠাও কুরিয়ারে বুক করে দেবে—দিনরাত ২৪ ঘণ্টাই!
         </p>
 
         {/* Action Buttons */}
@@ -418,7 +417,7 @@ export default function HeroSection() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <MessageSquare className="w-4 h-4 text-emerald-600" />
-                      1. Inbound Midnight Inquiry via WhatsApp Cloud
+                      ১. মধ্যরাতের কাস্টমার মেসেজ (হোয়াটসঅ্যাপ/ওয়েবসাইট)
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">02:14:02 AM</span>
                   </div>
@@ -430,7 +429,7 @@ export default function HeroSection() {
                   </div>
                   <div className="text-xs text-slate-600 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Zyncoo AI receives webhook within <strong>180ms</strong>. No human staff is awake.</span>
+                    <span>মেসেজ পাওয়ার সাথে সাথে মাত্র <strong>১ সেকেন্ডের</strong> মধ্যে মিষ্টি ভাষায় উত্তর পাঠানো হয়।</span>
                   </div>
                 </div>
               )}
@@ -440,7 +439,7 @@ export default function HeroSection() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-emerald-600" />
-                      2. Semantic Reasoning & Server-Authoritative Catalog Match
+                      ২. মানুষের মতো মিষ্টি ভাষায় কথা ও সঠিক পণ্য বাছাই
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">02:14:04 AM</span>
                   </div>
@@ -454,7 +453,7 @@ export default function HeroSection() {
                     </div>
                   </div>
                   <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-900">
-                    <span className="font-bold block mb-0.5">Zyncoo Autonomous AI Reply (Sent in 1.4s):</span>
+                    <span className="font-bold block mb-0.5">এআই কাস্টমার ম্যানেজারের উত্তর (স্বাভাবিক ও মার্জিত বাংলায়):</span>
                     &quot;Assalamu Alaikum! Ji Ultra Watch 9 Black stock e ache. Dhanmondi te kal sondhar moddhei delivery paben (charge ৳60). Apnar name, phone number o full address ta bolben please?&quot;
                   </div>
                 </div>
@@ -465,7 +464,7 @@ export default function HeroSection() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      3. RTO Fraud Shield Cross-Courier Verification
+                      ৩. পার্সেল রিটার্ন ফ্রড চেক (গ্রাহকের কুরিয়ার হিস্ট্রি যাচাই)
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">02:14:48 AM</span>
                   </div>
@@ -492,31 +491,31 @@ export default function HeroSection() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-slate-800 flex items-center gap-1.5">
                       <Truck className="w-4 h-4 text-emerald-600" />
-                      4. Steadfast Courier API Direct Consignment
+                      ৪. কুরিয়ারে স্বয়ংক্রিয় পার্সেল বুকিং ও ট্র্যাকিং তৈরি
                     </span>
                     <span className="font-mono text-[11px] text-slate-400">02:15:05 AM</span>
                   </div>
                   <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs space-y-1.5 font-mono text-xs">
                     <div className="flex items-center justify-between text-slate-700">
-                      <span>Consignment ID:</span>
+                      <span>কুরিয়ার বুকিং আইডি:</span>
                       <span className="font-bold text-slate-900">#STDFST-8812</span>
                     </div>
                     <div className="flex items-center justify-between text-slate-700">
-                      <span>Recipient:</span>
+                      <span>গ্রাহকের নাম ও ফোন:</span>
                       <span>Tanvir Hasan (01711-987654)</span>
                     </div>
                     <div className="flex items-center justify-between text-slate-700">
-                      <span>COD Collection:</span>
+                      <span>ক্যাশ অন ডেলিভারি কালেকশন:</span>
                       <span className="font-bold text-emerald-700">৳1,610 (Item + Delivery)</span>
                     </div>
                     <div className="flex items-center justify-between text-slate-700">
-                      <span>Pickup Scheduled:</span>
+                      <span>পার্সেল পিকআপ সময়:</span>
                       <span className="text-emerald-700 font-semibold">Morning 10:00 AM Hub Run</span>
                     </div>
                   </div>
                   <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Courier label created automatically in background!</span>
+                    <span>কুরিয়ার স্লিপ ও ট্র্যাকিং কোড স্বয়ংক্রিয়ভাবে তৈরি হয়ে গেছে!</span>
                   </div>
                 </div>
               )}

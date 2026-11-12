@@ -54,10 +54,10 @@ export default function DriverSentinelSection() {
               </div>
               <div>
                 <h3 className="font-bold text-white text-base">
-                  468-Point 3D ফেস ও আই-মেশ স্ক্যানার
+                  স্মার্ট ড্রাইভার ফেস ও আই স্ক্যানার (নিরাপত্তা সেন্সর)
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  MediaPipe আল্ট্রা-ফাস্ট ভিশন এআই দিয়ে চালকের চোখের পাতা (EAR), হাই তোলা (MAR) এবং মাথা সামনের দিকে ঝুঁকে পড়া রিয়েল-টাইমে পরিমাপ করে।
+                  উন্নত ভিশন সেন্সর দিয়ে চালকের চোখের পাতা বন্ধ হওয়া, ক্লান্তি বা হাই তোলা এবং মাথা সামনের দিকে ঝুঁকে পড়া চোখের পলকে নিখুঁতভাবে শনাক্ত করে।
                 </p>
               </div>
             </div>

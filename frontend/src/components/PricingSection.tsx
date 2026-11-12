@@ -19,6 +19,7 @@ export default function PricingSection() {
       popular: false,
       features: [
         "১টি ফেসবুক পেইজ বা ইন্সটাগ্রাম চ্যানেল কানেক্ট",
+        "যেকোনো ওয়েবসাইটে (WordPress/Shopify) ১-ক্লিক এআই চ্যাট উইজেট",
         "১,৫০০টি সম্পূর্ণ স্বয়ংক্রিয় এআই সেলস চ্যাট / মাস",
         "ন্যাচারাল বাংলা, ইংরেজি ও বাংলিশে সাবলীল কথোপকথন",
         "ক্যাশ অন ডেলিভারি অটো-অর্ডার এক্সট্রাকশন ও ১১-ডিজিট ফোন চেক",
@@ -38,7 +39,8 @@ export default function PricingSection() {
       priceYearlyUSD: 36,
       popular: true,
       features: [
-        "Facebook Page + Instagram + 1 Official WhatsApp Cloud API",
+        "Facebook Page + Instagram + WhatsApp + Website Live Chat Widget",
+        "WordPress, Shopify ও Custom HTML ১-ক্লিক ইন্টিগ্রেশন",
         "৫,০০০টি হাই-কনভার্সন এআই সেলস কনভার্সেশন / মাস",
         "ইন-চ্যাটে ৳১০০ বিকাশ ডেলিভারি চার্জ কিউআর ও TrxID অটো-ভেরিফাই",
         "Steadfast, Pathao ও RedX ফ্রড শিল্ড ও পার্সেল অটো-এন্ট্রি",

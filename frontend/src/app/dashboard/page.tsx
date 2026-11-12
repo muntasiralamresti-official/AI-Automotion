@@ -72,7 +72,8 @@ import {
   MessageCircle,
   Car,
   Gauge,
-  Key
+  Key,
+  Code
 } from "lucide-react";
 import ZyncooLogo from "@/components/ZyncooLogo";
 import { playOrderChime } from "@/lib/sound";
@@ -84,7 +85,7 @@ interface Order {
   address: string;
   item: string;
   amount: number;
-  channel: "facebook" | "whatsapp";
+  channel: "facebook" | "whatsapp" | "website" | "instagram";
   status: "Confirmed" | "Shipped" | "Pending";
   time: string;
   rtoRate: string;
@@ -97,7 +98,7 @@ interface Lead {
   name: string;
   phone: string;
   interest: string;
-  channel: "facebook" | "whatsapp";
+  channel: "facebook" | "whatsapp" | "website" | "instagram";
   status: "Pending" | "Offer Sent" | "Converted";
   lastChat: string;
 }
@@ -309,7 +310,7 @@ export default function DashboardPage() {
   };
 
   // Advanced Messaging & Omnichannel Inbox State
-  const [inboxFilter, setInboxFilter] = useState<"all" | "whatsapp" | "facebook" | "instagram" | "priority">("all");
+  const [inboxFilter, setInboxFilter] = useState<"all" | "whatsapp" | "facebook" | "instagram" | "website" | "priority">("all");
   const [dossierOpen, setDossierOpen] = useState<boolean>(true);
   const [audioPlayingId, setAudioPlayingId] = useState<string | null>(null);
 
@@ -408,6 +409,19 @@ export default function DashboardPage() {
 
   // Sample Orders Data
   const [orders, setOrders] = useState<Order[]>([
+    {
+      id: "ORD-9822",
+      customer: "Nusrat Jahan",
+      phone: "01755-443322",
+      address: "House 12, Road 5, Sector 11, Uttara, Dhaka",
+      item: "Smart Watch 9 Pro (Black)",
+      amount: 2450,
+      channel: "website",
+      status: "Confirmed",
+      time: "2 mins ago",
+      rtoRate: "95%",
+      rtoRisk: "LOW",
+    },
     {
       id: "ORD-9821",
       customer: "Tanvir Hasan",
@@ -521,6 +535,10 @@ export default function DashboardPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [isAddingRule, setIsAddingRule] = useState<boolean>(false);
   const [ruleSaveMessage, setRuleSaveMessage] = useState<string | null>(null);
+
+  // Website Live Chat Widget Embed Settings State
+  const [widgetPlatformTab, setWidgetPlatformTab] = useState<"wordpress" | "shopify" | "custom">("wordpress");
+  const [widgetColor, setWidgetColor] = useState<string>("#10b981");
 
   // Real-Time Google Sheets Webhook Exporter State
   const [googleSheetWebhook, setGoogleSheetWebhook] = useState("https://script.google.com/macros/s/AKfycbz_SAMPLE_LEADS_SHEET/exec");
@@ -1146,6 +1164,29 @@ export default function DashboardPage() {
         { sender: "customer", text: "আজকের মধ্যে না আসলে আমি পার্সেল রিসিভ করব না এবং পেইজে নেগেটিভ রিভিউ দেব!", time: "11:05 AM" },
       ],
     },
+    {
+      id: "c6",
+      customer: "Nusrat Jahan",
+      phone: "01755-443322",
+      channel: "website" as const,
+      unread: false,
+      priority: false,
+      lastMsg: "ওয়েবসাইট লাইভ চ্যাট থেকে অর্ডার কনফার্ম হয়েছে",
+      time: "11:20 AM",
+      location: "Uttara Sector 11, Dhaka",
+      rtoSuccessRate: "95%",
+      rtoRisk: "LOW" as const,
+      totalOrders: 1,
+      lifetimeValue: 2450,
+      tags: ["WordPress/Shopify Store", "Live Chat", "Cash on Delivery"],
+      stage: "Order Booked",
+      messages: [
+        { sender: "customer", text: "আপনাদের ওয়েবসাইটে Smart Watch 9 Pro অফারটি দেখলাম, এটা কি ওয়াটারপ্রুফ?", time: "11:18 AM" },
+        { sender: "bot", text: "জি আপু! এটি IP68 ওয়াটারপ্রুফ ও ১ বছরের অফিসিয়াল ওয়ারেন্টি সহ। সাথে একটি অতিরিক্ত প্রিমিয়াম সিলিকন স্ট্র্যাপ ফ্রি পাচ্ছেন। 😊", time: "11:18 AM" },
+        { sender: "customer", text: "আমি ১টি নিতে চাই ক্যাশ অন ডেলিভারিতে। ঠিকানা: বাড়ি ১২, রোড ৫, সেক্টর ১১, উত্তরা, ঢাকা। ফোন: 01755-443322", time: "11:19 AM" },
+        { sender: "bot", text: "ধন্যবাদ নুসরাত আপু! আপনার অর্ডারটি নিশ্চিত করা হয়েছে (#ORD-9822)। পাঠাও কুরিয়ারে খুব দ্রুত পার্সেল পৌঁছে যাবে!", time: "11:20 AM", isBookingPill: true, bookingData: { consignmentId: "PTH-99321", courier: "Pathao Courier", trackingCode: "TRK-9932" } },
+      ],
+    },
   ]);
 
   const activeConversation = conversations.find((c) => c.id === selectedChatId) || conversations[0];
@@ -1656,7 +1697,7 @@ export default function DashboardPage() {
               }`}
             >
               <Settings className="w-4 h-4" />
-              <span>Channels & API</span>
+              <span>চ্যানেল ও ওয়েবসাইট ইন্টিগ্রেশন</span>
             </button>
           </nav>
         </div>
@@ -1668,7 +1709,7 @@ export default function DashboardPage() {
               <div className="text-xs font-bold text-slate-800">Agent Status</div>
               <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
                 <span className={`w-1.5 h-1.5 rounded-full ${botActive ? "bg-emerald-500 animate-ping" : "bg-slate-400"}`}></span>
-                <span>{botActive ? "Autonomous (24/7)" : "Paused"}</span>
+                <span>{botActive ? "২৪/৭ সক্রিয় (Active)" : "পজ করা"}</span>
               </div>
             </div>
             <button
@@ -1712,7 +1753,7 @@ export default function DashboardPage() {
               {activeTab === "training" && "Store AI Knowledge Base & Product Training"}
               {activeTab === "team" && "Client Sub-Accounts & Multi-Tenant Role Permissions"}
               {activeTab === "sentinel" && "Zyncoo Driver Sentinel (AI Driver Drowsiness & Fleet Safety IoT Hub)"}
-              {activeTab === "settings" && "Integrations & API Configuration"}
+              {activeTab === "settings" && "চ্যানেল ও ওয়েবসাইট ইন্টিগ্রেশন (Facebook, WhatsApp, Website Store)"}
             </h1>
           </div>
 
@@ -2223,9 +2264,15 @@ export default function DashboardPage() {
                           <td className="px-5 py-3.5 font-mono font-bold text-slate-900">৳{ord.amount}</td>
                           <td className="px-5 py-3.5">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              ord.channel === "whatsapp" ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-800"
+                              ord.channel === "whatsapp" 
+                                ? "bg-emerald-100 text-emerald-800" 
+                                : ord.channel === "website"
+                                ? "bg-teal-100 text-teal-800"
+                                : ord.channel === "instagram"
+                                ? "bg-pink-100 text-pink-800"
+                                : "bg-blue-100 text-blue-800"
                             }`}>
-                              {ord.channel === "whatsapp" ? "WhatsApp" : "Messenger"}
+                              {ord.channel === "whatsapp" ? "WhatsApp" : ord.channel === "website" ? "Website Store" : ord.channel === "instagram" ? "Instagram" : "Messenger"}
                             </span>
                           </td>
                           <td className="px-5 py-3.5">
@@ -2452,6 +2499,16 @@ export default function DashboardPage() {
                       Instagram
                     </button>
                     <button
+                      onClick={() => setInboxFilter("website")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                        inboxFilter === "website"
+                          ? "bg-teal-600 text-white"
+                          : "bg-teal-50 text-teal-800 hover:bg-teal-100"
+                      }`}
+                    >
+                      🌐 Website Store
+                    </button>
+                    <button
                       onClick={() => setInboxFilter("priority")}
                       className={`px-2 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                         inboxFilter === "priority"
@@ -2495,10 +2552,12 @@ export default function DashboardPage() {
                                   ? "bg-emerald-600"
                                   : conv.channel === "instagram"
                                   ? "bg-pink-600"
+                                  : conv.channel === "website"
+                                  ? "bg-teal-600"
                                   : "bg-blue-600"
                               }`}
                             >
-                              {conv.channel === "whatsapp" ? "W" : conv.channel === "instagram" ? "I" : "M"}
+                              {conv.channel === "whatsapp" ? "W" : conv.channel === "instagram" ? "I" : conv.channel === "website" ? "🌐" : "M"}
                             </span>
                           </div>
 
@@ -2553,9 +2612,11 @@ export default function DashboardPage() {
                             ? "bg-emerald-100 text-emerald-800"
                             : activeConversation.channel === "instagram"
                             ? "bg-pink-100 text-pink-800"
+                            : activeConversation.channel === "website"
+                            ? "bg-teal-100 text-teal-800"
                             : "bg-blue-100 text-blue-800"
                         }`}>
-                          {activeConversation.channel}
+                          {activeConversation.channel === "website" ? "Website Live Chat" : activeConversation.channel}
                         </span>
                       </div>
                       <div className="text-[10px] text-slate-500 flex items-center gap-1.5 mt-0.5">
@@ -2991,9 +3052,15 @@ export default function DashboardPage() {
                           <td className="px-5 py-4 font-mono font-bold text-slate-900">৳{ord.amount}</td>
                           <td className="px-5 py-4">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              ord.channel === "whatsapp" ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-800"
+                              ord.channel === "whatsapp" 
+                                ? "bg-emerald-100 text-emerald-800" 
+                                : ord.channel === "website"
+                                ? "bg-teal-100 text-teal-800"
+                                : ord.channel === "instagram"
+                                ? "bg-pink-100 text-pink-800"
+                                : "bg-blue-100 text-blue-800"
                             }`}>
-                              {ord.channel === "whatsapp" ? "WhatsApp" : "Messenger"}
+                              {ord.channel === "whatsapp" ? "WhatsApp" : ord.channel === "website" ? "Website Store" : ord.channel === "instagram" ? "Instagram" : "Messenger"}
                             </span>
                           </td>
                           <td className="px-5 py-4">
@@ -5210,15 +5277,15 @@ export default function DashboardPage() {
               {/* Feature 3: One-Click Meta Connect Card */}
               <div className="bg-gradient-to-r from-blue-600/10 via-emerald-600/10 to-transparent p-6 rounded-2xl border border-blue-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Fast-Track Setup</div>
-                  <h4 className="font-extrabold text-base text-slate-900">One-Click Meta Official OAuth Connect</h4>
-                  <p className="text-xs text-slate-600">Connect Facebook Page Messenger & WhatsApp Cloud API directly with 1 click.</p>
+                  <div className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">সহজ ও দ্রুত কানেকশন</div>
+                  <h4 className="font-extrabold text-base text-slate-900">১-ক্লিক ফেসবুক ও হোয়াটসঅ্যাপ অটো কানেক্ট</h4>
+                  <p className="text-xs text-slate-600">কোনো টেকনিক্যাল কোডিং ছাড়াই এক ক্লিকে ফেসবুক পেজ মেসেঞ্জার ও হোয়াটসঅ্যাপ সরাসরি যুক্ত করুন।</p>
                 </div>
                 <button
                   onClick={() => setMetaModalOpen(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md shadow-blue-600/20 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
                 >
-                  <span>Launch 1-Click Wizard</span>
+                  <span>কানেক্ট উইজার্ড চালু করুন</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -5229,10 +5296,10 @@ export default function DashboardPage() {
                     f
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900">Facebook Page & Messenger Graph API</h4>
-                    <p className="text-xs text-slate-500">Connected Page: GadgetZone BD (Page ID: 10928374921)</p>
+                    <h4 className="font-bold text-sm text-slate-900">ফেসবুক পেজ ও মেসেঞ্জার কানেকশন</h4>
+                    <p className="text-xs text-slate-500">সংযুক্ত পেজ: GadgetZone BD (Page ID: 10928374921)</p>
                     <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1 inline-block">
-                      ✓ Webhook Verified (200 OK)
+                      ✓ সফলভাবে সংযুক্ত ও সক্রিয় (Active)
                     </span>
                   </div>
                 </div>
@@ -5240,7 +5307,7 @@ export default function DashboardPage() {
                   onClick={() => alert("Facebook Page credentials refreshed.")}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl border border-slate-300 transition-colors cursor-pointer"
                 >
-                  Reconnect Page
+                  রি-কানেক্ট পেজ
                 </button>
               </div>
 
@@ -5250,10 +5317,10 @@ export default function DashboardPage() {
                     W
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900">Meta Official WhatsApp Cloud API</h4>
-                    <p className="text-xs text-slate-500">Business Phone: +880 1700-000000 (WABA ID: 4981729)</p>
+                    <h4 className="font-bold text-sm text-slate-900">অফিসিয়াল হোয়াটসঅ্যাপ বিজনেস কানেকশন</h4>
+                    <p className="text-xs text-slate-500">বিজনেস নম্বর: +880 1700-000000 (WABA ID: 4981729)</p>
                     <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1 inline-block">
-                      ✓ Cloud Engine Connected
+                      ✓ সরাসরি সংযুক্ত ও সচল
                     </span>
                   </div>
                 </div>
@@ -5261,14 +5328,14 @@ export default function DashboardPage() {
                   onClick={() => alert("Test Ping sent to WhatsApp Cloud API.")}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl border border-slate-300 transition-colors cursor-pointer"
                 >
-                  Send Test Ping
+                  টেস্ট মেসেজ পাঠান
                 </button>
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                 <div>
-                  <h4 className="font-bold text-sm text-slate-900">Steadfast Courier API Keys</h4>
-                  <p className="text-xs text-slate-500">API keys allow your AI to automatically book parcel delivery and retrieve tracking IDs.</p>
+                  <h4 className="font-bold text-sm text-slate-900">স্টেডফাস্ট কুরিয়ার অটোমেশন (Steadfast Courier Keys)</h4>
+                  <p className="text-xs text-slate-500">আপনার স্টেডফাস্ট অ্যাকাউন্ট যুক্ত থাকলে কাস্টমার অর্ডার কনফার্ম করার সাথে সাথে স্বয়ংক্রিয়ভাবে পার্সেল বুক হয়ে ট্র্যাকিং নম্বর তৈরি হবে।</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
@@ -5304,9 +5371,9 @@ export default function DashboardPage() {
                   <div>
                     <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                       <span className="w-6 h-6 rounded-lg bg-red-600 text-white text-xs font-black flex items-center justify-center">P</span>
-                      <span>Pathao Courier Official Merchant API</span>
+                      <span>পাঠাও কুরিয়ার মার্চেন্ট কানেকশন (Pathao Courier)</span>
                     </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">Automates city and zone mapping with instant tracking code generation.</p>
+                    <p className="text-xs text-slate-500 mt-0.5">অর্ডার আসার সাথে সাথে পাঠাও সিস্টেমে সরাসরি পার্সেল এন্ট্রি ও ইনস্ট্যান্ট ট্র্যাকিং নিশ্চিত করে।</p>
                   </div>
                   <span className="text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
                     SLA: 24-48h
@@ -5354,9 +5421,9 @@ export default function DashboardPage() {
                   <div>
                     <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                       <span className="w-6 h-6 rounded-lg bg-pink-600 text-white text-xs font-black flex items-center justify-center">৳</span>
-                      <span>bKash Tokenized PGW (In-Chat Instant Checkout)</span>
+                      <span>মার্চেন্ট বিকাশ পেমেন্ট (ইন-চ্যাট অটো পেমেন্ট ও ডেলিভারি চার্জ)</span>
                     </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">Allows AI to automatically send dynamic bKash payment links & QR codes inside chat.</p>
+                    <p className="text-xs text-slate-500 mt-0.5">চ্যাটের ভেতরেই স্বয়ংক্রিয়ভাবে ১০০ টাকা অ্যাডভান্স ডেলিভারি চার্জের কিউআর ও ডায়নামিক পে-লিংক পাঠায়।</p>
                   </div>
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     Instant Settlement
@@ -5364,7 +5431,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                   <div>
-                    <label className="font-bold text-slate-700 mb-1 block">Merchant bKash Number</label>
+                    <label className="font-bold text-slate-700 mb-1 block">মার্চেন্ট বিকাশ নম্বর</label>
                     <input
                       type="text"
                       defaultValue="01700-000000"
@@ -5393,52 +5460,170 @@ export default function DashboardPage() {
                     onClick={() => alert("bKash Merchant credentials verified!")}
                     className="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                   >
-                    Save bKash PGW
+                    Save bKash Settings
                   </button>
                 </div>
               </div>
 
               {/* Universal Website Live Chat Widget Embed Card */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full mb-1">
-                      <Globe className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Web Live Chat Widget</span>
+                    <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full mb-1">
+                      <Globe className="w-3.5 h-3.5 text-teal-600" />
+                      <span>যেকোনো ওয়েবসাইটে এআই চ্যাটবট ইন্টিগ্রেশন</span>
                     </div>
-                    <h4 className="font-bold text-sm text-slate-900">
-                      যেকোনো ওয়েবসাইটে Zyncoo AI চ্যাট উইজেট এম্বেড করুন
+                    <h4 className="font-extrabold text-base text-slate-900">
+                      Website Live Chat & Auto-Order Widget (WordPress, Shopify, Web)
                     </h4>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      WordPress, Shopify বা যেকোনো কাস্টম HTML ওয়েবসাইটে নিচের কোডটি বসালেই ওয়েবসাইটেই লাইভ এআই চ্যাট চালু হয়ে যাবে।
+                    <p className="text-xs text-slate-500 mt-1">
+                      আপনার নিজস্ব ই-কমার্স ওয়েবসাইটে আসা ভিজিটরদের সাথে মিষ্টি ভাষায় কথা বলে অর্ডার নিবে এবং কুরিয়ারে পাঠিয়ে দেবে—১ ক্লিকেই ইন্টিগ্রেট করুন।
                     </p>
                   </div>
-                  <Link
-                    href="/widget"
-                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap self-start sm:self-auto"
-                  >
-                    <span>লাইভ উইজেট কনফিগ পেজ খুলুন</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/widget"
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all shadow-sm cursor-pointer whitespace-nowrap"
+                    >
+                      <span>লাইভ ডেমো দেখুন</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
 
+                {/* Platform Selector Tabs */}
+                <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3">
+                  <button
+                    type="button"
+                    onClick={() => setWidgetPlatformTab("wordpress")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      widgetPlatformTab === "wordpress"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-[10px]">W</span>
+                    <span>WordPress & WooCommerce</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWidgetPlatformTab("shopify")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      widgetPlatformTab === "shopify"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <span className="w-4 h-4 rounded-full bg-white/20 text-white flex items-center justify-center text-[10px]">S</span>
+                    <span>Shopify Store</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setWidgetPlatformTab("custom")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      widgetPlatformTab === "custom"
+                        ? "bg-purple-600 text-white shadow-xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <Code className="w-3.5 h-3.5" />
+                    <span>Custom HTML / React / PHP</span>
+                  </button>
+                </div>
+
+                {/* Color customizer */}
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                    <span>উইজেটের ব্র্যান্ড কালার নির্বাচন করুন:</span>
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { color: "#10b981", name: "Emerald Green" },
+                        { color: "#2563eb", name: "Royal Blue" },
+                        { color: "#7c3aed", name: "Deep Purple" },
+                        { color: "#e11d48", name: "Rose Pink" },
+                        { color: "#0f172a", name: "Slate Black" }
+                      ].map((c) => (
+                        <button
+                          key={c.color}
+                          type="button"
+                          onClick={() => setWidgetColor(c.color)}
+                          style={{ backgroundColor: c.color }}
+                          className={`w-6 h-6 rounded-full border-2 transition-transform cursor-pointer ${
+                            widgetColor === c.color ? "border-white scale-110 shadow-md ring-2 ring-emerald-500" : "border-transparent opacity-80 hover:opacity-100"
+                          }`}
+                          title={c.name}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    নির্বাচিত থিম কোড: <span className="font-mono font-bold text-slate-800">{widgetColor}</span>
+                  </div>
+                </div>
+
+                {/* Platform-Specific Step-by-Step Instructions */}
+                {widgetPlatformTab === "wordpress" && (
+                  <div className="space-y-3 bg-blue-50/50 p-4 rounded-xl border border-blue-200 text-xs">
+                    <div className="font-bold text-blue-900 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                      <span>WordPress & WooCommerce এ ৩ মিনিটে সেটআপ গাইড:</span>
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-slate-700 leading-relaxed">
+                      <li>আপনার ওয়ার্ডপ্রেস অ্যাডমিন প্যানেলে লগইন করুন (<code className="bg-white px-1 py-0.5 rounded border border-blue-200">yourdomain.com/wp-admin</code>)।</li>
+                      <li>Plugins &gt; Add New এ গিয়ে <strong>&quot;Insert Headers and Footers&quot;</strong> (বা WPCode) প্লাগইন সার্চ করে একটিভ করুন।</li>
+                      <li>সেটিংস থেকে <strong>Scripts in Body / Footer</strong> বক্সে নিচের স্ক্রিপ্ট কোডটি পেস্ট করে <strong>Save Changes</strong> দিন।</li>
+                      <li>ব্যাস! আপনার ওয়েবসাইটে গ্রাহকরা প্রবেশ করলেই ডান কোণায় Zyncoo এআই চ্যাটবট সক্রিয় হয়ে যাবে।</li>
+                    </ol>
+                  </div>
+                )}
+
+                {widgetPlatformTab === "shopify" && (
+                  <div className="space-y-3 bg-emerald-50/50 p-4 rounded-xl border border-emerald-200 text-xs">
+                    <div className="font-bold text-emerald-900 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>Shopify স্টোরে ২ মিনিটে সেটআপ গাইড:</span>
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-slate-700 leading-relaxed">
+                      <li>আপনার Shopify Admin প্যানেলে গিয়ে <strong>Online Store &gt; Themes</strong> এ ক্লিক করুন।</li>
+                      <li>আপনার বর্তমান থিমের পাশে থাকা <strong>... (তিনটি ডট)</strong> বাটনে ক্লিক করে <strong>Edit code</strong> সিলেক্ট করুন।</li>
+                      <li>Layout ফোল্ডারের ভেতর <strong>theme.liquid</strong> ফাইলটি খুলুন।</li>
+                      <li>ফাইলটির একদম শেষে <code className="bg-white px-1 py-0.5 rounded border border-emerald-200">&lt;/body&gt;</code> ট্যাগের ঠিক উপরে নিচের কোডটি পেস্ট করে <strong>Save</strong> দিন।</li>
+                    </ol>
+                  </div>
+                )}
+
+                {widgetPlatformTab === "custom" && (
+                  <div className="space-y-3 bg-purple-50/50 p-4 rounded-xl border border-purple-200 text-xs">
+                    <div className="font-bold text-purple-900 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                      <span>Custom HTML / React / Next.js / PHP সেটআপ:</span>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed">
+                      আপনার ওয়েবসাইটের মূল লেআউট বা <code className="bg-white px-1 py-0.5 rounded border border-purple-200">index.html</code> ফাইলের <code className="bg-white px-1 py-0.5 rounded border border-purple-200">&lt;/body&gt;</code> ক্লোজিং ট্যাগের ঠিক আগে নিচের কোডটি যুক্ত করুন।
+                    </p>
+                  </div>
+                )}
+
+                {/* Script Code Block with 1-click Copy */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                    <span>১-লাইন HTML এম্বেড কোড:</span>
+                    <span>১-লাইন রেডি-টু-পেস্ট কোড:</span>
                     <button
+                      type="button"
                       onClick={() => {
-                        const code = `<script src="${typeof window !== "undefined" ? window.location.origin : "https://zyncoo.ai"}/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="#10b981" async></script>`;
+                        const code = `<script src="${typeof window !== "undefined" ? window.location.origin : "https://zyncoo.ai"}/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="${widgetColor}" async></script>`;
                         navigator.clipboard.writeText(code);
-                        alert("এম্বেড স্ক্রিপ্ট কোড কপি করা হয়েছে!");
+                        alert("এম্বেড স্ক্রিপ্ট কোড সফলভাবে কপি করা হয়েছে! আপনার ওয়েবসাইটে পেস্ট করুন।");
                       }}
-                      className="text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer font-bold"
+                      className="text-teal-700 hover:text-teal-800 flex items-center gap-1 cursor-pointer font-bold bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg border border-teal-200 transition-colors"
                     >
                       <Copy className="w-3.5 h-3.5" />
                       <span>Copy Embed Code</span>
                     </button>
                   </div>
-                  <pre className="p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl border border-slate-800 overflow-x-auto leading-relaxed">
-                    {`<script src="https://zyncoo.ai/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="#10b981" async></script>`}
+                  <pre className="p-3.5 bg-slate-900 text-teal-400 font-mono text-xs rounded-xl border border-slate-800 overflow-x-auto leading-relaxed select-all">
+                    {`<script src="${typeof window !== "undefined" ? window.location.origin : "https://zyncoo.ai"}/zyncoo-widget.js" data-store="${selectedClientStore}" data-color="${widgetColor}" async></script>`}
                   </pre>
                 </div>
               </div>

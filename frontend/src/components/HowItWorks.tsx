@@ -5,8 +5,8 @@ export default function HowItWorks() {
     {
       number: "01",
       icon: <PlugZap className="w-6 h-6 text-emerald-600" />,
-      title: "Connect Channels in 2 Clicks",
-      desc: "Link your Facebook Page, Instagram Account, and official Meta WhatsApp Cloud API via our secure OAuth connector. No complex coding required.",
+      title: "Connect Channels & Website in 2 Clicks",
+      desc: "Link your Facebook Page, Instagram, WhatsApp, and paste 1 line on your website (WordPress/Shopify). No complex coding required.",
       highlight: "2 Minutes Setup",
     },
     {

@@ -17,7 +17,9 @@ import {
   Camera, 
   Volume2, 
   ImageIcon,
-  Play
+  Globe,
+  Globe2,
+  Code2
 } from "lucide-react";
 import { playOrderChime } from "@/lib/sound";
 
@@ -43,7 +45,7 @@ interface Message {
 }
 
 export default function InteractiveChatSimulator() {
-  const [platform, setPlatform] = useState<"whatsapp" | "messenger" | "instagram">("whatsapp");
+  const [platform, setPlatform] = useState<"whatsapp" | "messenger" | "instagram" | "website">("whatsapp");
   const [inputVal, setInputVal] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [orderCount, setOrderCount] = useState(1);
@@ -247,6 +249,18 @@ export default function InteractiveChatSimulator() {
             >
               <span>Instagram DM</span>
             </button>
+            <button
+              onClick={() => setPlatform("website")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                platform === "website"
+                  ? "bg-slate-900 text-[#b8e900] border border-[#b8e900]/40 shadow-xs font-bold"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-[#b8e900]" />
+              <span>Website Live Chat (WordPress/Shopify)</span>
+              <span className="text-[9px] bg-[#b8e900] text-slate-950 font-black px-1.5 py-0.2 rounded-md">NEW</span>
+            </button>
           </div>
           
           <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 font-medium bg-emerald-950/70 px-2.5 py-1.5 rounded-lg border border-emerald-800/60">
@@ -309,7 +323,7 @@ export default function InteractiveChatSimulator() {
                 <div className="flex items-center gap-1.5 mb-1.5 text-xs font-bold text-emerald-700">
                   <Bot className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Zyncoo AI Agent</span>
-                  <span className="text-[10px] font-normal text-slate-400 bg-slate-100 px-1 rounded">24/7 Autonomous</span>
+                  <span className="text-[10px] font-normal text-slate-500 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">২৪/৭ কাস্টমার ম্যানেজার</span>
                 </div>
               )}
 
@@ -396,7 +410,7 @@ export default function InteractiveChatSimulator() {
                   </div>
                   <div className="pt-1 text-[11px] text-emerald-800 font-medium flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    Automatically routed to Steadfast Courier consignment queue.
+                    স্টেডফাস্ট কুরিয়ারে স্বয়ংক্রিয়ভাবে পার্সেল বুকিং হয়ে ট্র্যাকিং নম্বর তৈরি হয়েছে।
                   </div>
                 </div>
               )}
